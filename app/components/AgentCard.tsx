@@ -1,0 +1,141 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import { formatNumber, getTimeAgo, truncateHash } from "../utils/formatting";
+import {
+	IconBrandTelegram,
+	IconBrandX,
+	IconCopy,
+	IconWorld,
+} from "@tabler/icons-react";
+import Link from "next/link";
+
+interface AgentCardProps {
+	title: string;
+	image: string;
+	imageAlt: string;
+	certificate: string;
+	description: string;
+	createdBy: string;
+	marketCap: number;
+	datePublished: Date;
+	sparkingProgress: number;
+}
+
+const socialButtonProperties =
+	"w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-orange-200 transition-all";
+const socialIconSize = 20;
+
+const AgentCard: React.FC<AgentCardProps> = ({
+	image,
+	imageAlt,
+	title,
+	certificate,
+	description,
+	createdBy,
+	marketCap,
+	datePublished,
+	sparkingProgress,
+}) => {
+	return (
+		<div className="group max-w-sm bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-orange-500 hover:border-orange-500 transition-all duration-200 flex flex-col justify-between h-full relative">
+			<Link href={""}>
+				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
+					<Image
+						src={image}
+						alt={imageAlt || "Card image"}
+						layout="fill"
+						objectFit="cover"
+						className="object-cover"
+					/>
+				</div>
+			</Link>
+			<div className="p-5 flex flex-col flex-grow">
+				<div>
+					<div className="flex justify-between items-center">
+						<Link href={""}>
+							<h2 className="text-2xl font-bold tracking-tight hover:text-orange-600">
+								{title}
+							</h2>
+						</Link>
+						<div className="flex space-x-1">
+							<button
+								className={socialButtonProperties}
+								onClick={() => console.log(`Website`)}
+								title="Website"
+							>
+								<IconWorld size={socialIconSize} />
+							</button>
+
+							<button
+								className={socialButtonProperties}
+								onClick={() => console.log(`Telegram`)}
+								title="Telegram"
+							>
+								<IconBrandTelegram size={socialIconSize} />
+							</button>
+							<button
+								className={socialButtonProperties}
+								onClick={() => console.log(`X`)}
+								title="X"
+							>
+								<IconBrandX size={socialIconSize} />
+							</button>
+						</div>
+					</div>
+
+					<h3 className="mb-2 text-xl tracking-tight truncate w-full flex items-center">
+						<span className="pr-2">CA:</span>
+						<button
+							className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-orange-200 transition-all"
+							onClick={() => console.log(`IMPLEMENT COPY`)}
+						>
+							<span>{`${truncateHash(certificate, 12)}`}</span>
+							<IconCopy size={16} />
+						</button>
+					</h3>
+					<p className="mb-3 font-normal">{description}</p>
+				</div>
+
+				<div className="truncate mt-auto -mx-5">
+					<p className="px-5 mb-2 font-normal flex justify-between">
+						<span>{"Created by:"}</span>
+						<Link href=""><span className="hover:text-orange-600">{`${truncateHash(createdBy)}`}</span></Link>
+					</p>
+					<p className="px-5 font-normal flex justify-between">
+						<span>{"Market Cap:"}</span>
+						<span className="font-bold">
+							{formatNumber(marketCap)}
+						</span>
+					</p>
+					<p className="font-normal text-gray-400 text-xs px-5 text-right mb-1">
+						{`${getTimeAgo(datePublished)}`}
+					</p>
+					<hr className="border-black border-2 group-hover:border-orange-500 transition-all duration-200" />
+					<div className="px-5">
+						<p className="font-normal text-sm">{`Sparking Progress: ${sparkingProgress}%`}</p>
+						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
+							{/* Outer container for the border */}
+							<div
+								className={`h-full rounded-full ${
+									sparkingProgress === 100
+										? "bg-orange-300"
+										: "bg-green-300"
+								}`}
+								style={{
+									width: `${Math.min(
+										sparkingProgress,
+										100
+									)}%`,
+								}}
+							></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+export default AgentCard;
