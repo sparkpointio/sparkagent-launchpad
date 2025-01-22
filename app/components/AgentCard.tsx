@@ -91,7 +91,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-orange-200 transition-all"
 							onClick={() => console.log(`IMPLEMENT COPY`)}
 						>
-							<span>{`${truncateHash(certificate, 12)}`}</span>
+							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 							<IconCopy size={16} />
 						</button>
 					</h3>
@@ -116,7 +116,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					<div className="px-5">
 						<p className="font-normal text-sm">{`Sparking Progress: ${sparkingProgress}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
-							{/* Outer container for the border */}
+							{/* Colors not final */}
+							{/* To fix: avoid using CSS inline styles. */}
 							<div
 								className={`h-full rounded-full ${
 									sparkingProgress === 100
