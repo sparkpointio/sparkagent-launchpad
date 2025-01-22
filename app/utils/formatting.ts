@@ -28,11 +28,18 @@ export function formatNumber(number: number): string {
   return number.toString();
 }
 
-export function truncateHash(hash: string, maxLength: number = 10,): string {
-    if (hash.length > maxLength) {
-      const front = hash.slice(0, Math.floor(maxLength / 2) + 1);
-      const back = hash.slice(-Math.floor(maxLength / 2) + 1);
-      return `${front} . . . ${back}`;
-    }
-    return hash;
-  };
+export function truncateHash(hash: string, maxLength: number = 10, left?: number, right?: number): string {
+  const defaultLeft = Math.floor(maxLength / 2) + 1;
+  const defaultRight = Math.floor(maxLength / 2) + 1;
+
+  const leftLength = left ?? defaultLeft;
+  const rightLength = right ?? defaultRight;
+
+  if (hash.length > leftLength + rightLength) {
+    const front = hash.slice(0, leftLength);
+    const back = hash.slice(-rightLength);
+    return `${front} . . . ${back}`;
+  }
+
+  return hash;
+}
