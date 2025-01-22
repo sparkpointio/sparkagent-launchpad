@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { formatNumber, getTimeAgo, truncateHash } from "../utils/formatting";
 import {
@@ -8,6 +8,7 @@ import {
 	IconBrandX,
 	IconCopy,
 	IconWorld,
+	IconCircleCheck,
 } from "@tabler/icons-react";
 import Link from "next/link";
 
@@ -38,6 +39,16 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	datePublished,
 	sparkingProgress,
 }) => {
+	const [copied, setCopied] = useState(false);
+
+	const copyToClipboard = (text: string) => {
+		if (text) {
+			navigator.clipboard.writeText(text);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 3000);
+		}
+	};
+
 	return (
 		<div className="group max-w-sm bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-orange-500 hover:border-orange-500 transition-all duration-200 flex flex-col justify-between h-full relative">
 			<Link href={""}>
@@ -89,10 +100,16 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<span className="pr-2">CA:</span>
 						<button
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-orange-200 transition-all"
-							onClick={() => console.log(`IMPLEMENT COPY`)}
+							onClick={() => {
+								copyToClipboard(certificate);
+							}}
 						>
 							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
-							<IconCopy size={16} />
+							{copied ? (
+								<IconCircleCheck size={16} />
+							) : (
+								<IconCopy size={16} />
+							)}
 						</button>
 					</h3>
 					<p className="mb-3 font-normal">{description}</p>
