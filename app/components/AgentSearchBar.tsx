@@ -24,7 +24,7 @@ const AgentSearchBar: React.FC<AgentSearchBarProps> = ({ onSearch, placeholder =
         className="flex-1 px-4 py-3 mr-2 lg:mr-4 border border-black rounded-xl focus:outline-none focus:ring focus:ring-orange-300"
       />
       <button
-        className="px-4 py-3 text-white bg-black border border-black rounded-xl hover:bg-orange-400 w-auto sm:w-32"
+        className="px-4 lg:px-10 py-3 text-white bg-black border border-black rounded-xl hover:bg-orange-400"
         onClick={handleSearch}
       >
         Search
