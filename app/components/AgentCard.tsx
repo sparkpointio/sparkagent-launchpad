@@ -139,7 +139,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 								className={`h-full rounded-full ${
 									sparkingProgress === 100
 										? "bg-sparkyOrange"
-										: "bg-sparkyGreen"
+										: "bg-sparkyGreen-200"
 								}`}
 								style={{
 									width: `${Math.min(
