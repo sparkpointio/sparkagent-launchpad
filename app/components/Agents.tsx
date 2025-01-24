@@ -13,9 +13,9 @@ const Agents = () => {
     };
 
     return (
-        <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-24">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-24 w-full">
-                
+        <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
+
                 {/* First Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center h-14 mb-8 select-none">
@@ -36,7 +36,7 @@ const Agents = () => {
                     </div>
 
                     {/* Agent Cards */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
                         {AGENTS.map((agent, index) => (
                             <AgentCard
                                 key={index}
