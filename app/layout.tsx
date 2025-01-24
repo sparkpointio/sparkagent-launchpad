@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Rubik, Poppins } from "next/font/google";
 import "./globals.css";
 import { ThirdwebProvider } from "thirdweb/react";
+import Header from "./components/Header";
+import { Footer } from "./components/Footer";
 
 const rubik = Rubik({
   weight: '400',
@@ -53,7 +55,9 @@ export default function RootLayout({
         <body
           className={`${rubik.variable} ${poppins.variable} antialiased`}
         >
+          <Header />
           {children}
+          <Footer />
         </body>
       </ThirdwebProvider>
     </html>
