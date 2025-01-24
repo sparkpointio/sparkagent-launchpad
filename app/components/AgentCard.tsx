@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { formatNumber, getTimeAgo, truncateHash } from "../utils/formatting";
+import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
 	IconBrandTelegram,
 	IconBrandX,
@@ -50,7 +50,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	};
 
 	return (
-		<div className="group max-w-sm bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 transition-all duration-200 flex flex-col justify-between h-full relative">
+		<div className="group bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 transition-all duration-200 flex flex-col justify-between h-full relative">
 			<Link href={""}>
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
 					<Image
@@ -112,7 +112,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							)}
 						</button>
 					</h3>
-					<p className="mb-3 font-normal">{description}</p>
+					<p className="mb-3 font-normal text-small line-clamp-3">{description}</p>
 				</div>
 
 				<div className="truncate mt-auto -mx-5">
@@ -133,7 +133,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					<div className="px-5">
 						<p className="font-normal text-sm">{`Sparking Progress: ${sparkingProgress}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
-							{/* Colors not final */}
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
 								className={`h-full rounded-full ${
