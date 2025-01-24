@@ -1,0 +1,8 @@
+export { default as transparency_logo } from './transparency-logo.svg'
+export { default as new_sparkpoint_logo_full_light } from './new-sparkpoint-logo-full-light.png'
+export { default as new_sparkpoint_logo_full_dark } from './new-sparkpoint-logo-full-dark.png'
+export { default as sparkpoint_logo_spinning } from './srk-anim-square-1.gif'
+export { default as bg_community_light } from './bg-community-light.jpg'
+export { default as bg_community_dark } from './bg-community-dark.jpg'
+export { default as bg_hero_light } from './bg-hero-2-light.webp'
+export { default as bg_hero_dark } from './bg-hero-2-dark.webp'
