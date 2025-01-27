@@ -24,8 +24,8 @@ const SwapCard = () => {
                     src={new_sparkpoint_logo}
                     alt="SparkPoint Logo"
                     className="absolute right-4"
-                    width={24}
-                    height={24}
+                    width={32}
+                    height={32}
                 />
             </div>
             <button type="button" className={buttonProperties}> Swap </button>
