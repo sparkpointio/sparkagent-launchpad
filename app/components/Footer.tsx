@@ -14,7 +14,7 @@ export function Footer() {
     {
       label: "Privacy Policy",
       url: "https://sparkpoint.io/privacy-policy",
-      target: "_self",
+      target: "_blank",
       col: 1
     },
     {
