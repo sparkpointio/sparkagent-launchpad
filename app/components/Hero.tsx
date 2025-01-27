@@ -8,6 +8,7 @@ import tokenAbi from '../../contracts/TokenABI.json';
 import { arbitrumSepolia } from "thirdweb/chains";
 import { client } from '../client';
 import { ConnectButton } from 'thirdweb/react';
+import axios from 'axios';
 
 const Hero = () => {
     const [isDeploying, setIsDeploying] = useState(false);
@@ -17,6 +18,34 @@ const Hero = () => {
     const chain = arbitrumSepolia;
 
     console.log(account);
+
+    const verifyContract = async (contractAddress: any, abi: any, bytecode: any) => {
+        const apiKey = process.env.NEXT_PUBLIC_EXPLORER_API_KEY;
+        const sourceCode = tokenAbi.sourceCode;
+
+        const constructorArguments = ethers.utils.defaultAbiCoder.encode(
+            ["uint256"],
+            [ethers.utils.parseEther("1000000000")]
+        );
+
+        const data = {
+            apikey: apiKey,
+            module: "contract",
+            action: "verifysourcecode",
+            contractaddress: contractAddress,
+            sourceCode,
+            contractname: "MyToken",
+            compilerversion: "v0.8.20+commit.a1b79de6",
+            constructorArguments: constructorArguments.slice(2),
+        };
+
+        try {
+            const response = await axios.post("https://api-sepolia.arbiscan.io/api", data);
+            console.log("Verification response:", response.data);
+        } catch (error) {
+            console.error("Failed to verify contract:", error);
+        }
+    }
 
     const deployTokenContract = async () => {
         try {
@@ -52,6 +81,11 @@ const Hero = () => {
             // Save the deployed contract address
             setContractAddress(contract.address);
             alert(`Token deployed successfully at ${contract.address}`);
+
+            console.log("Verifying contract...");
+            await verifyContract(contract.address, abi, bytecode);
+
+            // await verifyContract("0x5e5b76517e7cc2a07d40a2aab1fea78127506691", tokenAbi.abi, tokenAbi.bytecode);
         } catch (error) {
             console.error('Deployment failed:', error);
             alert('Failed to deploy the contract. Check the console for details.');
