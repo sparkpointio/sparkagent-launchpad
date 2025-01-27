@@ -51,7 +51,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 
 	return (
 		<div className="group bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 transition-all duration-200 flex flex-col justify-between h-full relative">
-			<Link href={""}>
+			<Link href="/agent">
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
 					<Image
 						src={image}
@@ -65,7 +65,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			<div className="p-5 flex flex-col flex-grow">
 				<div>
 					<div className="flex justify-between items-center">
-						<Link href={""}>
+						<Link href={"/agent"}>
 							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
 								{title}
 							</h2>
