@@ -13,7 +13,7 @@ export function Footer() {
   const footer_links = [
     {
       label: "Privacy Policy",
-      url: "https://github.com/sparkpointio/sparkpoint.io-privacy-policy/tree/main",
+      url: "https://github.com/sparkpointio/sparkagent-privacy-policy/tree/main",
       target: "_blank",
       col: 1
     },
