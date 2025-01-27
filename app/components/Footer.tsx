@@ -13,7 +13,13 @@ export function Footer() {
   const footer_links = [
     {
       label: "Privacy Policy",
-      url: "/privacy-policy",
+      url: "https://sparkpoint.io/privacy-policy",
+      target: "_self",
+      col: 1
+    },
+    {
+      label: "AUP",
+      url: "/aup",
       target: "_self",
       col: 1
     },
