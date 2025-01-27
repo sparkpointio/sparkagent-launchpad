@@ -50,102 +50,110 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	};
 
 	return (
-		<div className="group bg-white border-2 border-black rounded-2xl shadow-md flex flex-row justify-between h-full relative p-6">
-			<Link href={""}>
-				<div className="relative w-32 h-32 rounded-full overflow-hidden mr-4">
-					<Image
-						src={image}
-						alt={imageAlt || "Card image"}
-						layout="fill"
-						objectFit="cover"
-						className="object-cover"
-					/>
-				</div>
-			</Link>
-			<div className="flex flex-col flex-grow">
-				<div>
-					<div className="flex justify-between items-center mb-4">
-						<Link href={""}>
-							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
-								{title + " (Abbr.)"}
-							</h2>
-						</Link>
-						<div className="flex space-x-1 items-center">
-							<div className="flex items-center space-x-2 mr-8">
-								<p>Created by:</p>
-								<Link href="">
-									<span className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
-								</Link>
+		<div className="group bg-white border-2 border-black rounded-2xl shadow-md flex flex-col justify-between h-full relative p-6">
+			{/* Section 1 */}
+			<div className="flex flex-row mb-2">
+				<Link href={""}>
+					<div className="relative w-32 h-32 rounded-full overflow-hidden mr-4">
+						<Image
+							src={image}
+							alt={imageAlt || "Card image"}
+							layout="fill"
+							objectFit="cover"
+							className="object-cover"
+						/>
+					</div>
+				</Link>
+				<div className="flex flex-col flex-grow">
+					<div>
+						<div className="flex justify-between items-center mb-4">
+							<Link href={""}>
+								<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
+									{title + " (Abbr.)"}
+								</h2>
+							</Link>
+							<div className="flex space-x-1 items-center">
+								<div className="flex items-center space-x-2 mr-8">
+									<p>Created by:</p>
+									<Link href="">
+										<span className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
+									</Link>
+								</div>
+								<button
+									className={socialButtonProperties}
+									onClick={() => console.log(`Website`)}
+									title="Website"
+								>
+									<IconWorld size={socialIconSize} />
+								</button>
+								<button
+									className={socialButtonProperties}
+									onClick={() => console.log(`Telegram`)}
+									title="Telegram"
+								>
+									<IconBrandTelegram size={socialIconSize} />
+								</button>
+								<button
+									className={socialButtonProperties}
+									onClick={() => console.log(`X`)}
+									title="X"
+								>
+									<IconBrandX size={socialIconSize} />
+								</button>
 							</div>
-							<button
-								className={socialButtonProperties}
-								onClick={() => console.log(`Website`)}
-								title="Website"
-							>
-								<IconWorld size={socialIconSize} />
-							</button>
-							<button
-								className={socialButtonProperties}
-								onClick={() => console.log(`Telegram`)}
-								title="Telegram"
-							>
-								<IconBrandTelegram size={socialIconSize} />
-							</button>
-							<button
-								className={socialButtonProperties}
-								onClick={() => console.log(`X`)}
-								title="X"
-							>
-								<IconBrandX size={socialIconSize} />
-							</button>
 						</div>
+
+						<div className="mb-2 w-full flex items-center justify-between space-x-4">
+							<div className="flex flex-col flex-1">
+								<span>Contract Address</span>
+								<button
+									className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
+									onClick={() => {
+										copyToClipboard(certificate);
+									}}
+								>
+									<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
+									{copied ? (
+										<IconCircleCheck size={16} />
+									) : (
+										<IconCopy size={16} />
+									)}
+								</button>
+							</div>
+							<div className="flex flex-col flex-1">
+								<span>Market Cap</span>
+								<span className="font-bold">
+									{formatNumber(marketCap)}
+								</span>
+							</div>
+							<div className="flex flex-col flex-1">
+								<span>Price USD</span>
+								<span className="font-bold">
+									{"Price"}
+								</span>
+							</div>
+							<div className="flex flex-col flex-1">
+								<span>Price</span>
+								<span className="font-bold">
+									{"Price" + " SRK"}
+								</span>
+							</div>
+						</div>
+						<p className="font-normal text-small truncate">{description}</p>
 					</div>
 
-					<div className="mb-2 w-full flex items-center justify-between space-x-4">
-						<div className="flex flex-col flex-1">
-							<span>Contract Address</span>
-							<button
-								className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-								onClick={() => {
-									copyToClipboard(certificate);
-								}}
-							>
-								<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
-								{copied ? (
-									<IconCircleCheck size={16} />
-								) : (
-									<IconCopy size={16} />
-								)}
-							</button>
-						</div>
-						<div className="flex flex-col flex-1">
-							<span>Market Cap</span>
-							<span className="font-bold">
-								{formatNumber(marketCap)}
-							</span>
-						</div>
-						<div className="flex flex-col flex-1">
-							<span>Price USD</span>
-							<span className="font-bold">
-								{"Price"}
-							</span>
-						</div>
-						<div className="flex flex-col flex-1">
-							<span>Price</span>
-							<span className="font-bold">
-								{"Price" + " SRK"}
-							</span>
-						</div>
+					<div className="truncate -mx-5 flex justify-end space-x-2 px-5">
+						<p className="font-normal text-gray-400 text-xs text-right mr-2">
+							{`Created at`}
+						</p>
+						<p className="font-bold text-xs text-right">
+							{`${getTimeAgo(datePublished)}`}
+						</p>
 					</div>
-					<p className="mb-3 font-normal text-small line-clamp-3">{description}</p>
-				</div>
-
-				<div className="truncate mt-auto -mx-5">
-					<p className="font-normal text-gray-400 text-xs px-5 text-right mb-1">
-						{`${getTimeAgo(datePublished)}`}
-					</p>
 				</div>
 			</div>
+			{/* Section 2: Embedded SOL token (for now) chart from GeckoTerminal (modified to remove swaps and additional info. Also enabled lightmode) */}
+			<iframe height={512} width="100%" id="geckoterminal-embed" title="GeckoTerminal Embed" src="https://www.geckoterminal.com/solana/pools/22WrmyTj8x2TRVQen3fxxi2r4Rn6JDHWoMTpsSmn8RUd?embed=1&info=0&swaps=0&grayscale=0&light_chart=1"></iframe>
 		</div>
 	);
 };
