@@ -112,13 +112,14 @@ const Header = ({ className }: { className?: string }) => {
                     How it works
                   </Link>
                 </nav>
-                <ConnectButton 
+                <ConnectButton
                   connectButton={customButtonStyles}
                   detailsButton={{
                     className: "!w-full justify-center"
                   }}
                   client={client} 
-                  chain={arbitrumSepolia} 
+                  chain={arbitrumSepolia}
+                  theme="light"
                 />
               </div>
               
@@ -153,7 +154,8 @@ const Header = ({ className }: { className?: string }) => {
                   className: "!w-full justify-center"
                 }}
                 client={client} 
-                chain={arbitrumSepolia} 
+                chain={arbitrumSepolia}
+                theme="light"
               />
             </motion.div>
           )}
