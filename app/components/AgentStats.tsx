@@ -152,7 +152,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					</div>
 				</div>
 			</div>
-			{/* Section 2: Embedded SOL token (for now) chart from GeckoTerminal (modified to remove swaps and additional info. Also enabled lightmode) */}
+			{/* Section 2: Embedded MOODENG token (for now) chart from GeckoTerminal (modified to remove swaps and additional info. Also enabled lightmode) */}
 			<iframe height={512} width="100%" id="geckoterminal-embed" title="GeckoTerminal Embed" src="https://www.geckoterminal.com/solana/pools/22WrmyTj8x2TRVQen3fxxi2r4Rn6JDHWoMTpsSmn8RUd?embed=1&info=0&swaps=0&grayscale=0&light_chart=1"></iframe>
 		</div>
 	);
