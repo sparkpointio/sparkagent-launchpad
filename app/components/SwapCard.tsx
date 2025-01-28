@@ -7,7 +7,7 @@ const SwapCard = () => {
     const headerProperties = "flex text-xl justify-right";
     const buttonProperties = "w-full border-2 border-black rounded-3xl hover:bg-sparkyGreen-500 transition-all p-4"
     return (
-        <div className="bg-white h-min border-2 border-black rounded-2xl shadow-md p-6">
+        <div className="bg-white h-min border-2 border-black rounded-2xl shadow-md p-5 m:p-6">
             <h2 className={`${headerProperties} font-bold mb-4`}>Swap</h2>
             <div className="flex flex-row gap-4 mb-12">
                 <button type="button" className={buttonProperties}> Buy </button>
