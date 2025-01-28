@@ -50,7 +50,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	};
 
 	return (
-		<div className="group bg-white border-2 border-black rounded-2xl shadow-md flex flex-col justify-between h-full relative p-6">
+		<div className="group bg-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6 ">
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<Link href={""}>
