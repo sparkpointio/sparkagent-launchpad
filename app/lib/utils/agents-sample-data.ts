@@ -7,6 +7,8 @@ export interface AgentsData {
   marketCap: number,
   datePublished: Date,
   sparkingProgress: number,
+  volume: number,
+  tokenPrice: number,
 }
 
 export const AGENTS: AgentsData[] = [
@@ -19,6 +21,8 @@ export const AGENTS: AgentsData[] = [
     marketCap: 1100000,
     datePublished: new Date('2025-01-10T14:00:00Z'),
     sparkingProgress: 100,
+    volume: 150,
+    tokenPrice: 0.75,
   },
   {
     title: "Small Bets",
@@ -29,6 +33,8 @@ export const AGENTS: AgentsData[] = [
     marketCap: 978000,
     datePublished: new Date('2025-01-11T08:30:00Z'),
     sparkingProgress: 69.3,
+    volume: 120,
+    tokenPrice: 0.55,
   },
   {
     title: "Red Sun",
@@ -39,6 +45,8 @@ export const AGENTS: AgentsData[] = [
     marketCap: 1100000,
     datePublished: new Date('2024-01-12T12:45:00Z'),
     sparkingProgress: 49.3,
+    volume: 180,
+    tokenPrice: 0.65,
   },
   {
     title: "Nova Beast",
@@ -49,6 +57,8 @@ export const AGENTS: AgentsData[] = [
     marketCap: 1100000,
     datePublished: new Date('2024-01-13T16:30:00Z'),
     sparkingProgress: 100,
+    volume: 200,
+    tokenPrice: 0.85,
   },
   {
     title: "Small Bets",
@@ -59,6 +69,8 @@ export const AGENTS: AgentsData[] = [
     marketCap: 978000,
     datePublished: new Date('2024-01-14T10:00:00Z'),
     sparkingProgress: 69.3,
+    volume: 90,
+    tokenPrice: 0.45,
   },
   {
     title: "Red Sun",
@@ -69,5 +81,7 @@ export const AGENTS: AgentsData[] = [
     marketCap: 1100000,
     datePublished: new Date('2024-01-15T13:15:00Z'),
     sparkingProgress: 49.3,
+    volume: 130,
+    tokenPrice: 0.35,
   },
 ];
