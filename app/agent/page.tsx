@@ -5,10 +5,11 @@ import React from "react";
 import { AGENTS } from "../lib/utils/agents-sample-data";
 import AgentStats from "../components/AgentStats";
 import SwapCard from "../components/SwapCard";
+import SparkingProgressCard from "../components/SparkingProgressCard";
 
 export default function Agent() {
 	return (
-		<div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
+		<div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
 				
 				{/* First Column */}
@@ -27,8 +28,9 @@ export default function Agent() {
 				</div>
 
         {/* Second Column */}
-				<div className="flex flex-col">
+				<div className="flex flex-col gap-4">
 					<SwapCard />
+          <SparkingProgressCard sparkingProgress={AGENTS[1].sparkingProgress} />
 				</div>
 			</div>
 		</div>
