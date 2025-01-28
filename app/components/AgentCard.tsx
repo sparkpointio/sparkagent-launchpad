@@ -11,6 +11,7 @@ import {
 	IconCircleCheck,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface AgentCardProps {
 	title: string;
@@ -50,7 +51,12 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	};
 
 	return (
-		<div className="group bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 transition-all duration-200 flex flex-col justify-between h-full relative">
+		<motion.div
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.75 }}
+			className="group bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 transition-all duration-200 flex flex-col justify-between h-full relative"
+		>
 			<Link href="/agent">
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
 					<Image
@@ -151,7 +157,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</div>
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 };
 
