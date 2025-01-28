@@ -72,7 +72,7 @@ const Agents = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
                         {sortedAgents.map((agent, index) => (
                             <AgentCard
-                                key={index}
+                                key={`${sortConfig.criterion}-${sortConfig.ascending}-${index}`}
                                 title={agent.title}
                                 image={agent.image}
                                 imageAlt={agent.title}
