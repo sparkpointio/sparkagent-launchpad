@@ -25,15 +25,15 @@ const Agents = () => {
 
         const sorted = [...sortedAgents].sort((a, b) => {
             if (criterion === "sparkingProgress") {
-                return ascending ? a.sparkingProgress - b.sparkingProgress : b.sparkingProgress - a.sparkingProgress;
+                return ascending ? b.sparkingProgress - a.sparkingProgress : a.sparkingProgress - b.sparkingProgress;
             } else if (criterion === "marketCap") {
-                return ascending ? a.marketCap - b.marketCap : b.marketCap - a.marketCap;
+                return ascending ? b.marketCap - a.marketCap : a.marketCap - b.marketCap;
             } else if (criterion === "datePublished") {
-                return ascending ? new Date(a.datePublished).getTime() - new Date(b.datePublished).getTime() : new Date(b.datePublished).getTime() - new Date(a.datePublished).getTime();
+                return ascending ? new Date(b.datePublished).getTime() - new Date(a.datePublished).getTime() : new Date(a.datePublished).getTime() - new Date(b.datePublished).getTime();
             } else if (criterion === "volume") {
-                return ascending ? a.volume - b.volume : b.volume - a.volume;
+                return ascending ? b.volume - a.volume : a.volume - b.volume;
             } else if (criterion === "tokenPrice") {
-                return ascending ? a.tokenPrice - b.tokenPrice : b.tokenPrice - a.tokenPrice;
+                return ascending ? b.tokenPrice - a.tokenPrice : a.tokenPrice - b.tokenPrice;
             }
             return 0;
         });
