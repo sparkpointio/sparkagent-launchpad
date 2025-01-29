@@ -25,7 +25,42 @@ body {
   background: var(--background);
   font-family: var(--font-poppins);
 }
-
+#light-dark-toggle-container .checkbox {
+  opacity: 0;
+  position: absolute;
+}
+#light-dark-toggle-container .checkbox-label {
+  background-color: #1a1d21;
+  width: 52px;
+  height: 28px;
+  border-radius: 50px;
+  position: relative;
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border:1px solid #1a1d21;
+  transition:0.5s;
+}
+.dark #light-dark-toggle-container .checkbox-label {
+  border:1px solid #ffffff;
+}
+#light-dark-toggle-container .fa-moon {color: #f1c40f;}
+#light-dark-toggle-container .fa-sun {color: #f39c12;}
+#light-dark-toggle-container .checkbox-label .ball {
+  background-color: #fff;
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  transition: transform 0.2s linear;
+}
+#light-dark-toggle-container .checkbox:checked + .checkbox-label .ball {
+  transform: translateX(24px);
+}
 h1, h2, h3, h4, h5, h6 {
   @apply font-sans;
   font-family: var(--font-rubik);
