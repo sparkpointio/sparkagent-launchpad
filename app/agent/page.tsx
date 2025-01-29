@@ -1,6 +1,5 @@
 "use client";
 
-"use client";
 import React from "react";
 import { AGENTS } from "../lib/utils/agents-sample-data";
 import AgentStats from "../components/AgentStats";
