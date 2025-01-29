@@ -163,7 +163,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				width="100%"
 				id="geckoterminal-embed"
 				title="GeckoTerminal Embed"
-				src={`https://www.geckoterminal.com/solana/pools/22WrmyTj8x2TRVQen3fxxi2r4Rn6JDHWoMTpsSmn8RUd?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
+				src={`https://www.geckoterminal.com/arbitrum/pools/${"0xc6f780497a95e246eb9449f5e4770916dcd6396a"}?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
 			></iframe>
 		</div>
 	);
