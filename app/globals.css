@@ -9,16 +9,10 @@
   --font-poppins: "Poppins", sans-serif;
 }
 
-/*
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #1a1d21;
+  --foreground: #ededed;
 }
-
-*/
 
 body {
   color: var(--foreground);
@@ -40,14 +34,21 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border:1px solid #1a1d21;
-  transition:0.5s;
+  border: 1px solid #1a1d21;
+  transition: 0.5s;
 }
 .dark #light-dark-toggle-container .checkbox-label {
-  border:1px solid #ffffff;
+  border: 1px solid #ffffff;
 }
-#light-dark-toggle-container .fa-moon {color: #f1c40f;}
-#light-dark-toggle-container .fa-sun {color: #f39c12;}
+
+#light-dark-toggle-container .fa-moon {
+  color: #f1c40f;
+}
+
+#light-dark-toggle-container .fa-sun {
+  color: #f39c12;
+}
+
 #light-dark-toggle-container .checkbox-label .ball {
   background-color: #fff;
   width: 22px;
