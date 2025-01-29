@@ -6,8 +6,55 @@ import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
 import { new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from "../lib/assets";
 import Image from "next/image";
+import { client } from "../client";
+
+const unsparkingAIContract = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
+});
+
+import {
+  useReadContract,
+} from "thirdweb/react";
+import { getContract } from "thirdweb";
+import { arbitrumSepolia } from "thirdweb/chains";
 
 const Agents = () => {
+    const [agents, setAgents] = useState<string[]>([]);
+    const [index, setIndex] = useState(0);
+
+    const { data } = useReadContract({
+        contract: unsparkingAIContract,
+        method: "function tokenInfos(uint256) returns (address)",
+        params: [BigInt(index)],
+    });
+
+    const { data: agentData, error } = useReadContract({
+        contract: unsparkingAIContract,
+        method: "function tokenInfo(address) returns (address, address, address, address, tuple)",
+        params: ["0x73C0BE869A2f057939d3484E2Ca98C6cbECE4405"],
+    });
+    
+    if (error) {
+        console.error("Error fetching agent data:", error);
+    } else {
+        console.log("Agent data:", agentData);
+    }
+
+    useEffect(() => {
+        if (data) {
+            setAgents((prevAgents) => [...prevAgents, data.toString()]);
+            setIndex((prevIndex) => prevIndex + 1);
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if (index > 0 && !data) {
+            console.log("No more addresses found");
+        }
+    }, [index, data]);
+
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredAgents, setFilteredAgents] = useState(AGENTS);
 
@@ -74,6 +121,14 @@ const Agents = () => {
     return (
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
+            <div>
+            <h1>Agents</h1>
+            <ul>
+                {agents.map((agent, idx) => (
+                    <li key={idx}>{agent}</li>
+                ))}
+            </ul>
+        </div>
                 {/* First Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center h-14 mb-8 select-none">
