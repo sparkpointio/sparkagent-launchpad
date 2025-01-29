@@ -4,13 +4,12 @@ interface SparkingProgressCardProps {
     sparkingProgress: number;
 }
 
-
 const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
     sparkingProgress,
 }) => {
     const headerProperties = "flex text-3xl justify-right font-bold";
     return (
-        <div className="bg-white h-min border-2 border-black rounded-2xl shadow-md p-5 lg:p-12 space-y-4 lg:space-y-6">
+        <div className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 lg:p-12 space-y-4 lg:space-y-6">
             <div className="flex items-center">
                 <h2 className={`${headerProperties} mr-2`}>Sparking Progress:</h2>
                 <span className={`${headerProperties} ${
@@ -21,7 +20,7 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
                     {sparkingProgress}%
                 </span>
             </div>
-            <div className="w-full h-4 rounded-full border border-black overflow-hidden">
+            <div className="w-full h-4 rounded-full border border-black dark:border-gray-700 overflow-hidden">
                 <div
                     className={`h-full rounded-full ${
                         sparkingProgress === 100

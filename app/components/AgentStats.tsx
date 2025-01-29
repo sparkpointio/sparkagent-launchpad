@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -25,7 +25,7 @@ interface AgentStatsProps {
 }
 
 const socialButtonProperties =
-	"w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-all";
+	"w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-all dark:border-gray-700";
 const socialIconSize = 20;
 
 const AgentStats: React.FC<AgentStatsProps> = ({
@@ -40,6 +40,12 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	//sparkingProgress,
 }) => {
 	const [copied, setCopied] = useState(false);
+	const [isDarkMode, setIsDarkMode] = useState(false);
+
+	useEffect(() => {
+		const darkMode = document.documentElement.classList.contains('dark');
+		setIsDarkMode(darkMode);
+	}, []);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
@@ -50,7 +56,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	};
 
 	return (
-		<div className="group bg-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6 ">
+		<div className="group bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<Link href={""}>
@@ -107,7 +113,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<div className="flex flex-col flex-1">
 								<span>Contract Address</span>
 								<button
-									className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
+									className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all"
 									onClick={() => {
 										copyToClipboard(certificate);
 									}}
@@ -152,13 +158,12 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					</div>
 				</div>
 			</div>
-			{/* Section 2: Embedded MOODENG token (for now) chart from GeckoTerminal (modified to remove swaps and additional info. Also enabled lightmode) */}
 			<iframe
 				style={{ height: "60vh" }}
 				width="100%"
 				id="geckoterminal-embed"
 				title="GeckoTerminal Embed"
-				src="https://www.geckoterminal.com/solana/pools/22WrmyTj8x2TRVQen3fxxi2r4Rn6JDHWoMTpsSmn8RUd?embed=1&info=0&swaps=0&grayscale=0&light_chart=1"
+				src={`https://www.geckoterminal.com/solana/pools/22WrmyTj8x2TRVQen3fxxi2r4Rn6JDHWoMTpsSmn8RUd?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
 			></iframe>
 		</div>
 	);
