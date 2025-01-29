@@ -39,8 +39,8 @@ const Agents = () => {
             filtered = filtered.filter(agent => agent.datePublished >= sevenDaysAgo);
         }
 
-        // Apply graduated filter
-        if (filterType === 'graduated' && value === true) {
+        // Apply sparked filter
+        if (filterType === 'sparked' && value === true) {
             filtered = filtered.filter(agent => agent.sparkingProgress === 100);
         }
 

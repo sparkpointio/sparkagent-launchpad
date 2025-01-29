@@ -9,7 +9,7 @@ const AgentFilter = ({ onFilterChange }: FilterProps) => {
         volume: null as "high" | "low" | null,
         marketCap: null as "high" | "low" | null,
         newPairs: false,
-        graduated: false,
+        sparked: false,
         price: null as "high" | "low" | null
     });
 
@@ -28,8 +28,8 @@ const AgentFilter = ({ onFilterChange }: FilterProps) => {
             case 'newPairs':
                 newFilters.newPairs = !activeFilters.newPairs;
                 break;
-            case 'graduated':
-                newFilters.graduated = !activeFilters.graduated;
+            case 'sparked':
+                newFilters.sparked = !activeFilters.sparked;
                 break;
             case 'price':
                 newFilters.price = activeFilters.price === "high" ? "low" :
@@ -86,12 +86,12 @@ const AgentFilter = ({ onFilterChange }: FilterProps) => {
             </button>
             <hr className={dividerProperties} />
             <button
-                className={getButtonClass(activeFilters.graduated)}
-                onClick={() => handleFilter('graduated')}
+                className={getButtonClass(activeFilters.sparked)}
+                onClick={() => handleFilter('sparked')}
             >
                 <p className={filterProperties}>
-                    Graduated
-                    {activeFilters.graduated && <span>✓</span>}
+                    Sparked
+                    {activeFilters.sparked && <span>✓</span>}
                 </p>
             </button>
             <hr className={dividerProperties} />
