@@ -123,8 +123,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
     const proceedWithLaunch = async () => {
         const ipfsUrl = await uploadToIPFS();
+
         if (ipfsUrl) {
-            setIcon(ipfsUrl);
             setValidationError("");
         } else {
             setValidationError("Failed to upload image.");
@@ -139,7 +139,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 name,
                 ticker,
                 description,
-                icon,
+                ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
                 fee,
             ],
