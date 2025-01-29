@@ -1,91 +1,111 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import AgentSearchBar from "./AgentSearchBar";
 import { AGENTS } from "../lib/utils/agents-sample-data";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
-import { new_sparkpoint_logo_full_dark } from "../lib/assets";
+import { new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from "../lib/assets";
 import Image from "next/image";
 
 const Agents = () => {
-    const [sortedAgents, setSortedAgents] = useState(AGENTS);
-    const [sortConfig, setSortConfig] = useState<{ criterion: string, ascending: boolean }>({ criterion: "", ascending: true });
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredAgents, setFilteredAgents] = useState(AGENTS);
 
-    const handleSearch = (query: string) => {
-        console.log("Search query:", query);
-    };
+    const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
+        let filtered = [...AGENTS];
 
-    const handleSort = (criterion: string) => {
-        let ascending = sortConfig.ascending;
-        if (sortConfig.criterion === criterion) {
-            ascending = !ascending;
-        } else {
-            ascending = true;
+        // Apply search filter first
+        if (searchQuery.trim()) {
+            const searchTerm = searchQuery.toLowerCase();
+            filtered = filtered.filter(agent =>
+                agent.title.toLowerCase().includes(searchTerm) ||
+                agent.description.toLowerCase().includes(searchTerm) ||
+                agent.certificate.toLowerCase().includes(searchTerm) ||
+                agent.createdBy.toLowerCase().includes(searchTerm)
+            );
         }
 
-        const sorted = [...sortedAgents].sort((a, b) => {
-            if (criterion === "sparkingProgress") {
-                return ascending ? b.sparkingProgress - a.sparkingProgress : a.sparkingProgress - b.sparkingProgress;
-            } else if (criterion === "marketCap") {
-                return ascending ? b.marketCap - a.marketCap : a.marketCap - b.marketCap;
-            } else if (criterion === "datePublished") {
-                return ascending ? new Date(b.datePublished).getTime() - new Date(a.datePublished).getTime() : new Date(a.datePublished).getTime() - new Date(b.datePublished).getTime();
-            } else if (criterion === "volume") {
-                return ascending ? b.volume - a.volume : a.volume - b.volume;
-            } else if (criterion === "tokenPrice") {
-                return ascending ? b.tokenPrice - a.tokenPrice : a.tokenPrice - b.tokenPrice;
-            }
-            return 0;
-        });
+        // Apply market cap filter
+        if (value === "high") {
+            filtered.sort((a, b) => b.marketCap - a.marketCap);
+        } else if (value === "low") {
+            filtered.sort((a, b) => a.marketCap - b.marketCap);
+        }
 
-        setSortedAgents(sorted);
-        setSortConfig({ criterion, ascending });
-    };
+        // Apply new pairs filter (last 7 days)
+        if (filterType === 'newPairs' && value === true) {
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            filtered = filtered.filter(agent => agent.datePublished >= sevenDaysAgo);
+        }
+
+        // Apply sparked filter
+        if (filterType === 'sparked' && value === true) {
+            filtered = filtered.filter(agent => agent.sparkingProgress === 100);
+        }
+
+        setFilteredAgents(filtered);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        handleFilterChange('search', searchQuery);
+    }, [searchQuery, handleFilterChange]);
 
     return (
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
-
                 {/* First Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center h-14 mb-8 select-none">
                         <Image
                             src={new_sparkpoint_logo_full_dark}
                             alt="SparkPoint Logo"
-                            className="h-12 w-fit"
+                            className="h-12 w-fit dark:hidden block"
+                            unselectable="on"
+                        />
+                        <Image
+                            src={new_sparkpoint_logo_full_light}
+                            alt="SparkPoint Logo"
+                            className="h-12 w-fit dark:block hidden"
                             unselectable="on"
                         />
                     </div>
-                    <AgentFilter 
-                        onSort={(criterion) => handleSort(criterion)} 
-                        sortConfig={sortConfig}
-                    />
+                    <AgentFilter onFilterChange={handleFilterChange} />
                 </div>
 
                 {/* Second Column */}
                 <div className="lg:col-span-2 w-full">
                     <div className="flex items-center justify-center h-16 mb-6">
-                        <AgentSearchBar onSearch={handleSearch} placeholder="Search Agent/Token" />
+                        <AgentSearchBar onSearch={(query: string) => {
+                            setSearchQuery(query);
+                        }} onClear={() => {
+                            setSearchQuery("");
+                            setFilteredAgents(AGENTS); // Reset to original agents list
+                        }} placeholder="Search Agent/Token" />
                     </div>
 
                     {/* Agent Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
-                        {sortedAgents.map((agent, index) => (
-                            <AgentCard
-                                key={`${sortConfig.criterion}-${sortConfig.ascending}-${index}`}
-                                title={agent.title}
-                                image={agent.image}
-                                imageAlt={agent.title}
-                                certificate={agent.certificate}
-                                description={agent.description}
-                                createdBy={agent.createdBy}
-                                marketCap={agent.marketCap}
-                                datePublished={agent.datePublished}
-                                sparkingProgress={agent.sparkingProgress}
-                                //volume={agent.volume}
-                                //tokenPrice={agent.tokenPrice}
-                            />
-                        ))}
+                        {filteredAgents.length > 0 ? (
+                            filteredAgents.map((agent, index) => (
+                                <AgentCard
+                                    key={index}
+                                    title={agent.title}
+                                    image={agent.image}
+                                    imageAlt={agent.title}
+                                    certificate={agent.certificate}
+                                    description={agent.description}
+                                    createdBy={agent.createdBy}
+                                    marketCap={agent.marketCap}
+                                    datePublished={agent.datePublished}
+                                    sparkingProgress={agent.sparkingProgress}
+                                />
+                            ))
+                        ) : (
+                            <div className="col-span-full text-xl text-center py-8 text-gray-500">
+                                No agents found
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

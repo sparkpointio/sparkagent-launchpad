@@ -51,13 +51,9 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	};
 
 	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			transition={{ duration: 0.75 }}
-			className="group bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 transition-all duration-200 flex flex-col justify-between h-full relative"
-		>
-			<Link href="/agent">
+		<motion.div whileHover={{ scale: 1.02 }}
+			whileTap={{ scale: 0.9 }} className="group dark:bg-[#1a1d21] dark:text-white bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 duration-200 flex flex-col justify-between h-full relative">
+			<Link href={""}>
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
 					<Image
 						src={image}
@@ -105,7 +101,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					<h3 className="mb-2 text-xl tracking-tight truncate w-full flex items-center">
 						<span className="pr-2">CA:</span>
 						<button
-							className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
+							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
 							onClick={() => {
 								copyToClipboard(certificate);
 							}}
@@ -141,11 +137,10 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
-								className={`h-full rounded-full ${
-									sparkingProgress === 100
-										? "bg-sparkyOrange"
-										: "bg-sparkyGreen-200"
-								}`}
+								className={`h-full rounded-full ${sparkingProgress === 100
+									? "bg-sparkyOrange"
+									: "bg-sparkyGreen-200"
+									}`}
 								style={{
 									width: `${Math.min(
 										sparkingProgress,

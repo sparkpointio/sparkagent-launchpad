@@ -13,8 +13,14 @@ export function Footer() {
   const footer_links = [
     {
       label: "Privacy Policy",
-      url: "https://github.com/sparkpointio/sparkagent-privacy-policy/tree/main",
-      target: "_blank",
+      url: "/aup",
+      target: "_self",
+      col: 1
+    },
+    {
+      label: "AUP",
+      url: "/aup",
+      target: "_self",
       col: 1
     },
     {
@@ -31,7 +37,7 @@ export function Footer() {
     },
     {
       label: "Home",
-      url: "#",
+      url: "/#",
       target: "_self",
       col: 2
     },
@@ -86,7 +92,7 @@ export function Footer() {
   return (
     <footer className="bg-[#20282A] text-white md:px-44 p-10 py-16 flex justify-between items-start gap-8 mx-auto lg:flex-row flex-col">
       <div className="grid gap-4">
-        <Link className="flex items-center gap-2" href="#">
+        <Link className="flex items-center gap-2" href="/#">
           <Image
             src={new_sparkpoint_logo_full_light}
             alt="SparkPoint Logo"
