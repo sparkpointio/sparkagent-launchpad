@@ -23,6 +23,34 @@ import { arbitrumSepolia } from "thirdweb/chains";
 const Agents = () => {
     const [agents, setAgents] = useState<string[]>([]);
     const [index, setIndex] = useState(0);
+    const [address, setAddress] = useState<string>("");
+    interface AgentData {
+        creator: string,
+        certificate: string,
+        pair: string,
+        agentToken: string,
+        title: string,
+        tokenName: string,
+        tokenSymbol: string,
+        tokenNumberOne: number,
+        tokenNumberTwo: number,
+        tokenNumberThree: number,
+        tokenNumberFour: number,
+        tokenNumberFive: number,
+        tokenNumberSix: number,
+        tokenNumberSeven: number,
+        tokenNumberEight: number,
+        description: string,
+        image: string,
+        twitter: string,
+        telegram: string,
+        youtube: string,
+        website: string,
+        trading: boolean,
+        tradingOnUniSwap: boolean,
+    }
+    
+    const [agentsData, setAgentsData] = useState<AgentData[]>([]);
 
     const { data } = useReadContract({
         contract: unsparkingAIContract,
@@ -30,24 +58,52 @@ const Agents = () => {
         params: [BigInt(index)],
     });
 
-    const { data: agentData, error } = useReadContract({
+    const { data: agentData } = useReadContract({
         contract: unsparkingAIContract,
-        method: "function tokenInfo(address) returns (address, address, address, address, tuple)",
-        params: ["0x73C0BE869A2f057939d3484E2Ca98C6cbECE4405"],
+        method: "function tokenInfo(address) returns (address, address, address, address, (address, string, string, string, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256), string, string, string, string, string, string, bool, bool)",
+        params: [address],
     });
-    
-    if (error) {
-        console.error("Error fetching agent data:", error);
-    } else {
-        console.log("Agent data:", agentData);
-    }
 
     useEffect(() => {
         if (data) {
             setAgents((prevAgents) => [...prevAgents, data.toString()]);
             setIndex((prevIndex) => prevIndex + 1);
+            setAddress(data.toString());
         }
     }, [data]);
+
+    useEffect(() => {
+        if (agentData) {
+            console.log("Agent data:", agentData);
+            const parsedData = {
+                creator: agentData[0].toString(),
+                certificate: agentData[1].toString(),
+                pair: agentData[2].toString(),
+                agentToken: agentData[3].toString(),
+                tokenAddress: agentData[4][0].toString(),
+                title: agentData[4][1].toString(),
+                tokenName: agentData[4][2].toString(),
+                tokenSymbol: agentData[4][3].toString(),
+                tokenNumberOne: parseInt(agentData[4][4].toString()),
+                tokenNumberTwo: parseInt(agentData[4][5].toString()),
+                tokenNumberThree: parseInt(agentData[4][6].toString()),
+                tokenNumberFour: parseInt(agentData[4][7].toString()),
+                tokenNumberFive: parseInt(agentData[4][8].toString()),
+                tokenNumberSix: parseInt(agentData[4][9].toString()),
+                tokenNumberSeven: parseInt(agentData[4][10].toString()),
+                tokenNumberEight: parseInt(agentData[4][11].toString()),
+                description: agentData[5].toString(),
+                image: agentData[6].toString(),
+                twitter: agentData[7].toString(),
+                telegram: agentData[8].toString(),
+                youtube: agentData[9].toString(),
+                website: agentData[10].toString(),
+                trading: agentData[11].valueOf(),
+                tradingOnUniSwap: agentData[12]?.valueOf(),
+            };
+            setAgentsData((prevAgentsData) => [...prevAgentsData, parsedData]);
+        }
+    }, [agentData]);
 
     useEffect(() => {
         if (index > 0 && !data) {
@@ -121,14 +177,6 @@ const Agents = () => {
     return (
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
-            <div>
-            <h1>Agents</h1>
-            <ul>
-                {agents.map((agent, idx) => (
-                    <li key={idx}>{agent}</li>
-                ))}
-            </ul>
-        </div>
                 {/* First Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center h-14 mb-8 select-none">
@@ -161,23 +209,25 @@ const Agents = () => {
 
                     {/* Agent Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
-                        {filteredAgents.length > 0 ? (
-                            filteredAgents.map((agent, index) => (
-                                <AgentCard
-                                    key={index}
-                                    title={agent.title}
-                                    image={agent.image}
-                                    imageAlt={agent.title}
-                                    certificate={agent.certificate}
-                                    description={agent.description}
-                                    createdBy={agent.createdBy}
-                                    marketCap={agent.marketCap}
-                                    datePublished={agent.datePublished}
-                                    sparkingProgress={agent.sparkingProgress}
-                                    //tokenPrice={agent.tokenPrice}
-                                    //volume={agent.volume}
-                                />
-                            ))
+                        {agentsData.length > 0 ? (
+                            agentsData
+                                .filter(agent => agent.certificate !== "0x0000000000000000000000000000000000000000")
+                                .map((agent, index) => (
+                                    <AgentCard
+                                        key={index}
+                                        title={agent.tokenName}
+                                        image={AGENTS[1].image}
+                                        imageAlt={agent.tokenName}
+                                        certificate={agent.certificate}
+                                        description={agent.description}
+                                        createdBy={agent.creator}
+                                        marketCap={AGENTS[1].marketCap}
+                                        datePublished={AGENTS[1].datePublished}
+                                        sparkingProgress={AGENTS[1].sparkingProgress}
+                                        //tokenPrice={agent.tokenPrice}
+                                        //volume={agent.volume}
+                                    />
+                                ))
                         ) : (
                             <div className="col-span-full text-xl text-center py-8 text-gray-500">
                                 No agents found
