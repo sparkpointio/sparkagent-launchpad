@@ -26,10 +26,30 @@ const Agents = () => {
         }
 
         // Apply market cap filter
-        if (value === "high") {
-            filtered.sort((a, b) => b.marketCap - a.marketCap);
-        } else if (value === "low") {
-            filtered.sort((a, b) => a.marketCap - b.marketCap);
+        if (filterType === "marketCap") {
+            if (value === "high") {
+                filtered.sort((a, b) => b.marketCap - a.marketCap);
+            } else if (value === "low") {
+                filtered.sort((a, b) => a.marketCap - b.marketCap);
+            }
+        }
+
+        // Apply token price filter
+        if (filterType === "price") {
+            if (value === "high") {
+                filtered.sort((a, b) => b.tokenPrice - a.tokenPrice);
+            } else if (value === "low") {
+                filtered.sort((a, b) => a.tokenPrice - b.tokenPrice);
+            }
+        }
+
+        // Apply volume filter
+        if (filterType === "volume") {
+            if (value === "high") {
+                filtered.sort((a, b) => b.volume - a.volume);
+            } else if (value === "low") {
+                filtered.sort((a, b) => a.volume - b.volume);
+            }
         }
 
         // Apply new pairs filter (last 7 days)
@@ -99,6 +119,8 @@ const Agents = () => {
                                     marketCap={agent.marketCap}
                                     datePublished={agent.datePublished}
                                     sparkingProgress={agent.sparkingProgress}
+                                    //tokenPrice={agent.tokenPrice}
+                                    //volume={agent.volume}
                                 />
                             ))
                         ) : (
