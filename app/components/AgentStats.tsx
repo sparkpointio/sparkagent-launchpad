@@ -22,6 +22,7 @@ interface AgentStatsProps {
 	marketCap: number;
 	datePublished: Date;
 	sparkingProgress: number;
+	tokenPrice: number;
 }
 
 const socialButtonProperties =
@@ -37,7 +38,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	createdBy,
 	marketCap,
 	datePublished,
-	//sparkingProgress,
+	tokenPrice,
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [isDarkMode, setIsDarkMode] = useState(false);
@@ -135,13 +136,13 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<div className="flex flex-col flex-1">
 								<span>Price USD</span>
 								<span className="font-bold">
-									{"Price"}
+									{tokenPrice}
 								</span>
 							</div>
 							<div className="flex flex-col flex-1">
 								<span>Price</span>
 								<span className="font-bold">
-									{"Price" + " SRK"}
+									{tokenPrice + " SRK"}
 								</span>
 							</div>
 						</div>

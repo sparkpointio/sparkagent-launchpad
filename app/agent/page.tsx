@@ -23,6 +23,7 @@ export default function Agent() {
             marketCap={AGENTS[1].marketCap}
             datePublished={AGENTS[1].datePublished}
             sparkingProgress={AGENTS[1].sparkingProgress}
+            tokenPrice={AGENTS[1].tokenPrice}
           />
 				</div>
 
