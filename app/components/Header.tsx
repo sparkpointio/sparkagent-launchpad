@@ -10,7 +10,7 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import { cn } from '../lib/utils/style';
-  import { new_sparkpoint_logo_full_dark } from '../lib/assets';
+import { new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from '../lib/assets';
 import { ConnectButton } from 'thirdweb/react';
 import { client } from '../client';
 import { arbitrumSepolia } from 'thirdweb/chains';
@@ -60,7 +60,7 @@ const Header = ({ className }: { className?: string }) => {
           duration: 0.2,
         }}
         className={cn(
-          "bg-white fixed top-4 left-0 right-0 z-50 flex mx-4 items-center justify-between p-4 border border-black rounded-[1.7rem] gap-1 flex-col md:flex-row md:mx-12 lg:mx-24 xl:mx-auto px-4 md:px-12 py-4 max-w-screen-lg",
+          "bg-white dark:bg-[#1a1d21] dark:text-white fixed top-4 left-0 right-0 z-50 flex mx-4 items-center justify-between p-4 border border-black rounded-[1.7rem] gap-1 flex-col md:flex-row md:mx-12 lg:mx-24 xl:mx-auto px-4 md:px-12 py-4 max-w-screen-lg",
           className
         )}
       >
@@ -71,7 +71,12 @@ const Header = ({ className }: { className?: string }) => {
             <Image
               src={new_sparkpoint_logo_full_dark}
               alt="SparkPoint Logo"
-              className="md:h-8 h-4 w-fit sparkpoint-logo-dark"
+              className="md:h-8 h-4 w-fit dark:block hidden"
+            />
+            <Image
+              src={new_sparkpoint_logo_full_light}
+              alt="SparkPoint Logo"
+              className="md:h-8 h-4 w-fit dark:hidden block"
             />
             {/*
             <Image
@@ -93,9 +98,14 @@ const Header = ({ className }: { className?: string }) => {
                 <Image
                   src={new_sparkpoint_logo_full_dark}
                   alt="SparkPoint Logo"
-                  className="md:h-8 h-4 w-fit"
+                  className="md:h-8 h-4 w-fit block dark:hidden"
                 />
-                
+                <Image
+                  src={new_sparkpoint_logo_full_light}
+                  alt="SparkPoint Logo"
+                  className="md:h-8 h-4 w-fit dark:block hidden"
+                />
+
                 {/*
                 <Image
                   src={new_sparkpoint_logo_full_light}
@@ -103,12 +113,12 @@ const Header = ({ className }: { className?: string }) => {
                   className="md:h-8 h-4 w-fit absolute top-[20px] sparkpoint-logo-light"
                 />
                 */}
-                
-                
+
+
               </Link>
               <div className='hidden md:flex items-center gap-6'>
                 <nav className="flex gap-6 w-full">
-                  <Link href="" className="nav-item hover:text-gray-900">
+                  <Link href="" className="nav-item hover:text-gray-900 dark:text-white dark:hover:underline">
                     How it works
                   </Link>
                 </nav>
@@ -117,13 +127,13 @@ const Header = ({ className }: { className?: string }) => {
                   detailsButton={{
                     className: "!w-full justify-center"
                   }}
-                  client={client} 
+                  client={client}
                   chain={arbitrumSepolia}
                   theme="light"
                 />
               </div>
-              
-              
+
+
               {/*
                 <Link href="">
                 <button className={buttonVariants({ variant: "outline", size: "md", className: "border active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] hover:shadow-[0.25rem_0.25rem_#000] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1" })}>
@@ -148,12 +158,12 @@ const Header = ({ className }: { className?: string }) => {
                   How it works
                 </Link>
               </nav>
-              <ConnectButton 
+              <ConnectButton
                 connectButton={customButtonStyles}
                 detailsButton={{
                   className: "!w-full justify-center"
                 }}
-                client={client} 
+                client={client}
                 chain={arbitrumSepolia}
                 theme="light"
               />

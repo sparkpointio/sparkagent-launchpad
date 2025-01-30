@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThirdwebProvider } from "thirdweb/react";
 import Header from "./components/Header";
 import { Footer } from "./components/Footer";
+import LightDarkToggle from "./components/layout/light-dark-toggle";
 
 const rubik = Rubik({
   weight: '400',
@@ -42,7 +43,7 @@ export default function RootLayout({
         {/* Android Chrome Icons */}
         <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
         <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
-        
+
         {/* Socmed metadata */}
         <meta name="description" content="We connect blockchain and AI to unlock new possibilities and drive exponential growth for businesses and communities" />
         <meta property="og:title" content="SparkPoint - The Smart Agents Platform" />
@@ -55,6 +56,7 @@ export default function RootLayout({
         <body
           className={`${rubik.variable} ${poppins.variable} antialiased`}
         >
+          <LightDarkToggle />
           <Header />
           {children}
           <Footer />
