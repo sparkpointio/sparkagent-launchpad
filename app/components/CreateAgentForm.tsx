@@ -282,7 +282,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         onOpenChange={(open) => {
             setIsOpen(open);
             if (!open) {
-                setCurrentPage(4);
+                setCurrentPage(1);
             }
         }}>
       <Dialog.Trigger asChild>
