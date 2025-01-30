@@ -83,48 +83,40 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						</Link>
 						<div className="flex space-x-1">
 							{website && (
-								<a
-									href={website}
-									target="_blank"
-									rel="noopener noreferrer"
+								<button
+									onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
 									className={socialButtonProperties}
 									title="Website"
 								>
 									<IconWorld size={socialIconSize} />
-								</a>
+								</button>
 							)}
 							{telegram && (
-								<a
-									href={telegram}
-									target="_blank"
-									rel="noopener noreferrer"
+								<button
+									onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
 									className={socialButtonProperties}
 									title="Telegram"
 								>
 									<IconBrandTelegram size={socialIconSize} />
-								</a>
+								</button>
 							)}
 							{twitter && (
-								<a
-									href={twitter}
-									target="_blank"
-									rel="noopener noreferrer"
+								<button
+									onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
 									className={socialButtonProperties}
 									title="X"
 								>
 									<IconBrandX size={socialIconSize} />
-								</a>
+								</button>
 							)}
 							{youtube && (
-								<a
-									href={youtube}
-									target="_blank"
-									rel="noopener noreferrer"
+								<button
+									onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
 									className={socialButtonProperties}
 									title="YouTube"
 								>
 									<IconBrandYoutube size={socialIconSize} />
-								</a>
+								</button>
 							)}
 						</div>
 					</div>
