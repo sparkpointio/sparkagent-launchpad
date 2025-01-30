@@ -1,7 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Form from "@radix-ui/react-form";
+import Link from 'next/link'
 import { buttonVariants } from '../components/variants/button-variants';
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -58,9 +59,26 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         return;
     }
 
-    const fee = BigInt("10000000000000000000");
+    // const fee = BigInt("10000000000000000000");
 
     /* eslint-disable react-hooks/rules-of-hooks */
+    const { data: fee } = useReadContract({
+        contract: unsparkingAIContract,
+        method: "function fee() returns (uint256)",
+    });
+
+    const currentFee = fee ?? BigInt(0);
+    const purchaseAmountInitial = (currentFee / BigInt("1000000000000000000")).toString();
+    const [purchaseAmount, setPurchaseAmount] = useState(purchaseAmountInitial);
+
+    useEffect(() => {
+        const currentFee = fee ?? BigInt(0);
+        const newPurchaseAmount = (currentFee / BigInt("1000000000000000000")).toString();
+        setPurchaseAmount(newPurchaseAmount);
+    }, [fee]);
+
+    console.log(purchaseAmount);
+
     const { data: currentAllowanceTemp } = useReadContract({
         contract: srkContract,
         method: "function allowance(address owner, address spender) returns (uint256)",
@@ -69,9 +87,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     /* eslint-enable react-hooks/rules-of-hooks */
 
     const currentAllowance = BigInt(currentAllowanceTemp ?? "0");
-    const isAllowanceSufficient = currentAllowance > BigInt(0) && currentAllowance >= BigInt(fee);
-
-    console.log(isAllowanceSufficient);
 
     const uploadToIPFS = async () => {
         if (typeof window !== "undefined") {
@@ -101,7 +116,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         const approveTx = prepareContractCall({
             contract: srkContract,
             method: "function approve(address spender, uint256 value)",
-            params: [unsparkingAIContract.address, fee],
+            params: [
+                unsparkingAIContract.address,
+                BigInt(purchaseAmount) * BigInt("1000000000000000000")
+            ],
             value: BigInt(0),
         });
 
@@ -132,6 +150,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
         setTransactionPhase(2);
 
+        console.log({
+            contract: unsparkingAIContract,
+            method: "function launch(string _name, string _ticker, string desc, string img, string[4] urls, uint256 purchaseAmount)",
+            params: [
+                name,
+                ticker,
+                description,
+                ipfsUrl,
+                [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
+                (BigInt(purchaseAmount) * BigInt("1000000000000000000")).toString(),
+            ],
+            value: BigInt(0),
+        })
+
         const launchTx = prepareContractCall({
             contract: unsparkingAIContract,
             method: "function launch(string _name, string _ticker, string desc, string img, string[4] urls, uint256 purchaseAmount)",
@@ -141,7 +173,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 description,
                 ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
-                fee,
+                BigInt(purchaseAmount) * BigInt("1000000000000000000"),
             ],
             value: BigInt(0),
         });
@@ -162,8 +194,13 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     };
 
     function validatePage1Fields(): boolean {
-        if (!name || !description || !ticker || !icon) {
+        if (!name || !description || !ticker || !icon || !purchaseAmount) {
             setValidationError("Please fill in all required fields, including a valid image for the icon.");
+            return false;
+        }
+
+        if ((BigInt(purchaseAmount) * BigInt("1000000000000000000")) < currentFee) {
+            setValidationError("Purchase Amount must be greater that the fee.");
             return false;
         }
 
@@ -187,13 +224,14 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     }
 
     async function launchAIAgent(): Promise<boolean> {
-        if(!validatePage2Fields) {
+        if(!validatePage2Fields()) {
+            console.log("sdf");
             return true;
         }
 
         setCurrentPage(3);
 
-        if (isAllowanceSufficient) {
+        if (currentAllowance > BigInt(0) && currentAllowance >= BigInt(purchaseAmount) * BigInt("1000000000000000000")) {
             console.log("Sufficient allowance already granted.");
             await proceedWithLaunch();
         } else {
@@ -235,6 +273,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
   const handleDialogClose = () => {
       setIsOpen(false)
+      setCurrentPage(1)
   };
 
   return (
@@ -243,7 +282,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         onOpenChange={(open) => {
             setIsOpen(open);
             if (!open) {
-                setCurrentPage(1);
+                setCurrentPage(4);
             }
         }}>
       <Dialog.Trigger asChild>
@@ -457,6 +496,32 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                           </Form.Field>
 
+                          <Form.Field className="w-full mb-2" name="purchase_amount">
+                              <div
+                                  style={{
+                                      display: "flex",
+                                      alignItems: "baseline",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      fontSize: "0.8em",
+                                      paddingLeft: "6px",
+                                      marginBottom: "2px",
+                                  }}
+                              >
+                                  Purchase Amount:
+                              </div>
+                              <Form.Control asChild>
+                                  <input
+                                      className="w-full h-12 rounded-xl border-black border mb-1 px-5 py-3 text-[0.9em]"
+                                      type="number"
+                                      name="purchase_amount"
+                                      value={purchaseAmount}
+                                      onChange={(e) => setPurchaseAmount(e.target.value)}
+                                      placeholder='Purchase Amount'
+                                  />
+                              </Form.Control>
+                          </Form.Field>
+
                           <Form.Field className="w-full mb-2" name="website_link">
                               <div
                                   style={{
@@ -475,7 +540,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                   <input
                                       className="w-full h-12 rounded-xl border-black border mb-1 px-5 py-3 text-[0.9em]"
                                       type="text"
-                                      name="website_link" // Make sure to specify the 'name' to bind with Form
+                                      name="website_link"
                                       value={websiteLink}
                                       onChange={(e) => setWebsiteLink(e.target.value)}
                                       placeholder='Website Link'
@@ -767,8 +832,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                   )}
 
                   {currentPage === 4 && (
-                      <button
-                          type="button"
+                      <Link
+                          href={"/agent"}
                           className={buttonVariants({
                               variant: "outline",
                               size: "md",
@@ -776,7 +841,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                           })}
                       >
                           View Token Page
-                      </button>
+                      </Link>
                   )}
               </Form.Root>
               {statusMessage && (
