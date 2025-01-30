@@ -6,9 +6,9 @@ import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting"
 import {
 	IconBrandTelegram,
 	IconBrandX,
-	IconCopy,
+	//IconCopy,
 	IconWorld,
-	IconCircleCheck,
+	//IconCircleCheck,
 	IconBrandYoutube,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -30,6 +30,7 @@ interface AgentStatsProps {
 	twitter: string;
 	telegram: string;
 	youtube: string;
+	pair: string;
 }
 
 const socialButtonProperties =
@@ -52,7 +53,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	telegram,
 	youtube,
 }) => {
-	const [copied, setCopied] = useState(false);
+	//const [copied, setCopied] = useState(false);
 	const [isDarkMode, setIsDarkMode] = useState(false);
 
 	useEffect(() => {
@@ -60,6 +61,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		setIsDarkMode(darkMode);
 	}, []);
 
+	/*
 	const copyToClipboard = (text: string) => {
 		if (text) {
 			navigator.clipboard.writeText(text);
@@ -67,6 +69,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			setTimeout(() => setCopied(false), 3000);
 		}
 	};
+	*/
 
 	return (
 		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="group bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
@@ -94,7 +97,11 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<div className="flex space-x-1 items-center">
 								<div className="flex items-center space-x-2 mr-8">
 									<p>Created by:</p>
-									<Link href="">
+									<Link
+										href={`https://sepolia.arbiscan.io/address/${createdBy}`}
+										target="_blank"
+										rel="noopener noreferrer"
+									>
 										<span className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
 									</Link>
 								</div>
@@ -142,16 +149,16 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								<span>Contract Address</span>
 								<button
 									className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-									onClick={() => {
-										copyToClipboard(certificate);
-									}}
+									onClick={() => window.open(`https://sepolia.arbiscan.io/token/${certificate}`, "_blank", "noopener, noreferrer")}
 								>
 									<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
-									{copied ? (
-										<IconCircleCheck size={16} />
-									) : (
-										<IconCopy size={16} />
-									)}
+									{/*
+										{copied ? (
+											<IconCircleCheck size={16} />
+										) : (
+											<IconCopy size={16} />
+										)}
+									*/}
 								</button>
 							</div>
 							<div className="flex flex-col flex-1">
