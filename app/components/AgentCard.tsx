@@ -1,16 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
 	IconBrandTelegram,
 	IconBrandX,
-	//IconCopy,
+	IconCopy,
 	IconWorld,
-	//IconCircleCheck,
-	IconBrandYoutube,
-	IconLink,
+	IconCircleCheck,
+	IconBrandYoutube
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -55,9 +54,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	youtube,
 	pairAddress,
 }) => {
-	//const [copied, setCopied] = useState(false);
+	const [copied, setCopied] = useState(false);
 
-	/*
 	const copyToClipboard = (text: string) => {
 		if (text) {
 			navigator.clipboard.writeText(text);
@@ -65,7 +63,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			setTimeout(() => setCopied(false), 3000);
 		}
 	};
-	*/
 
 	const srkToken = getContract({
 		client,
@@ -155,18 +152,14 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<span className="pr-2">CA:</span>
 						<button
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-							//onClick={() => { copyToClipboard(certificate);}}
-							onClick={() => window.open(`https://sepolia.arbiscan.io/token/${certificate}`, "_blank", "noopener, noreferrer")}
+							onClick={() => { copyToClipboard(certificate);}}
 						>
 							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
-							<IconLink size={16} />
-							{/*
-								{copied ? (
-									<IconCircleCheck size={16} />
-								) : (
-									<IconCopy size={16} />
-								)}
-							*/}
+							{copied ? (
+								<IconCircleCheck size={16} />
+							) : (
+								<IconCopy size={16} />
+							)}
 						</button>
 					</h3>
 					<p className="mb-3 font-normal text-small line-clamp-3">{description}</p>

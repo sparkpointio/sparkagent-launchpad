@@ -19,7 +19,7 @@ import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 
 const Agents = () => {
-    const [agents, setAgents] = useState<string[]>([]);
+    //const [agents, setAgents] = useState<string[]>([]);
     const [index, setIndex] = useState(0);
     const [address, setAddress] = useState<string>("");
     interface AgentData {
@@ -65,7 +65,7 @@ const Agents = () => {
 
     useEffect(() => {
         if (data) {
-            setAgents((prevAgents) => [...prevAgents, data.toString()]);
+            //setAgents((prevAgents) => [...prevAgents, data.toString()]);
             setIndex((prevIndex) => prevIndex + 1);
             setAddress(data.toString());
         }

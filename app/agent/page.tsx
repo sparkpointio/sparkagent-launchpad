@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AgentStats from "../components/AgentStats";
 import SwapCard from "../components/SwapCard";
@@ -154,4 +154,12 @@ const AgentPage = () => {
 	);
 }
 
-export default AgentPage;
+const Page = () => {
+  return (
+    <Suspense>
+        <AgentPage />
+    </Suspense>
+  )
+}
+
+export default Page;
