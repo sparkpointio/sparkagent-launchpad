@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 interface SparkingProgressCardProps {
     sparkingProgress: number;
 }
@@ -9,7 +11,7 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
 }) => {
     const headerProperties = "flex text-3xl justify-right font-bold";
     return (
-        <div className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 lg:p-12 space-y-4 lg:space-y-6">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 lg:p-12 space-y-4 lg:space-y-6">
             <div className="flex items-center">
                 <h2 className={`${headerProperties} mr-2`}>Sparking Progress:</h2>
                 <span className={`${headerProperties} ${
@@ -40,7 +42,7 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
                 <strong>150,000,000 SRK</strong>
                 {` before all the liquidity from the bonding curve will be deposited into Uniswap and burnt. Progression increases as the price goes up,`}
             </p>
-        </div>
+        </motion.div>
     );
 };
 

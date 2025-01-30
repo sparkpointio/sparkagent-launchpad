@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { new_sparkpoint_logo } from "../lib/assets";
+import { motion } from "framer-motion";
 
 const SwapCard = () => {
     const headerProperties = "flex text-xl justify-right";
     const buttonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyGreen-500 dark:hover:bg-sparkyGreen-600 transition-all p-4";
     return (
-        <div className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 m:p-6">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 m:p-6">
             <h2 className={`${headerProperties} font-bold mb-4`}>Swap</h2>
             <div className="flex flex-row gap-4 mb-12">
                 <button type="button" className={buttonProperties}> Buy </button>
@@ -29,7 +30,7 @@ const SwapCard = () => {
                 />
             </div>
             <button type="button" className={buttonProperties}> Swap </button>
-        </div>
+        </motion.div>
     );
 };
 
