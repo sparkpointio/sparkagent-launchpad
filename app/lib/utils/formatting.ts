@@ -6,6 +6,9 @@ export function getTimeAgo(date: Date): string {
   const years = Math.floor(diffInDays / 365);
   const months = Math.floor((diffInDays % 365) / 30);
   
+  if (diffInDays === 0) {
+    return "Today";
+  }
   if (years > 0 && months > 0) {
     return `${years} year${years > 1 ? 's' : ''} and ${months} month${months > 1 ? 's' : ''} ago`;
   }
