@@ -195,7 +195,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						</Link>
 					</p>
 					<p className="px-5 font-normal flex justify-between">
-						<span>{"Market Cap (in USD):"}</span>
+						<span>{"Market Cap:"}</span>
 						<span className="font-bold">
 							{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 						</span>

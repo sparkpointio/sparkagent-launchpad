@@ -1,26 +1,22 @@
+import { NextRequest } from 'next/server';
 import axios from 'axios';
 
-// Adding this to handle rate-limiting
-async function retryRequest(retries: number, delay: number | undefined, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
+// Handle rate-limiting
+async function retryRequest(retries: number, delay: number, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
     for (let attempt = 0; attempt < retries; attempt++) {
         try {
             const response = await axios.get('https://pro-api.coinmarketcap.com/v2/tools/price-conversion', {
                 headers: {
-                    'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_COINMARKETCAP_API_KEY,
+                    'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_COINMARKETCAP_API_KEY!,
                     'Accept': 'application/json',
                 },
-                params: {
-                    amount: cryptoAmount,
-                    symbol: cryptoSymbol,
-                    convert: fiatSymbol,
-                },
+                params: { amount: cryptoAmount, symbol: cryptoSymbol, convert: fiatSymbol },
             });
 
-            return response; // Only when the request is successful
-
-        } catch (error) {
-            if (error.response && error.response.status === 429) {
-                console.log(`Failed to fetch currency conversion. Retrying in ${delay}ms...`);
+            return response;
+        } catch (error: any) {
+            if (error.response?.status === 429) {
+                console.log(`Rate limit hit. Retrying in ${delay}ms...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
                 throw error;
@@ -28,10 +24,10 @@ async function retryRequest(retries: number, delay: number | undefined, cryptoAm
         }
     }
 
-    throw new Error('Failed after many retries');
+    throw new Error('Failed after multiple retries.');
 }
 
-export async function POST(req: { json: () => PromiseLike<{ cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string; }> | { cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string; }; }) {
+export async function POST(req: NextRequest) {
     try {
         const { cryptoAmount, cryptoSymbol, fiatSymbol } = await req.json();
 
@@ -44,29 +40,24 @@ export async function POST(req: { json: () => PromiseLike<{ cryptoAmount: number
         const retries = 3;
         const delay = 5000;
 
-        // Retry logic for making the CoinMarketCap API request (to handle rate-limiting)
+        // Retry logic for CoinMarketCap API request
         const response = await retryRequest(retries, delay, cryptoAmount, cryptoSymbol, fiatSymbol);
-
         console.log('CoinMarketCap API response:', response.data);
 
         const { data } = response;
-
         if (data.status.error_code === 0) {
-            const cryptoData = data.data.find((item: { symbol: string; }) => item.symbol === cryptoSymbol);
-            if (cryptoData && cryptoData.quote && cryptoData.quote[fiatSymbol]) {
+            const cryptoData = data.data.find((item: { symbol: string }) => item.symbol === cryptoSymbol);
+            if (cryptoData?.quote?.[fiatSymbol]) {
                 const convertedAmount = cryptoData.quote[fiatSymbol].price;
-                return new Response(
-                    JSON.stringify({ convertedAmount, fiatSymbol }),
-                    { status: 200, headers: { 'Content-Type': 'application/json' } }
-                );
+                return new Response(JSON.stringify({ convertedAmount, fiatSymbol }), { status: 200, headers: { 'Content-Type': 'application/json' } });
             } else {
                 return new Response(JSON.stringify({ error: `Unable to find quote for ${cryptoSymbol} to ${fiatSymbol}` }), { status: 500 });
             }
         } else {
             return new Response(JSON.stringify({ error: 'API error: Unable to fetch conversion rate.' }), { status: 500 });
         }
-    } catch (error) {
-        console.error('Error in API route:', error); 
-        return new Response(JSON.stringify({ error: `Server error: Unable to process the request. ${error.message}` }), { status: 500 });
+    } catch (error: any) {
+        console.error('Error in API route:', error);
+        return new Response(JSON.stringify({ error: `Server error: ${error.message}` }), { status: 500 });
     }
 }
