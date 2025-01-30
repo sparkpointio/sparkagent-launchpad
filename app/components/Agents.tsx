@@ -17,7 +17,7 @@ const unsparkingAIContract = getContract({
 import {
   useReadContract,
 } from "thirdweb/react";
-import { getContract } from "thirdweb";
+import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 
 const Agents = () => {
@@ -87,7 +87,7 @@ const Agents = () => {
                 tokenTicker: agentData[4][3].toString(),
                 supply: parseInt(agentData[4][4].toString()),
                 price: parseInt(agentData[4][5].toString()),
-                marketCap: parseInt(agentData[4][6].toString()),
+                marketCap: parseInt(toEther(agentData[4][6])), // todo: further convert to USD
                 liquidity: parseInt(agentData[4][7].toString()),
                 volume: parseInt(agentData[4][8].toString()),
                 volume24H: parseInt(agentData[4][9].toString()),
