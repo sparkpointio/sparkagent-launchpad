@@ -94,43 +94,49 @@ const AgentPage = () => {
 }, [agentData]);
 
   return (
-    <Suspense>
-      <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-          
-          {/* First Column */}
-          <div className="lg:col-span-2 w-full">
-            {agent && (
-              <AgentStats
-                title={agent._tokenName}
-                ticker={agent.tokenTicker}
-                image={AGENTS[1].image}
-                imageAlt={agent.tokenName}
-                certificate={agent.certificate}
-                description={agent.description}
-                createdBy={agent.creator}
-                marketCap={agent.marketCap}
-                datePublished={new Date(agent.lastUpdated)}
-                sparkingProgress={agent.trading ? 50 : 0}
-                tokenPrice={agent.price}
-                website={agent.website}
-                twitter={agent.twitter}
-                telegram={agent.telegram}
-                youtube={agent.youtube}
-                pair={agent.pair}
-              />
-            )}
-          </div>
+    <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+        
+        {/* First Column */}
+        <div className="lg:col-span-2 w-full">
+          {agent && (
+            <AgentStats
+              title={agent._tokenName}
+              ticker={agent.tokenTicker}
+              image={AGENTS[1].image}
+              imageAlt={agent.tokenName}
+              certificate={agent.certificate}
+              description={agent.description}
+              createdBy={agent.creator}
+              marketCap={agent.marketCap}
+              datePublished={new Date(agent.lastUpdated)}
+              sparkingProgress={agent.trading ? 50 : 0}
+              tokenPrice={agent.price}
+              website={agent.website}
+              twitter={agent.twitter}
+              telegram={agent.telegram}
+              youtube={agent.youtube}
+              pair={agent.pair}
+            />
+          )}
+        </div>
 
-          {/* Second Column */}
-  				<div className="flex flex-col gap-4">
-  					<SwapCard />
-            <SparkingProgressCard sparkingProgress={agent?.trading ? 50 : 0} />
-  				</div>
-  			</div>
-  		</div>
-    </Suspense>
+        {/* Second Column */}
+				<div className="flex flex-col gap-4">
+					<SwapCard />
+          <SparkingProgressCard sparkingProgress={agent?.trading ? 50 : 0} />
+				</div>
+			</div>
+		</div>
 	);
 }
 
-export default AgentPage;
+const Page = () => {
+  return (
+    <Suspense>
+        <AgentPage />
+    </Suspense>
+  )
+}
+
+export default Page;
