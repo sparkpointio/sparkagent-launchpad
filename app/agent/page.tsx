@@ -103,7 +103,7 @@ const AgentPage = () => {
             <AgentStats
               title={agent._tokenName}
               ticker={agent.tokenTicker}
-              image={AGENTS[0].image}
+              image={AGENTS[1].image}
               imageAlt={agent.tokenName}
               certificate={agent.certificate}
               description={agent.description}
@@ -116,6 +116,7 @@ const AgentPage = () => {
               twitter={agent.twitter}
               telegram={agent.telegram}
               youtube={agent.youtube}
+              pair={agent.pair}
             />
           )}
         </div>
