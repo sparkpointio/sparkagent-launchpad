@@ -113,19 +113,19 @@ const Agents = () => {
     }, [index, data]);
 
     const [searchQuery, setSearchQuery] = useState("");
-    const [filteredAgents, setFilteredAgents] = useState(AGENTS);
+    const [filteredAgents, setFilteredAgents] = useState<AgentData[]>([]);
 
     const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
-        let filtered = [...AGENTS];
+        let filtered = [...agentsData];
 
         // Apply search filter first
         if (searchQuery.trim()) {
             const searchTerm = searchQuery.toLowerCase();
             filtered = filtered.filter(agent =>
-                agent.title.toLowerCase().includes(searchTerm) ||
+                agent._tokenName.toLowerCase().includes(searchTerm) ||
                 agent.description.toLowerCase().includes(searchTerm) ||
                 agent.certificate.toLowerCase().includes(searchTerm) ||
-                agent.createdBy.toLowerCase().includes(searchTerm)
+                agent.creator.toLowerCase().includes(searchTerm)
             );
         }
 
@@ -141,9 +141,9 @@ const Agents = () => {
         // Apply token price filter
         if (filterType === "price") {
             if (value === "high") {
-                filtered.sort((a, b) => b.tokenPrice - a.tokenPrice);
+                filtered.sort((a, b) => b.price - a.price);
             } else if (value === "low") {
-                filtered.sort((a, b) => a.tokenPrice - b.tokenPrice);
+                filtered.sort((a, b) => a.price - b.price);
             }
         }
 
@@ -160,20 +160,24 @@ const Agents = () => {
         if (filterType === 'newPairs' && value === true) {
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            filtered = filtered.filter(agent => agent.datePublished >= sevenDaysAgo);
+            filtered = filtered.filter(agent => agent.lastUpdated >= sevenDaysAgo);
         }
 
         // Apply sparked filter
         if (filterType === 'sparked' && value === true) {
-            filtered = filtered.filter(agent => agent.sparkingProgress === 100);
+            filtered = filtered.filter(agent => agent.trading);
         }
 
         setFilteredAgents(filtered);
-    }, [searchQuery]);
+    }, [searchQuery, agentsData]);
 
     useEffect(() => {
         handleFilterChange('search', searchQuery);
-    }, [searchQuery, handleFilterChange]);
+    }, [searchQuery, handleFilterChange, agentsData]);
+
+    useEffect(() => {
+        setFilteredAgents(agentsData);
+    }, [agentsData]);
 
     return (
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
@@ -204,14 +208,14 @@ const Agents = () => {
                             setSearchQuery(query);
                         }} onClear={() => {
                             setSearchQuery("");
-                            setFilteredAgents(AGENTS); // Reset to original agents list
+                            setFilteredAgents(agentsData); // Reset to original agents list
                         }} placeholder="Search Agent/Token" />
                     </div>
 
                     {/* Agent Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
-                        {agentsData.length > 0 ? (
-                            agentsData
+                        {filteredAgents.length > 0 ? (
+                            filteredAgents
                                 .filter(agent => agent.certificate !== "0x0000000000000000000000000000000000000000")
                                 .map((agent, index) => (
                                     <AgentCard
@@ -224,12 +228,12 @@ const Agents = () => {
                                         createdBy={agent.creator}
                                         marketCap={agent.marketCap}
                                         datePublished={agent.lastUpdated}
-                                        sparkingProgress={AGENTS[1].sparkingProgress}
+                                        sparkingProgress={agent.trading ? 50 : 0} // Parse boolean to int
                                         website={agent.website}
                                         twitter={agent.twitter}
                                         telegram={agent.telegram}
                                         youtube={agent.youtube}
-                                        //tokenPrice={agent.tokenPrice}
+                                        //tokenPrice={agent.price}
                                         //volume={agent.volume}
                                     />
                                 ))
