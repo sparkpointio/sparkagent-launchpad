@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Handle rate-limiting
 async function retryRequest(retries: number, delay: number, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
@@ -14,12 +14,12 @@ async function retryRequest(retries: number, delay: number, cryptoAmount: number
             });
 
             return response;
-        } catch (error: any) {
-            if (error.response?.status === 429) {
+        } catch (error: unknown) {
+            if (error instanceof AxiosError && error.response?.status === 429) {
                 console.log(`Rate limit hit. Retrying in ${delay}ms...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
-                throw error;
+                throw error; // Re-throw other errors
             }
         }
     }
@@ -56,8 +56,11 @@ export async function POST(req: NextRequest) {
         } else {
             return new Response(JSON.stringify({ error: 'API error: Unable to fetch conversion rate.' }), { status: 500 });
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error in API route:', error);
-        return new Response(JSON.stringify({ error: `Server error: ${error.message}` }), { status: 500 });
+
+        // Check if error has a `message` property
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return new Response(JSON.stringify({ error: `Server error: ${errorMessage}` }), { status: 500 });
     }
 }
