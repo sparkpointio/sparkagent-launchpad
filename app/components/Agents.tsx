@@ -225,6 +225,10 @@ const Agents = () => {
                                         marketCap={agent.marketCap}
                                         datePublished={agent.lastUpdated}
                                         sparkingProgress={AGENTS[1].sparkingProgress}
+                                        website={agent.website}
+                                        twitter={agent.twitter}
+                                        telegram={agent.telegram}
+                                        youtube={agent.youtube}
                                         //tokenPrice={agent.tokenPrice}
                                         //volume={agent.volume}
                                     />

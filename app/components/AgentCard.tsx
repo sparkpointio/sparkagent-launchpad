@@ -9,6 +9,7 @@ import {
 	IconCopy,
 	IconWorld,
 	IconCircleCheck,
+	IconBrandYoutube,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -23,6 +24,10 @@ interface AgentCardProps {
 	marketCap: number;
 	datePublished: Date;
 	sparkingProgress: number;
+	website: string;
+	twitter: string;
+	telegram: string;
+	youtube: string;
 }
 
 const socialButtonProperties =
@@ -39,6 +44,10 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	marketCap,
 	datePublished,
 	sparkingProgress,
+	website,
+	twitter,
+	telegram,
+	youtube,
 }) => {
 	const [copied, setCopied] = useState(false);
 
@@ -73,28 +82,50 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							</h2>
 						</Link>
 						<div className="flex space-x-1">
-							<button
-								className={socialButtonProperties}
-								onClick={() => console.log(`Website`)}
-								title="Website"
-							>
-								<IconWorld size={socialIconSize} />
-							</button>
-
-							<button
-								className={socialButtonProperties}
-								onClick={() => console.log(`Telegram`)}
-								title="Telegram"
-							>
-								<IconBrandTelegram size={socialIconSize} />
-							</button>
-							<button
-								className={socialButtonProperties}
-								onClick={() => console.log(`X`)}
-								title="X"
-							>
-								<IconBrandX size={socialIconSize} />
-							</button>
+							{website && (
+								<a
+									href={website}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={socialButtonProperties}
+									title="Website"
+								>
+									<IconWorld size={socialIconSize} />
+								</a>
+							)}
+							{telegram && (
+								<a
+									href={telegram}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={socialButtonProperties}
+									title="Telegram"
+								>
+									<IconBrandTelegram size={socialIconSize} />
+								</a>
+							)}
+							{twitter && (
+								<a
+									href={twitter}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={socialButtonProperties}
+									title="X"
+								>
+									<IconBrandX size={socialIconSize} />
+								</a>
+							)}
+							{youtube && (
+								<a
+									href={youtube}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={socialButtonProperties}
+									title="YouTube"
+								>
+									<IconBrandYoutube size={socialIconSize} />
+								</a>
+							)}
 						</div>
 					</div>
 
