@@ -1,6 +1,36 @@
 import axios from 'axios';
 
-export async function POST(req) {
+// Adding this to handle rate-limiting
+async function retryRequest(retries: number, delay: number | undefined, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
+    for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+            const response = await axios.get('https://pro-api.coinmarketcap.com/v2/tools/price-conversion', {
+                headers: {
+                    'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_COINMARKETCAP_API_KEY,
+                    'Accept': 'application/json',
+                },
+                params: {
+                    amount: cryptoAmount,
+                    symbol: cryptoSymbol,
+                    convert: fiatSymbol,
+                },
+            });
+
+            return response; // Only when the request is successful
+
+        } catch (error) {
+            if (error.response && error.response.status === 429) {
+                console.log(`Failed to fetch currency conversion. Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    throw new Error('Failed after many retries');
+}
+
 export async function POST(req: { json: () => PromiseLike<{ cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string; }> | { cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string; }; }) {
     try {
         const { cryptoAmount, cryptoSymbol, fiatSymbol } = await req.json();
@@ -11,24 +41,17 @@ export async function POST(req: { json: () => PromiseLike<{ cryptoAmount: number
 
         console.log('Received values:', { cryptoAmount, cryptoSymbol, fiatSymbol });
 
-        const response = await axios.get('https://pro-api.coinmarketcap.com/v2/tools/price-conversion', {
-            headers: {
-                'X-CMC_PRO_API_KEY': process.env.NEXT_PUBLIC_COINMARKETCAP_API_KEY,
-                'Accept': 'application/json',
-            },
-            params: {
-                amount: cryptoAmount,
-                symbol: cryptoSymbol,
-                convert: fiatSymbol,
-            },
-        });
+        const retries = 3;
+        const delay = 5000;
+
+        // Retry logic for making the CoinMarketCap API request (to handle rate-limiting)
+        const response = await retryRequest(retries, delay, cryptoAmount, cryptoSymbol, fiatSymbol);
 
         console.log('CoinMarketCap API response:', response.data);
 
         const { data } = response;
 
         if (data.status.error_code === 0) {
-            const cryptoData = data.data.find(item => item.symbol === cryptoSymbol);
             const cryptoData = data.data.find((item: { symbol: string; }) => item.symbol === cryptoSymbol);
             if (cryptoData && cryptoData.quote && cryptoData.quote[fiatSymbol]) {
                 const convertedAmount = cryptoData.quote[fiatSymbol].price;
