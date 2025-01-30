@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export async function POST(req) {
+export async function POST(req: { json: () => PromiseLike<{ cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string; }> | { cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string; }; }) {
     try {
         const { cryptoAmount, cryptoSymbol, fiatSymbol } = await req.json();
 
@@ -28,6 +29,7 @@ export async function POST(req) {
 
         if (data.status.error_code === 0) {
             const cryptoData = data.data.find(item => item.symbol === cryptoSymbol);
+            const cryptoData = data.data.find((item: { symbol: string; }) => item.symbol === cryptoSymbol);
             if (cryptoData && cryptoData.quote && cryptoData.quote[fiatSymbol]) {
                 const convertedAmount = cryptoData.quote[fiatSymbol].price;
                 return new Response(
