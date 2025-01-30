@@ -1,14 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NextRequest } from 'next/server';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 // Handle rate-limiting
-async function retryRequest(
-    retries: number,
-    delay: number,
-    cryptoAmount: number,
-    cryptoSymbol: string,
-    fiatSymbol: string
-): Promise<any> { // Consider defining a proper return type
+async function retryRequest(retries: number, delay: number, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
     for (let attempt = 0; attempt < retries; attempt++) {
         try {
             const response = await axios.get('https://pro-api.coinmarketcap.com/v2/tools/price-conversion', {
@@ -20,8 +16,8 @@ async function retryRequest(
             });
 
             return response;
-        } catch (error: unknown) { 
-            if (error instanceof AxiosError && error.response?.status === 429) {
+        } catch (error: any) {
+            if (error.response?.status === 429) {
                 console.log(`Rate limit hit. Retrying in ${delay}ms...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
@@ -33,9 +29,9 @@ async function retryRequest(
     throw new Error('Failed after multiple retries.');
 }
 
-export async function POST(req: NextRequest): Promise<Response> {
+export async function POST(req: NextRequest) {
     try {
-        const { cryptoAmount, cryptoSymbol, fiatSymbol }: { cryptoAmount: number; cryptoSymbol: string; fiatSymbol: string } = await req.json();
+        const { cryptoAmount, cryptoSymbol, fiatSymbol } = await req.json();
 
         if (!cryptoAmount || !cryptoSymbol || !fiatSymbol) {
             return new Response(JSON.stringify({ error: 'Missing required parameters.' }), { status: 400 });
@@ -62,11 +58,8 @@ export async function POST(req: NextRequest): Promise<Response> {
         } else {
             return new Response(JSON.stringify({ error: 'API error: Unable to fetch conversion rate.' }), { status: 500 });
         }
-    } catch (error: unknown) { 
+    } catch (error: any) {
         console.error('Error in API route:', error);
-
-        // Check if error has a `message` property
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        return new Response(JSON.stringify({ error: `Server error: ${errorMessage}` }), { status: 500 });
+        return new Response(JSON.stringify({ error: `Server error: ${error.message}` }), { status: 500 });
     }
 }
