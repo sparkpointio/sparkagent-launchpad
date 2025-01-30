@@ -29,17 +29,18 @@ const Agents = () => {
         certificate: string,
         pair: string,
         agentToken: string,
-        title: string,
+        token: string,
         tokenName: string,
-        tokenSymbol: string,
-        tokenNumberOne: number,
-        tokenNumberTwo: number,
-        tokenNumberThree: number,
-        tokenNumberFour: number,
-        tokenNumberFive: number,
-        tokenNumberSix: number,
-        tokenNumberSeven: number,
-        tokenNumberEight: number,
+        _tokenName: string,
+        tokenTicker: string,
+        supply: number,
+        price: number,
+        marketCap: number,
+        liquidity: number,
+        volume: number,
+        volume24H: number,
+        prevPrice: number,
+        lastUpdated: Date,
         description: string,
         image: string,
         twitter: string,
@@ -75,23 +76,23 @@ const Agents = () => {
     useEffect(() => {
         if (agentData) {
             console.log("Agent data:", agentData);
-            const parsedData = {
+            const parsedData: AgentData = {
                 creator: agentData[0].toString(),
                 certificate: agentData[1].toString(),
                 pair: agentData[2].toString(),
                 agentToken: agentData[3].toString(),
-                tokenAddress: agentData[4][0].toString(),
-                title: agentData[4][1].toString(),
-                tokenName: agentData[4][2].toString(),
-                tokenSymbol: agentData[4][3].toString(),
-                tokenNumberOne: parseInt(agentData[4][4].toString()),
-                tokenNumberTwo: parseInt(agentData[4][5].toString()),
-                tokenNumberThree: parseInt(agentData[4][6].toString()),
-                tokenNumberFour: parseInt(agentData[4][7].toString()),
-                tokenNumberFive: parseInt(agentData[4][8].toString()),
-                tokenNumberSix: parseInt(agentData[4][9].toString()),
-                tokenNumberSeven: parseInt(agentData[4][10].toString()),
-                tokenNumberEight: parseInt(agentData[4][11].toString()),
+                token: agentData[4][0].toString(),
+                tokenName: agentData[4][1].toString(),
+                _tokenName: agentData[4][2].toString(),
+                tokenTicker: agentData[4][3].toString(),
+                supply: parseInt(agentData[4][4].toString()),
+                price: parseInt(agentData[4][5].toString()),
+                marketCap: parseInt(agentData[4][6].toString()),
+                liquidity: parseInt(agentData[4][7].toString()),
+                volume: parseInt(agentData[4][8].toString()),
+                volume24H: parseInt(agentData[4][9].toString()),
+                prevPrice: parseInt(agentData[4][10].toString()),
+                lastUpdated: new Date(parseInt(agentData[4][11].toString()) * 1000),
                 description: agentData[5].toString(),
                 image: agentData[6].toString(),
                 twitter: agentData[7].toString(),
@@ -215,14 +216,14 @@ const Agents = () => {
                                 .map((agent, index) => (
                                     <AgentCard
                                         key={index}
-                                        title={agent.tokenName}
+                                        title={agent._tokenName}
                                         image={AGENTS[1].image}
                                         imageAlt={agent.tokenName}
                                         certificate={agent.certificate}
                                         description={agent.description}
                                         createdBy={agent.creator}
-                                        marketCap={AGENTS[1].marketCap}
-                                        datePublished={AGENTS[1].datePublished}
+                                        marketCap={agent.marketCap}
+                                        datePublished={agent.lastUpdated}
                                         sparkingProgress={AGENTS[1].sparkingProgress}
                                         //tokenPrice={agent.tokenPrice}
                                         //volume={agent.volume}
