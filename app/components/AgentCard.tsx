@@ -31,7 +31,6 @@ interface AgentCardProps {
 	twitter: string;
 	telegram: string;
 	youtube: string;
-	srkHoldings: bigint;
 	pairAddress: string;
 }
 
