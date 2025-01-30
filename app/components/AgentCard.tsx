@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -17,6 +17,7 @@ import { client } from "../client";
 import { getContract } from "thirdweb";
 import { useReadContract } from "thirdweb/react";
 import { arbitrumSepolia } from "thirdweb/chains";
+import { convertCryptoToFiat } from "../lib/utils/utils";
 
 interface AgentCardProps {
 	title: string;
@@ -54,6 +55,23 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	pairAddress,
 }) => {
 	const [copied, setCopied] = useState(false);
+	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const convertMarketCap = async () => {
+			try {
+				const result = await convertCryptoToFiat(marketCap, "ETH", "USD");
+				setConvertedMarketCap(result);
+			} catch (err) {
+				setError("Error converting market cap to USD: " + err);
+			}
+		};
+
+		if (marketCap > 0) {
+			convertMarketCap();
+		}
+	}, [marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
@@ -171,14 +189,14 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							href={`https://sepolia.arbiscan.io/address/${createdBy}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							>
+						>
 							<span className="hover:text-sparkyOrange-600">{truncateHash(createdBy)}</span>
 						</Link>
 					</p>
 					<p className="px-5 font-normal flex justify-between">
-						<span>{"Market Cap:"}</span>
+						<span>{"Market Cap (in USD):"}</span>
 						<span className="font-bold">
-							{formatNumber(marketCap)}
+							{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 						</span>
 					</p>
 					<p className="font-normal text-gray-400 text-xs px-5 text-right mb-1">
