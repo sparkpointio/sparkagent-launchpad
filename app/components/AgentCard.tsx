@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
+import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
 	IconBrandTelegram,
 	IconBrandX,
@@ -14,6 +14,10 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { client } from "../client";
+import { getContract } from "thirdweb";
+import { useReadContract } from "thirdweb/react";
+import { arbitrumSepolia } from "thirdweb/chains";
 
 interface AgentCardProps {
 	title: string;
@@ -24,11 +28,12 @@ interface AgentCardProps {
 	createdBy: string;
 	marketCap: number;
 	datePublished: Date;
-	sparkingProgress: number;
 	website: string;
 	twitter: string;
 	telegram: string;
 	youtube: string;
+	srkHoldings: bigint;
+	pairAddress: string;
 }
 
 const socialButtonProperties =
@@ -44,11 +49,11 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	createdBy,
 	marketCap,
 	datePublished,
-	sparkingProgress,
 	website,
 	twitter,
 	telegram,
 	youtube,
+	pairAddress,
 }) => {
 	//const [copied, setCopied] = useState(false);
 
@@ -61,6 +66,18 @@ const AgentCard: React.FC<AgentCardProps> = ({
 		}
 	};
 	*/
+
+	const srkToken = getContract({
+		client,
+		chain: arbitrumSepolia,
+		address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
+	});
+
+	const { data: srkHoldings } = useReadContract({
+		contract: srkToken,
+		method: "function balanceOf(address) returns (uint256)",
+		params: [pairAddress], 
+	});
 
 	return (
 		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
@@ -177,17 +194,17 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</p>
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
 					<div className="px-5">
-						<p className="font-normal text-sm">{`Sparking Progress: ${sparkingProgress}%`}</p>
+						<p className="font-normal text-sm">{`Sparking Progress: ${srkHoldings ? getSparkingProgress(srkHoldings) : 0}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
-								className={`h-full rounded-full ${sparkingProgress === 100
+								className={`h-full rounded-full ${srkHoldings ? getSparkingProgress(srkHoldings) : 0 >= 100
 									? "bg-sparkyOrange"
 									: "bg-sparkyGreen-200"
 									}`}
 								style={{
 									width: `${Math.min(
-										sparkingProgress,
+										srkHoldings ? getSparkingProgress(srkHoldings) : 0,
 										100
 									)}%`,
 								}}

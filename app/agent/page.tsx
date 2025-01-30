@@ -19,10 +19,13 @@ useReadContract,
 import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { AGENTS } from "../lib/utils/agents-sample-data";
+import { getSparkingProgress } from "../lib/utils/formatting";
 
 const AgentPage = () => {
   const searchParams = useSearchParams();
   const certificate = searchParams.get("certificate");
+
+   const [pairAddress, setPairAddress] = useState<string>("");
 
   const { data: agentData } = useReadContract({
     contract: unsparkingAIContract,
@@ -30,32 +33,45 @@ const AgentPage = () => {
     params: [certificate || ""],
   });
 
+  const srkToken = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
+});
+
+  const { data: srkHoldings } = useReadContract({
+      contract: srkToken,
+      method: "function balanceOf(address) returns (uint256)",
+      params: [pairAddress], // use dynamic pair address from agent
+  });
+
   interface AgentData {
-    creator: string,
-    certificate: string,
-    pair: string,
-    agentToken: string,
-    token: string,
-    tokenName: string,
-    _tokenName: string,
-    tokenTicker: string,
-    supply: number,
-    price: number,
-    marketCap: number,
-    liquidity: number,
-    volume: number,
-    volume24H: number,
-    prevPrice: number,
-    lastUpdated: Date,
-    description: string,
-    image: string,
-    twitter: string,
-    telegram: string,
-    youtube: string,
-    website: string,
-    trading: boolean,
-    tradingOnUniSwap: boolean,
-}
+    creator: string;
+    certificate: string;
+    pair: string;
+    agentToken: string;
+    token: string;
+    tokenName: string;
+    _tokenName: string;
+    tokenTicker: string;
+    supply: number;
+    price: number;
+    marketCap: number;
+    liquidity: number;
+    volume: number;
+    volume24H: number;
+    prevPrice: number;
+    lastUpdated: Date;
+    description: string;
+    image: string;
+    twitter: string;
+    telegram: string;
+    youtube: string;
+    website: string;
+    trading: boolean;
+    tradingOnUniSwap: boolean;
+    srkHoldings: bigint;
+  }
 
   const [agent, setAgent] = useState<AgentData>();
 
@@ -87,11 +103,16 @@ const AgentPage = () => {
             website: agentData[10].toString(),
             trading: agentData[11].valueOf(),
             tradingOnUniSwap: agentData[12]?.valueOf(),
+            srkHoldings: srkHoldings ?? BigInt(0), // Set SRK holdings for agent
         };
-        console.log("Parsed agent data:", parsedData);
+        console.log("AGENT CERTIFICATE: " + agentData[1].toString());
+        console.log("AGENT PAIR ADDRESS: " + agentData[2].toString());
+        console.log("SRK HOLDINGS: " + parsedData.srkHoldings);
+        setPairAddress(agentData[2].toString());
         setAgent(parsedData);
+        console.log("SRK HOLDINGS: " + parsedData.srkHoldings);
     }
-}, [agentData]);
+}, [agentData, srkHoldings]);
 
   return (
     <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
@@ -123,8 +144,10 @@ const AgentPage = () => {
 
         {/* Second Column */}
 				<div className="flex flex-col gap-4">
+          <p>{agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0}</p>
 					<SwapCard />
-          <SparkingProgressCard sparkingProgress={agent?.trading ? 50 : 0} />
+          <SparkingProgressCard sparkingProgress={agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0} />
+
 				</div>
 			</div>
 		</div>

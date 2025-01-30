@@ -14,9 +14,7 @@ const unsparkingAIContract = getContract({
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
 });
 
-import {
-  useReadContract,
-} from "thirdweb/react";
+import { useReadContract } from "thirdweb/react";
 import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 
@@ -25,32 +23,32 @@ const Agents = () => {
     const [index, setIndex] = useState(0);
     const [address, setAddress] = useState<string>("");
     interface AgentData {
-        creator: string,
-        certificate: string,
-        pair: string,
-        agentToken: string,
-        token: string,
-        tokenName: string,
-        _tokenName: string,
-        tokenTicker: string,
-        supply: number,
-        price: number,
-        marketCap: number,
-        liquidity: number,
-        volume: number,
-        volume24H: number,
-        prevPrice: number,
-        lastUpdated: Date,
-        description: string,
-        image: string,
-        twitter: string,
-        telegram: string,
-        youtube: string,
-        website: string,
-        trading: boolean,
-        tradingOnUniSwap: boolean,
+        creator: string;
+        certificate: string;
+        pair: string;
+        agentToken: string;
+        token: string;
+        tokenName: string;
+        _tokenName: string;
+        tokenTicker: string;
+        supply: number;
+        price: number;
+        marketCap: number;
+        liquidity: number;
+        volume: number;
+        volume24H: number;
+        prevPrice: number;
+        lastUpdated: Date;
+        description: string;
+        image: string;
+        twitter: string;
+        telegram: string;
+        youtube: string;
+        website: string;
+        trading: boolean;
+        tradingOnUniSwap: boolean;
     }
-    
+
     const [agentsData, setAgentsData] = useState<AgentData[]>([]);
 
     const { data } = useReadContract({
@@ -74,7 +72,7 @@ const Agents = () => {
     }, [data]);
 
     useEffect(() => {
-        if (agentData) {
+        if (agentData !== undefined) {
             console.log("Agent data:", agentData);
             const parsedData: AgentData = {
                 creator: agentData[0].toString(),
@@ -104,7 +102,7 @@ const Agents = () => {
             };
             setAgentsData((prevAgentsData) => [...prevAgentsData, parsedData]);
         }
-    }, [agentData]);
+    }, [agentData]);    
 
     useEffect(() => {
         if (index > 0 && !data) {
@@ -228,13 +226,11 @@ const Agents = () => {
                                         createdBy={agent.creator}
                                         marketCap={agent.marketCap}
                                         datePublished={agent.lastUpdated}
-                                        sparkingProgress={agent.trading ? 50 : 0} // Parse boolean to int
                                         website={agent.website}
                                         twitter={agent.twitter}
                                         telegram={agent.telegram}
                                         youtube={agent.youtube}
-                                        //tokenPrice={agent.price}
-                                        //volume={agent.volume}
+                                        pairAddress={agent.pair}
                                     />
                                 ))
                         ) : (
