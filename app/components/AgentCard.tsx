@@ -16,7 +16,6 @@ import { motion } from "framer-motion";
 
 interface AgentCardProps {
 	title: string;
-	ticker: string;
 	image: string;
 	imageAlt: string;
 	certificate: string;
