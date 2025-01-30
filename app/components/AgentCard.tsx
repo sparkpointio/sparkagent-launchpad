@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
 	IconBrandTelegram,
 	IconBrandX,
-	IconCopy,
+	//IconCopy,
 	IconWorld,
-	IconCircleCheck,
+	//IconCircleCheck,
 	IconBrandYoutube,
+	IconLink,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -49,8 +50,9 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	telegram,
 	youtube,
 }) => {
-	const [copied, setCopied] = useState(false);
+	//const [copied, setCopied] = useState(false);
 
+	/*
 	const copyToClipboard = (text: string) => {
 		if (text) {
 			navigator.clipboard.writeText(text);
@@ -58,6 +60,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			setTimeout(() => setCopied(false), 3000);
 		}
 	};
+	*/
 
 	return (
 		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
@@ -135,16 +138,18 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<span className="pr-2">CA:</span>
 						<button
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-							onClick={() => {
-								copyToClipboard(certificate);
-							}}
+							//onClick={() => { copyToClipboard(certificate);}}
+							onClick={() => window.open(`https://sepolia.arbiscan.io/token/${certificate}`, "_blank", "noopener, noreferrer")}
 						>
 							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
-							{copied ? (
-								<IconCircleCheck size={16} />
-							) : (
-								<IconCopy size={16} />
-							)}
+							<IconLink size={16} />
+							{/*
+								{copied ? (
+									<IconCircleCheck size={16} />
+								) : (
+									<IconCopy size={16} />
+								)}
+							*/}
 						</button>
 					</h3>
 					<p className="mb-3 font-normal text-small line-clamp-3">{description}</p>
@@ -153,7 +158,13 @@ const AgentCard: React.FC<AgentCardProps> = ({
 				<div className="truncate mt-auto -mx-5">
 					<p className="px-5 mb-2 font-normal flex justify-between">
 						<span>{"Created by:"}</span>
-						<Link href=""><span className="hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span></Link>
+						<Link
+							href={`https://sepolia.arbiscan.io/address/${createdBy}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							>
+							<span className="hover:text-sparkyOrange-600">{truncateHash(createdBy)}</span>
+						</Link>
 					</p>
 					<p className="px-5 font-normal flex justify-between">
 						<span>{"Market Cap:"}</span>
