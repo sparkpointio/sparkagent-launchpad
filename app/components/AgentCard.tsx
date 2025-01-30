@@ -51,7 +51,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	};
 
 	return (
-		<motion.div whileHover={{ scale: 1.02 }}
+		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
 			whileTap={{ scale: 0.9 }} className="group dark:bg-[#1a1d21] dark:text-white bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 duration-200 flex flex-col justify-between h-full relative">
 			<Link href={""}>
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
