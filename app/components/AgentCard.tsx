@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -9,8 +9,7 @@ import {
 	IconCopy,
 	IconWorld,
 	IconCircleCheck,
-	IconBrandYoutube,
-	IconLink,
+	IconBrandYoutube
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
