@@ -144,7 +144,6 @@ const AgentPage = () => {
 
         {/* Second Column */}
 				<div className="flex flex-col gap-4">
-          <p>{agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0}</p>
 					<SwapCard />
           <SparkingProgressCard sparkingProgress={agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0} />
 

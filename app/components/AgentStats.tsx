@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { convertCryptoToFiat } from "../lib/utils/utils";
 
 interface AgentStatsProps {
 	title: string;
@@ -55,6 +56,39 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [isDarkMode, setIsDarkMode] = useState(false);
+	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
+	const [convertedTokenPrice, setConvertedTokenPrice] = useState<number | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const convertMarketCap = async () => {
+			try {
+				const result = await convertCryptoToFiat(marketCap, "ETH", "USD");
+				setConvertedMarketCap(result);
+			} catch (err) {
+				setError("Error converting market cap to USD: " + err);
+			}
+		};
+
+		if (marketCap > 0) {
+			convertMarketCap();
+		}
+	}, [marketCap]);
+
+	useEffect(() => {
+		const convertTokenPrice = async () => {
+			try {
+				const result = await convertCryptoToFiat(tokenPrice, "SRK", "USD");
+				setConvertedTokenPrice(result);
+			} catch (err) {
+				setError("Error converting token price to USD: " + err);
+			}
+		};
+
+		if (tokenPrice > 0) {
+			convertTokenPrice();
+		}
+	}, [tokenPrice]);
 
 	useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');
@@ -154,15 +188,15 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								</button>
 							</div>
 							<div className="flex flex-col flex-1">
-								<span>Market Cap</span>
+								<span>Market Cap USD:</span>
 								<span className="font-bold">
-									{formatNumber(marketCap)}
+									{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 								</span>
 							</div>
 							<div className="flex flex-col flex-1">
 								<span>Price USD</span>
 								<span className="font-bold">
-									{tokenPrice}
+									{convertedTokenPrice ? `$${formatNumber(convertedTokenPrice)}` : "Fetching..."}
 								</span>
 							</div>
 							<div className="flex flex-col flex-1">
