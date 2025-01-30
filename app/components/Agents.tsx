@@ -222,7 +222,7 @@ const Agents = () => {
                                         key={index}
                                         title={agent._tokenName}
                                         image={AGENTS[1].image}
-                                        imageAlt={agent.tokenName}
+                                        imageAlt={agent._tokenName}
                                         certificate={agent.certificate}
                                         description={agent.description}
                                         createdBy={agent.creator}

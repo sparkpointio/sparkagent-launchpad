@@ -9,11 +9,14 @@ import {
 	IconCopy,
 	IconWorld,
 	IconCircleCheck,
+	IconBrandYoutube,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface AgentStatsProps {
 	title: string;
+	ticker: string;
 	image: string;
 	imageAlt: string;
 	certificate: string;
@@ -23,6 +26,10 @@ interface AgentStatsProps {
 	datePublished: Date;
 	sparkingProgress: number;
 	tokenPrice: number;
+	website: string;
+	twitter: string;
+	telegram: string;
+	youtube: string;
 }
 
 const socialButtonProperties =
@@ -33,12 +40,17 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	image,
 	imageAlt,
 	title,
+	ticker,
 	certificate,
 	description,
 	createdBy,
 	marketCap,
 	datePublished,
 	tokenPrice,
+	website,
+	twitter,
+	telegram,
+	youtube,
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [isDarkMode, setIsDarkMode] = useState(false);
@@ -57,7 +69,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	};
 
 	return (
-		<div className="group bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
+		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="group bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<Link href={""}>
@@ -76,7 +88,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						<div className="flex justify-between items-center mb-4">
 							<Link href={""}>
 								<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
-									{title + " (Abbr.)"}
+									{`${title} (${ticker})`}
 								</h2>
 							</Link>
 							<div className="flex space-x-1 items-center">
@@ -86,27 +98,42 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										<span className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
 									</Link>
 								</div>
-								<button
-									className={socialButtonProperties}
-									onClick={() => console.log(`Website`)}
-									title="Website"
-								>
-									<IconWorld size={socialIconSize} />
-								</button>
-								<button
-									className={socialButtonProperties}
-									onClick={() => console.log(`Telegram`)}
-									title="Telegram"
-								>
-									<IconBrandTelegram size={socialIconSize} />
-								</button>
-								<button
-									className={socialButtonProperties}
-									onClick={() => console.log(`X`)}
-									title="X"
-								>
-									<IconBrandX size={socialIconSize} />
-								</button>
+								{website && (
+									<button
+										className={socialButtonProperties}
+										onClick={() => window.open(website, "_blank", "noopener, noreferrer" )}
+										title="Website"
+									>
+										<IconWorld size={socialIconSize} />
+									</button>
+								)}
+								{telegram && (
+									<button
+										className={socialButtonProperties}
+										onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
+										title="Telegram"
+									>
+										<IconBrandTelegram size={socialIconSize} />
+									</button>
+								)}
+								{twitter && (
+									<button
+										className={socialButtonProperties}
+										onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
+										title="X"
+									>
+										<IconBrandX size={socialIconSize} />
+									</button>
+								)}
+								{youtube && (
+									<button
+										className={socialButtonProperties}
+										onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
+										title="YouTube"
+									>
+										<IconBrandYoutube size={socialIconSize} />
+									</button>
+								)}
 							</div>
 						</div>
 
@@ -166,7 +193,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				title="GeckoTerminal Embed"
 				src={`https://www.geckoterminal.com/arbitrum/pools/${"0xc6f780497a95e246eb9449f5e4770916dcd6396a"}?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
 			></iframe>
-		</div>
+		</motion.div>
 	);
 };
 
