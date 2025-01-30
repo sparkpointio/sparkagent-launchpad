@@ -65,13 +65,14 @@ const AgentCard: React.FC<AgentCardProps> = ({
 				setConvertedMarketCap(result);
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
+				console.log(error);
 			}
 		};
 
 		if (marketCap > 0) {
 			convertMarketCap();
 		}
-	}, [marketCap]);
+	}, [error, marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {

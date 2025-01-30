@@ -67,13 +67,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				setConvertedMarketCap(result);
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
+				console.log(error);
 			}
 		};
 
 		if (marketCap > 0) {
 			convertMarketCap();
 		}
-	}, [marketCap]);
+	}, [error, marketCap]);
 
 	useEffect(() => {
 		const convertTokenPrice = async () => {
@@ -82,13 +83,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				setConvertedTokenPrice(result);
 			} catch (err) {
 				setError("Error converting token price to USD: " + err);
+				console.log(error);
 			}
 		};
 
 		if (tokenPrice > 0) {
 			convertTokenPrice();
 		}
-	}, [tokenPrice]);
+	}, [error, tokenPrice]);
 
 	useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');
