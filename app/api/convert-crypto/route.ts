@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
         // Retry logic for making the CoinMarketCap API request (to handle rate-limiting)
         const response = await retryRequest(retries, delay, cryptoAmount, cryptoSymbol, fiatSymbol);
 
-        console.log('CoinMarketCap API response:', response.data);
+        //console.log('CoinMarketCap API response:', response.data);
 
         const { data } = response;
 

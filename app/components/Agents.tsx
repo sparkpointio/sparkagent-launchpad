@@ -4,8 +4,6 @@ import AgentSearchBar from "./AgentSearchBar";
 import { AGENTS } from "../lib/utils/agents-sample-data";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
-import { new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from "../lib/assets";
-import Image from "next/image";
 import { client } from "../client";
 
 const unsparkingAIContract = getContract({
@@ -17,6 +15,7 @@ const unsparkingAIContract = getContract({
 import { useReadContract } from "thirdweb/react";
 import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
+import SparkAgentLogo from "./SparkAgentLogo";
 
 const Agents = () => {
     //const [agents, setAgents] = useState<string[]>([]);
@@ -182,28 +181,17 @@ const Agents = () => {
 
     return (
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
                 {/* First Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center h-14 mb-8 select-none">
-                        <Image
-                            src={new_sparkpoint_logo_full_dark}
-                            alt="SparkPoint Logo"
-                            className="h-12 w-fit dark:hidden block"
-                            unselectable="on"
-                        />
-                        <Image
-                            src={new_sparkpoint_logo_full_light}
-                            alt="SparkPoint Logo"
-                            className="h-12 w-fit dark:block hidden"
-                            unselectable="on"
-                        />
+                        <SparkAgentLogo />
                     </div>
                     <AgentFilter onFilterChange={handleFilterChange} />
                 </div>
 
                 {/* Second Column */}
-                <div className="lg:col-span-2 w-full">
+                <div className="lg:col-span-3 w-full">
                     <div className="flex items-center justify-center h-16 mb-6">
                         <AgentSearchBar onSearch={(query: string) => {
                             setSearchQuery(query);

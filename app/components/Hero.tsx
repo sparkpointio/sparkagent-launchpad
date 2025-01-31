@@ -13,11 +13,11 @@ const Hero = () => {
 
     const customButtonStyles = {
         label: "Create Agent",
-        className: "!font-[Rubik] !w-[192px] sm:w-48 py-3 !transition-all !duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] !text-white !bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none !rounded-none",
+        className: "!font-[Rubik] !w-[192px] sm:w-48 py-3 !transition-all !duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] !text-white !bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none !rounded-full",
     };
 
   return (
-    <section className="text-center relative w-full h-[60vh] sm:h-[75vh] m:h-[60vh]">
+    <section className="text-center relative w-full h-[75vh] m:h-[60vh]">
       <div className="bg-cover bg-center bg-no-repeat absolute top-0 left-0 w-full h-full z-0 bg-img-1" style={{ backgroundImage: `url(${bg_hero_dark.src})` }}></div>
       {/* <div className="bg-cover bg-center bg-no-repeat absolute top-0 left-0 w-full h-full z-0 bg-img-2" style={{ backgroundImage: `url(${bg_hero_dark.src})` }}></div> */}
       <div className="absolute top-0 left-0 w-full h-full z-1 bg-mask"></div>
