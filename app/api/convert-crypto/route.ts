@@ -10,7 +10,7 @@ async function retryRequest(
     cryptoAmount: number,
     cryptoSymbol: string,
     fiatSymbol: string
-): Promise<any> { // Consider defining a proper return type
+): Promise<unknown> { // Consider defining a proper return type
     for (let attempt = 0; attempt < retries; attempt++) {
         try {
             const response = await axios.get('https://pro-api.coinmarketcap.com/v2/tools/price-conversion', {
