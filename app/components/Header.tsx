@@ -129,6 +129,7 @@ const Header = ({ className }: { className?: string }) => {
                   }}
                   client={client}
                   chain={arbitrumSepolia}
+                  theme="light"
                 />
               </div>
 
@@ -164,6 +165,7 @@ const Header = ({ className }: { className?: string }) => {
                 }}
                 client={client}
                 chain={arbitrumSepolia}
+                theme="light"
               />
             </motion.div>
           )}
