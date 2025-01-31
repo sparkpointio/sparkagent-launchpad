@@ -158,7 +158,10 @@ const Agents = () => {
         if (filterType === 'newPairs' && value === true) {
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-            filtered = filtered.filter(agent => agent.lastUpdated >= sevenDaysAgo);
+        
+            filtered = filtered
+                .filter(agent => agent.lastUpdated >= sevenDaysAgo)
+                .sort((a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime()); // Sort by most recent
         }
 
         // Apply sparked filter
