@@ -190,7 +190,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								</button>
 							</div>
 							<div className="flex flex-col flex-1">
-								<span>Market Cap USD:</span>
+								<span>Market Cap USD</span>
 								<span className="font-bold">
 									{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 								</span>
@@ -204,7 +204,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<div className="flex flex-col flex-1">
 								<span>Price</span>
 								<span className="font-bold">
-									{tokenPrice + " SRK"}
+									{formatNumber(tokenPrice) + " SRK"}
 								</span>
 							</div>
 						</div>
