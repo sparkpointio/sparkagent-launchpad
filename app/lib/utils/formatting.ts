@@ -68,6 +68,5 @@ export function getSparkingProgress(number: bigint): number {
   const sparkingProgress = numberToETH.dividedBy(150000000).times(100);
 
   // Cap at 100 and truncate to at least 7 decimal places
-  console.log("Getting Sparking Progress: " + number);
   return Decimal.min(sparkingProgress, 100).toDecimalPlaces(7, Decimal.ROUND_DOWN).toNumber();
 }
