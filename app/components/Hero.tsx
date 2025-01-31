@@ -32,12 +32,8 @@ const Hero = () => {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
               {account ? (
                     <CreateAgentForm>
-                      <button className={buttonVariants({
-                          variant: "ghost",
-                          size: "lg",
-                          className: 'text-[100%] w-full sm:w-48 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none !rounded-none'
-                      })}>
-                          Create Agent
+                      <button className={buttonVariants({ variant: "outline", size: "lg", className: 'w-full sm:w-48 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2' })}>
+                        Create Agent
                       </button>
                   </CreateAgentForm>
                   ): (
