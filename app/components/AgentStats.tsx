@@ -55,7 +55,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	youtube,
 }) => {
 	const [copied, setCopied] = useState(false);
-	const [isDarkMode, setIsDarkMode] = useState(false);
+	//const [isDarkMode, setIsDarkMode] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [convertedTokenPrice, setConvertedTokenPrice] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -92,10 +92,10 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		}
 	}, [error, tokenPrice]);
 
-	useEffect(() => {
+	/*useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');
 		setIsDarkMode(darkMode);
-	}, []);
+	}, []);*/
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
