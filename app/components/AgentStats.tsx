@@ -63,8 +63,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				const result = await convertCryptoToFiat(marketCap, "ETH", "USD");
-				setConvertedMarketCap(result);
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
+				setConvertedMarketCap(result.toFixed(2));
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
 				console.log(error);
