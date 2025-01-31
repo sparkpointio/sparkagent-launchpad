@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 // Adding this to handle rate-limiting
 async function retryRequest(retries: number, delay: number | undefined, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
