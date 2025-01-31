@@ -202,7 +202,7 @@ const Agents = () => {
                     </div>
 
                     {/* Agent Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-6 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-3 gap-6 w-full">
                         {filteredAgents.length > 0 ? (
                             filteredAgents
                                 .filter(agent => agent.certificate !== "0x0000000000000000000000000000000000000000")
