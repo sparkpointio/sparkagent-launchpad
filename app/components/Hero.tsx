@@ -17,7 +17,7 @@ const Hero = () => {
     };
 
   return (
-    <section className="text-center relative w-full h-[60vh] sm:h-[75vh] m:h-[60vh]">
+    <section className="text-center relative w-full h-[75vh] m:h-[60vh]">
       <div className="bg-cover bg-center bg-no-repeat absolute top-0 left-0 w-full h-full z-0 bg-img-1" style={{ backgroundImage: `url(${bg_hero_dark.src})` }}></div>
       {/* <div className="bg-cover bg-center bg-no-repeat absolute top-0 left-0 w-full h-full z-0 bg-img-2" style={{ backgroundImage: `url(${bg_hero_dark.src})` }}></div> */}
       <div className="absolute top-0 left-0 w-full h-full z-1 bg-mask"></div>
