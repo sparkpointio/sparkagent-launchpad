@@ -42,7 +42,7 @@ const AgentFilter = ({ onFilterChange }: FilterProps) => {
     };
 
     const dividerProperties = "border-t-2 border-black";
-    const filterProperties = "flex text-lg justify-between p-4";
+    const filterProperties = "flex text-lg justify-between mx-4 my-2";
     const buttonProperties = "w-full hover:bg-sparkyOrange-200 transition-colors";
 
     const getButtonClass = (isActive: boolean) => `
