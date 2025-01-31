@@ -17,6 +17,7 @@ const unsparkingAIContract = getContract({
 import { useReadContract } from "thirdweb/react";
 import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
+import SparkAgentLogo from "./SparkAgentLogo";
 
 const Agents = () => {
     //const [agents, setAgents] = useState<string[]>([]);
@@ -186,18 +187,7 @@ const Agents = () => {
                 {/* First Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center h-14 mb-8 select-none">
-                        <Image
-                            src={new_sparkpoint_logo_full_dark}
-                            alt="SparkPoint Logo"
-                            className="h-12 w-fit dark:hidden block"
-                            unselectable="on"
-                        />
-                        <Image
-                            src={new_sparkpoint_logo_full_light}
-                            alt="SparkPoint Logo"
-                            className="h-12 w-fit dark:block hidden"
-                            unselectable="on"
-                        />
+                        <SparkAgentLogo />
                     </div>
                     <AgentFilter onFilterChange={handleFilterChange} />
                 </div>
