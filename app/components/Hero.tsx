@@ -13,7 +13,7 @@ const Hero = () => {
 
     const customButtonStyles = {
         label: "Create Agent",
-        className: "!font-[Rubik] !w-[192px] sm:w-48 py-3 !transition-all !duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] !text-white !bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none !rounded-none",
+        className: "!font-[Rubik] !w-[192px] sm:w-48 py-3 !transition-all !duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] !text-white !bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none !rounded-full",
     };
 
   return (
