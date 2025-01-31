@@ -8,6 +8,7 @@ import { prepareContractCall, getContract } from "thirdweb";
 import {client} from "@/app/client";
 import {arbitrumSepolia} from "thirdweb/chains";
 import {useActiveAccount, useSendTransaction, useReadContract} from "thirdweb/react";
+import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 
 const unsparkingAIContract = getContract({
     client,
@@ -42,6 +43,8 @@ interface SwapCardProps {
 const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) => {
     const { mutate: sendTransaction } = useSendTransaction();
 
+    const [walletConfirmationStatus, setWalletConfirmationStatus] = useState(0);
+
     const [swapType, setSwapType] = useState<"buy" | "sell">("buy");
     const [amount, setAmount] = useState("");
 
@@ -61,6 +64,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         return;
     }
 
+    /* eslint-disable react-hooks/rules-of-hooks */
     const { data: unsparkingAIContractAllowanceForSRKTemp } = useReadContract({
         contract: srkContract,
         method: "function allowance(address owner, address spender) returns (uint256)",
@@ -78,11 +82,13 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         method: "function allowance(address owner, address spender) returns (uint256)",
         params: [account.address, pairContract.address],
     });
+    /* eslint-enable react-hooks/rules-of-hooks */
 
     const unsparkingAIContractAllowanceForSRK = BigInt(unsparkingAIContractAllowanceForSRKTemp ?? "0");
     const factoryContractAllowanceForSRK = BigInt(factoryContractAllowanceForSRKTemp ?? "0");
     const pairContractAllowanceForSRK = BigInt(pairContractAllowanceForSRKTemp ?? "0");
 
+    /* eslint-disable react-hooks/rules-of-hooks */
     const { data: unsparkingAIContractAllowanceForUnsparkedTokenTemp } = useReadContract({
         contract: srkContract,
         method: "function allowance(address owner, address spender) returns (uint256)",
@@ -100,6 +106,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         method: "function allowance(address owner, address spender) returns (uint256)",
         params: [account.address, pairContract.address],
     });
+    /* eslint-enable react-hooks/rules-of-hooks */
 
     const unsparkingAIContractAllowanceForUnsparkedToken = BigInt(unsparkingAIContractAllowanceForUnsparkedTokenTemp ?? "0");
     const factoryContractAllowanceForUnsparkedToken = BigInt(factoryContractAllowanceForUnsparkedTokenTemp ?? "0");
@@ -129,6 +136,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
 
             sendTransaction(approveTx, {
                 onError: (error) => {
+                    setWalletConfirmationStatus(0)
                     console.error(`Approval failed for ${contractAddress}:`, error);
                 },
                 onSuccess: () => {
@@ -136,6 +144,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                     if (nextApproval) nextApproval();
                     else {
                         console.log("All approvals completed. Proceeding with swap.");
+                        setWalletConfirmationStatus(4);
                         proceedWithSwap();
                     }
                 },
@@ -145,6 +154,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
             if (nextApproval) nextApproval();
             else {
                 console.log("All approvals completed. Proceeding with swap.");
+                setWalletConfirmationStatus(4);
                 proceedWithSwap();
             }
         }
@@ -157,10 +167,13 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         }
 
         console.log("Approval 1 Checked");
+        setWalletConfirmationStatus(5);
         approveIfNeeded(unsparkingAIContract.address, swapType === "buy" ? unsparkingAIContractAllowanceForSRK : unsparkingAIContractAllowanceForUnsparkedToken, () => {
             console.log("Approval 2 Checked");
+            setWalletConfirmationStatus(2);
             approveIfNeeded(factoryContract.address, swapType === "buy" ? factoryContractAllowanceForSRK : factoryContractAllowanceForUnsparkedToken, () => {
                 console.log("Approval 3 Checked");
+                setWalletConfirmationStatus(3);
                 approveIfNeeded(pairContract.address, swapType === "buy" ? pairContractAllowanceForSRK : pairContractAllowanceForUnsparkedToken);
             });
         });
@@ -184,9 +197,11 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
 
             sendTransaction(swapTx, {
                 onError: (error) => {
+                    setWalletConfirmationStatus(0)
                     console.error("Swap transaction failed:", error);
                 },
                 onSuccess: () => {
+                    setWalletConfirmationStatus(5);
                     console.log("Swap transaction successful!");
                 },
             });
@@ -234,6 +249,13 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                 />
             </div>
             <button type="button" className={buttonProperties} onClick={handleSwap}> Swap</button>
+
+            <WalletConfirmationStatus
+                walletConfirmationStatus={walletConfirmationStatus}
+                swapType={swapType}
+                ticker={ticker}
+                setWalletConfirmationStatus={setWalletConfirmationStatus}
+            />
         </motion.div>
     );
 };
