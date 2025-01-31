@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -10,7 +9,6 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import { cn } from '../lib/utils/style';
-import { new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from '../lib/assets';
 import { ConnectButton } from 'thirdweb/react';
 import { client } from '../client';
 import { arbitrumSepolia } from 'thirdweb/chains';
