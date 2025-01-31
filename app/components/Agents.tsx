@@ -4,8 +4,6 @@ import AgentSearchBar from "./AgentSearchBar";
 import { AGENTS } from "../lib/utils/agents-sample-data";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
-import { new_sparkpoint_logo, new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from "../lib/assets";
-import Image from "next/image";
 import { client } from "../client";
 
 const unsparkingAIContract = getContract({
