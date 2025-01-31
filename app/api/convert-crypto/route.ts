@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Adding this to handle rate-limiting
 async function retryRequest(retries: number, delay: number | undefined, cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) {
@@ -17,10 +17,10 @@ async function retryRequest(retries: number, delay: number | undefined, cryptoAm
                 },
             });
 
-            return response; // Only when the request is successful
+            return response;
 
         } catch (error) {
-            if (error.response && error.response.status === 429) {
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
                 console.log(`Failed to fetch currency conversion. Retrying in ${delay}ms...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ error: 'API error: Unable to fetch conversion rate.' }), { status: 500 });
         }
     } catch (error) {
-        console.error('Error in API route:', error); 
-        return new Response(JSON.stringify({ error: `Server error: Unable to process the request. ${error.message}` }), { status: 500 });
+        console.error('Error in API route:', error);
+        return new Response(JSON.stringify({ error: `Server error: Unable to process the request. ${error instanceof Error ? error.message : 'Unknown error'}` }), { status: 500 });
     }
 }
