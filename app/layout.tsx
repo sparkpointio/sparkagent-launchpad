@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Rubik, Poppins } from "next/font/google";
+import { Rubik, Poppins, Righteous } from "next/font/google";
 import "./globals.css";
 import { ThirdwebProvider } from "thirdweb/react";
 import Header from "./components/Header";
@@ -17,6 +17,12 @@ const poppins = Poppins({
   variable: '--font-poppins',
   subsets: ['latin']
 });
+
+const righteous = Righteous({
+  weight: '400',
+  variable: '--font-righteous',
+  subsets: ['latin']
+})
 
 export const metadata: Metadata = {
   title: "SparkAgent Launchpad",
@@ -54,7 +60,7 @@ export default function RootLayout({
       </head>
       <ThirdwebProvider>
         <body
-          className={`${rubik.variable} ${poppins.variable} antialiased`}
+          className={`${rubik.variable} ${poppins.variable} ${righteous.variable} antialiased`}
         >
           <LightDarkToggle />
           <Header />

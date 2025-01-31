@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -10,10 +9,10 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import { cn } from '../lib/utils/style';
-import { new_sparkpoint_logo_full_dark, new_sparkpoint_logo_full_light } from '../lib/assets';
 import { ConnectButton } from 'thirdweb/react';
 import { client } from '../client';
 import { arbitrumSepolia } from 'thirdweb/chains';
+import SparkAgentLogo from './SparkAgentLogo';
 
 const Header = ({ className }: { className?: string }) => {
 
@@ -68,16 +67,7 @@ const Header = ({ className }: { className?: string }) => {
         {/* Mobile Menu Button */}
         <div className="absolute -top-1 md:hidden flex items-center justify-between w-full px-4 py-2">
           <Link href="#">
-            <Image
-              src={new_sparkpoint_logo_full_dark}
-              alt="SparkPoint Logo"
-              className="md:h-8 h-4 w-fit dark:block hidden"
-            />
-            <Image
-              src={new_sparkpoint_logo_full_light}
-              alt="SparkPoint Logo"
-              className="md:h-8 h-4 w-fit dark:hidden block"
-            />
+            <SparkAgentLogo size={16}/>
             {/*
             <Image
                 src={new_sparkpoint_logo_full_light}
@@ -95,17 +85,7 @@ const Header = ({ className }: { className?: string }) => {
           (
             <div className='hidden md:flex items-center w-full justify-between'>
               <Link href="#">
-                <Image
-                  src={new_sparkpoint_logo_full_dark}
-                  alt="SparkPoint Logo"
-                  className="md:h-8 h-4 w-fit block dark:hidden"
-                />
-                <Image
-                  src={new_sparkpoint_logo_full_light}
-                  alt="SparkPoint Logo"
-                  className="md:h-8 h-4 w-fit dark:block hidden"
-                />
-
+                <SparkAgentLogo size={38} />
                 {/*
                 <Image
                   src={new_sparkpoint_logo_full_light}
