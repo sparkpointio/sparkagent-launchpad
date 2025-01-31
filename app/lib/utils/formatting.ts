@@ -1,3 +1,5 @@
+import { toEther } from "thirdweb";
+
 export function getTimeAgo(date: Date): string {
   const now = new Date();
   const diffInMilliseconds = now.getTime() - date.getTime();
@@ -6,6 +8,9 @@ export function getTimeAgo(date: Date): string {
   const years = Math.floor(diffInDays / 365);
   const months = Math.floor((diffInDays % 365) / 30);
   
+  if (diffInDays === 0) {
+    return "Today";
+  }
   if (years > 0 && months > 0) {
     return `${years} year${years > 1 ? 's' : ''} and ${months} month${months > 1 ? 's' : ''} ago`;
   }
@@ -19,6 +24,18 @@ export function getTimeAgo(date: Date): string {
 }
 
 export function formatNumber(number: number): string {
+  if (number >= 1_000_000_000_000_000_000) {
+    return (number / 1_000_000_000_000_000_000).toFixed(1) + ' Qi';
+  }
+  if (number >= 1_000_000_000_000_000) {
+    return (number / 1_000_000_000_000_000).toFixed(1) + ' Q';
+  }
+  if (number >= 1_000_000_000_000) {
+    return (number / 1_000_000_000_000).toFixed(1) + ' T';
+  }
+  if (number >= 1_000_000_000) {
+    return (number / 1_000_000_000).toFixed(1) + ' B';
+  }
   if (number >= 1_000_000) {
     return (number / 1_000_000).toFixed(1) + ' M';
   }
@@ -42,4 +59,15 @@ export function truncateHash(hash: string, maxLength: number = 10, left?: number
   }
 
   return hash;
+}
+
+import { Decimal } from "decimal.js";
+
+export function getSparkingProgress(number: bigint): number {
+  const numberToETH = new Decimal(toEther(number));
+  const sparkingProgress = numberToETH.dividedBy(150000000).times(100);
+
+  // Cap at 100 and truncate to at least 7 decimal places
+  console.log("Getting Sparking Progress: " + number);
+  return Decimal.min(sparkingProgress, 100).toDecimalPlaces(7, Decimal.ROUND_DOWN).toNumber();
 }
