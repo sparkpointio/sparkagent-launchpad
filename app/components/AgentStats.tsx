@@ -80,7 +80,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		const convertTokenPrice = async () => {
 			try {
 				const result = await convertCryptoToFiat(tokenPrice, "SRK", "USD");
-				setConvertedTokenPrice(result);
+				setConvertedTokenPrice(result.toFixed(2));
 			} catch (err) {
 				setError("Error converting token price to USD: " + err);
 				console.log(error);
@@ -221,13 +221,19 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					</div>
 				</div>
 			</div>
-			<iframe
+			{/*<iframe
 				style={{ height: "60vh" }}
 				width="100%"
 				id="geckoterminal-embed"
 				title="GeckoTerminal Embed"
 				src={`https://www.geckoterminal.com/sepolia-testnet/pools/${certificate}?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
-			></iframe>
+			></iframe>*/}
+			<div
+			  style={{ height: "60vh", width: "100%" }}
+			  className="bg-[radial-gradient(theme(colors.gray.300)_10%,transparent_10%)] bg-[length:16px_16px] flex border border-gray-300 justify-center items-center"
+			>
+			  <p className="text-center">Charts are not available as of the moment.</p>
+			</div>
 		</motion.div>
 	);
 };
