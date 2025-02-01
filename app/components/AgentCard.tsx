@@ -58,22 +58,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
-	useEffect(() => {
-		const convertMarketCap = async () => {
-			try {
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
-				setConvertedMarketCap(result.toFixed(2));
-			} catch (err) {
-				setError("Error converting market cap to USD: " + err);
-				console.log(error);
-			}
-		};
-
-		if (marketCap > 0) {
-			convertMarketCap();
-		}
-	}, [error, marketCap]);
-
 	const copyToClipboard = (text: string) => {
 		if (text) {
 			navigator.clipboard.writeText(text);
@@ -91,9 +75,24 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const { data: srkHoldings } = useReadContract({
 		contract: srkToken,
 		method: "function balanceOf(address) returns (uint256)",
-		params: [pairAddress], 
+		params: [pairAddress],
 	});
 
+	useEffect(() => {
+		const convertMarketCap = async () => {
+			try {
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
+				setConvertedMarketCap(result.toFixed(2));
+			} catch (err) {
+				setError("Error converting market cap to USD: " + err);
+				console.log(error);
+			}
+		};
+
+		if (marketCap > 0) {
+			convertMarketCap();
+		}
+	}, [error, marketCap]);
 	return (
 		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
 			whileTap={{ scale: 0.9 }} className="group dark:bg-[#1a1d21] dark:text-white bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 duration-200 flex flex-col justify-between h-full relative">
@@ -116,12 +115,12 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			<div className="p-5 flex flex-col flex-grow">
 				<div>
 					<div className="flex justify-between items-center">
-					<Link href={{
-						pathname: "/agent",
-						query: {
-							certificate,
-						}
-					}}>
+						<Link href={{
+							pathname: "/agent",
+							query: {
+								certificate,
+							}
+						}}>
 							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
 								{title}
 							</h2>
@@ -170,7 +169,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<span className="pr-2">CA:</span>
 						<button
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-							onClick={() => { copyToClipboard(certificate);}}
+							onClick={() => { copyToClipboard(certificate); }}
 						>
 							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 							{copied ? (

@@ -66,7 +66,7 @@ const Header = ({ className }: { className?: string }) => {
 
         {/* Mobile Menu Button */}
         <div className="absolute -top-1 md:hidden flex items-center justify-between w-full px-4 py-2">
-          <Link href="#">
+          <Link href="/">
             <SparkAgentLogo size={16}/>
             {/*
             <Image
@@ -84,7 +84,7 @@ const Header = ({ className }: { className?: string }) => {
         {!isOpen &&
           (
             <div className='hidden md:flex items-center w-full justify-between'>
-              <Link href="#">
+              <Link href="/">
                 <SparkAgentLogo size={38} />
                 {/*
                 <Image
