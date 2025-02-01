@@ -21,7 +21,7 @@ export default function NotFound() {
         <div className="space-y-3">
           <h1 className="text-4xl font-bold text-black dark:text-white">No Agent Found</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            We couldn't find the agent you're looking for. It might have been removed or doesn't exist.
+            We couldn&apos;t find the agent you&apos;re looking for. It might have been removed or doesn&apos;t exist.
           </p>
         </div>
 

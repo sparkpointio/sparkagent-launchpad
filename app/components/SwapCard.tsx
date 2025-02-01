@@ -47,8 +47,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
   const [walletConfirmationStatus, setWalletConfirmationStatus] = useState(0)
   const [swapType, setSwapType] = useState<"buy" | "sell">("buy")
   const [amount, setAmount] = useState("")
-  const [srkBalance, setSrkBalance] = useState("2,935.35")
-  const [agentBalance, setAgentBalance] = useState("1,833,435.45")
+  const srkBalance = "2,935.35";
+  const agentBalance = "1,833,435.45";
 
   const headerProperties = "flex text-xl justify-right"
   const buttonProperties = "w-full border-2 border-black rounded-3xl hover:bg-[#4CD4B0] transition-all p-4"
@@ -256,7 +256,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
       </div>
       {swapType === "buy" && (
         <p className="text-sm text-gray-800 dark:text-gray-200">
-          You'll need $SRK to buy {ticker}
+          You&apos;ll need $SRK to buy {ticker}
         </p>
       )}
       <div className="relative flex flex-col gap-4 mb-12">
