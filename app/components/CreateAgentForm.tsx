@@ -12,6 +12,7 @@ import {useActiveAccount, useSendTransaction} from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
+import axios from "axios";
 
 const unsparkingAIContract = getContract({
     client,
@@ -89,27 +90,38 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     const currentAllowance = BigInt(currentAllowanceTemp ?? "0");
 
     const uploadToIPFS = async () => {
-        if (typeof window !== "undefined") {
-            return `https://xxxx.ipfs.w3s.link`;
-        }
-
-        const { create } = await import("@web3-storage/w3up-client");
-        const web3StorageClient = await create();
-        const spaceDID = process.env.NEXT_PUBLIC_WEB3_STORAGE;
-
-        if (!spaceDID) {
-            throw new Error("Missing NEXT_PUBLIC_WEB3_STORAGE. Make sure it's set in your environment variables.");
-        }
-
-        await web3StorageClient.setCurrentSpace(spaceDID as `did:key:${string}`);
-
         if (!iconFile) {
-            throw new Error("No icon file selected.");
+            console.error("No file selected");
+            return "bafkreibxhlnihc5vy7trt6t4k2cdwpsjzelzv2lv4q2kmvhwcml2kf4pyu";
         }
 
-        const cid = await web3StorageClient.uploadFile(iconFile);
-        console.log("Uploaded to IPFS:", `https://${cid}.ipfs.w3s.link`);
-        return `https://${cid}.ipfs.w3s.link`;
+        const formData = new FormData();
+        formData.append("file", iconFile);
+
+        try {
+            const response = await axios.post(
+                "https://api.pinata.cloud/pinning/pinFileToIPFS",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY!,
+                        pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET!,
+                    },
+                }
+            );
+
+            console.log("CID:", response.data.IpfsHash);
+            console.log("URL:", `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`);
+
+            return response.data.IpfsHash;
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error("Pinata Upload Error:", error.message);
+            } else {
+                console.error("Unknown error occurred", error);
+            }
+        }
     };
 
     const approveTransaction = async () => {
@@ -468,8 +480,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                                           if (!file) return;
 
-                                          if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                                              setValidationError("File size must be 5MB or less.");
+                                          if (file.size > 1024 * 1024) { // 1MB limit
+                                              setValidationError("File size must be 1MB or less.");
                                               return;
                                           }
 
