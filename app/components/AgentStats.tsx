@@ -117,23 +117,31 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				<div className="relative w-32 h-32 rounded-full overflow-hidden mr-4">
 					{isLoading && (
 						<motion.div
+							className="absolute inset-0 flex items-center justify-center"
 							animate={{ rotate: 360 }}
 							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
 						>
-							<IconLoader3 />
+							<IconLoader3 size={32} />
 						</motion.div>
 					)}
-					<Image
-						src={imgSrc}
-						alt={imageAlt || "Card image"}
-						layout="fill"
-						objectFit="cover"
-						className="object-cover"
-						onError={() => {
-							setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
-							setIsLoading(false);
-						}}
-					/>
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: isLoading ? 0 : 1 }}
+						transition={{ duration: 0.5 }}
+						className="w-full h-full"
+					>
+						<Image
+							src={imgSrc}
+							alt={imageAlt || "Card image"}
+							layout="fill"
+							objectFit="cover"
+							className="object-cover"
+							onError={() => {
+								setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
+								setIsLoading(false);
+							}}
+						/>
+					</motion.div>
 				</div>
 				<div className="flex flex-col flex-grow">
 					<div>
