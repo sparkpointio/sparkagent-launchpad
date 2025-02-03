@@ -105,8 +105,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
-                        pinata_api_key: process.env.NEXT_PUBLIC_API_KEY!,
-                        pinata_secret_api_key: process.env.NEXT_PUBLIC_API_SECRET!,
+                        pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY!,
+                        pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_API_SECRET!,
                     },
                 }
             );
