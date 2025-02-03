@@ -61,18 +61,18 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate);
 				setConvertedMarketCap(result.toFixed(2));
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
 				console.log(error);
 			}
 		};
-
+	
 		if (marketCap > 0) {
 			convertMarketCap();
 		}
-	}, [error, marketCap]);
+	}, [certificate, error, marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
