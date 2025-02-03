@@ -63,34 +63,36 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
+				console.log("Certificate for Market Cap:", certificate); // Add this line
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate);
 				setConvertedMarketCap(result.toFixed(2));
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
 				console.log(error);
 			}
 		};
-
+	
 		if (marketCap > 0) {
 			convertMarketCap();
 		}
-	}, [error, marketCap]);
-
+	}, [certificate, error, marketCap]);
+	
 	useEffect(() => {
 		const convertTokenPrice = async () => {
 			try {
-				const result = await convertCryptoToFiat(tokenPrice, "SRK", "USD");
+				console.log("Certificate for Token Price:", certificate); // Add this line
+				const result = await convertCryptoToFiat(tokenPrice, "SRK", "USD", certificate);
 				setConvertedTokenPrice(result.toFixed(2));
 			} catch (err) {
 				setError("Error converting token price to USD: " + err);
 				console.log(error);
 			}
 		};
-
+	
 		if (tokenPrice > 0) {
 			convertTokenPrice();
 		}
-	}, [error, tokenPrice]);
+	}, [certificate, error, tokenPrice]);
 
 	/*useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');

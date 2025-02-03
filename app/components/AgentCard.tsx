@@ -61,18 +61,18 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate);
 				setConvertedMarketCap(result.toFixed(2));
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
 				console.log(error);
 			}
 		};
-
+	
 		if (marketCap > 0) {
 			convertMarketCap();
 		}
-	}, [error, marketCap]);
+	}, [certificate, error, marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
@@ -116,55 +116,57 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			<div className="p-5 flex flex-col flex-grow">
 				<div>
 					<div className="flex justify-between items-center">
-					<Link href={{
-						pathname: "/agent",
-						query: {
-							certificate,
-						}
-					}}>
-							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
+						<div className="flex-1 min-w-0">
+							<Link href={{
+								pathname: "/agent",
+								query: {
+									certificate,
+								}
+							}}>
+							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600 truncate">
 								{title}
 							</h2>
 						</Link>
-						<div className="flex space-x-1">
-							{website && (
-								<button
-									onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="Website"
-								>
-									<IconWorld size={socialIconSize} />
-								</button>
-							)}
-							{telegram && (
-								<button
-									onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="Telegram"
-								>
-									<IconBrandTelegram size={socialIconSize} />
-								</button>
-							)}
-							{twitter && (
-								<button
-									onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="X"
-								>
-									<IconBrandX size={socialIconSize} />
-								</button>
-							)}
-							{youtube && (
-								<button
-									onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="YouTube"
-								>
-									<IconBrandYoutube size={socialIconSize} />
-								</button>
-							)}
-						</div>
 					</div>
+					<div className="flex space-x-1">
+						{website && (
+							<button
+								onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="Website"
+							>
+								<IconWorld size={socialIconSize} />
+							</button>
+						)}
+						{telegram && (
+							<button
+								onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="Telegram"
+							>
+								<IconBrandTelegram size={socialIconSize} />
+							</button>
+						)}
+						{twitter && (
+							<button
+								onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="X"
+							>
+								<IconBrandX size={socialIconSize} />
+							</button>
+						)}
+						{youtube && (
+							<button
+								onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="YouTube"
+							>
+								<IconBrandYoutube size={socialIconSize} />
+							</button>
+						)}
+					</div>
+				</div>
 
 					<h3 className="mb-2 text-xl tracking-tight truncate w-full flex items-center">
 						<span className="pr-2">CA:</span>

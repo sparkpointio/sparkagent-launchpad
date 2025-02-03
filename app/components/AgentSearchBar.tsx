@@ -3,19 +3,24 @@ import React, { useState } from "react";
 interface AgentSearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
-  onClear?: () => void;  // New prop
+  onClear?: () => void;
+  onSearchButtonClick?: () => void;
 }
 
 const AgentSearchBar: React.FC<AgentSearchBarProps> = ({
   onSearch,
   placeholder = "Search...",
-  onClear
+  onClear,
+  onSearchButtonClick
 }) => {
   const [query, setQuery] = useState("");
 
   const handleSearch = () => {
     if (query.trim()) {
       onSearch(query.trim());
+      if (onSearchButtonClick) {
+        onSearchButtonClick();
+      }
     }
   };
 
