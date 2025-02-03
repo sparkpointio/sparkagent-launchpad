@@ -124,7 +124,7 @@ const AgentPage = () => {
             <AgentStats
               title={agent._tokenName}
               ticker={agent.tokenTicker}
-              image={AGENTS[1].image}
+              image={agent.image}
               imageAlt={agent.tokenName}
               certificate={agent.certificate}
               description={agent.description}
@@ -144,13 +144,14 @@ const AgentPage = () => {
 
         {/* Second Column */}
 				<div className="flex flex-col gap-4">
+          {/* 
                     {agent && (
                         <SwapCard
                             contractAddress={agent.certificate}
                             ticker={agent.tokenTicker}
-                            image={AGENTS[1].image}
+                            image={agent.image}
                         />
-                    )}
+                    )}Swap Card */}
 
                     <SparkingProgressCard sparkingProgress={agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0} />
 				</div>
