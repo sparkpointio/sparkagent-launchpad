@@ -10,6 +10,7 @@ import {
 	IconWorld,
 	IconCircleCheck,
 	IconBrandYoutube,
+	IconLoader3,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -59,6 +60,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [convertedTokenPrice, setConvertedTokenPrice] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const convertMarketCap = async () => {
@@ -111,17 +114,35 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="group bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
-				<Link href={""}>
-					<div className="relative w-32 h-32 rounded-full overflow-hidden mr-4">
+				<div className="relative w-32 h-32 rounded-full overflow-hidden mr-4">
+					{isLoading && (
+						<motion.div
+							className="absolute inset-0 flex items-center justify-center"
+							animate={{ rotate: 360 }}
+							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+						>
+							<IconLoader3 size={32} />
+						</motion.div>
+					)}
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: isLoading ? 0 : 1 }}
+						transition={{ duration: 0.5 }}
+						className="w-full h-full"
+					>
 						<Image
-							src={image}
+							src={imgSrc}
 							alt={imageAlt || "Card image"}
 							layout="fill"
 							objectFit="cover"
 							className="object-cover"
+							onError={() => {
+								setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
+								setIsLoading(false);
+							}}
 						/>
-					</div>
-				</Link>
+					</motion.div>
+				</div>
 				<div className="flex flex-col flex-grow">
 					<div>
 						<div className="flex justify-between items-center mb-4">

@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import AgentSearchBar from "./AgentSearchBar";
-import { AGENTS } from "../lib/utils/agents-sample-data";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
 import { client } from "../client";
@@ -19,7 +18,6 @@ import SparkAgentLogo from "./SparkAgentLogo";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 const Agents = () => {
-    //const [agents, setAgents] = useState<string[]>([]);
     const [index, setIndex] = useState(0);
     const [address, setAddress] = useState<string>("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -242,9 +240,9 @@ const Agents = () => {
                             currentAgents
                                 .map((agent, index) => (
                                     <AgentCard
-                                        key={index}
+                                        key={`${currentPage}-${index}`}
                                         title={agent._tokenName}
-                                        image={AGENTS[1].image}
+                                        image={agent.image}
                                         imageAlt={agent._tokenName}
                                         certificate={agent.certificate}
                                         description={agent.description}
