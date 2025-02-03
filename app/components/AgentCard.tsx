@@ -107,25 +107,33 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			}}>
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden flex items-center justify-center">
 					{isLoading && (
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                        >
-                            <IconLoader3 />
-                        </motion.div>
-                    )}
-					<Image
-						src={imgSrc}
-						alt={imageAlt || "Card image"}
-						layout="fill"
-						objectFit="cover"
-						className="object-cover"
-						onLoadingComplete={() => setIsLoading(false)}
-						onError={() => {
-							setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
-							setIsLoading(false);
-						}}
-					/>
+						<motion.div
+							className="flex items-center justify-center absolute inset-0"
+							animate={{ rotate: 360 }}
+							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+						>
+							<IconLoader3 size={64} />
+						</motion.div>
+					)}
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: isLoading ? 0 : 1 }}
+						transition={{ duration: 0.5 }}
+						className="w-full h-full"
+					>
+						<Image
+							src={imgSrc}
+							alt={imageAlt || "Card image"}
+							layout="fill"
+							objectFit="cover"
+							className="object-cover"
+							onLoadingComplete={() => setIsLoading(false)}
+							onError={() => {
+								setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
+								setIsLoading(false);
+							}}
+						/>
+					</motion.div>
 				</div>
 			</Link>
 			<div className="p-5 flex flex-col flex-grow">
