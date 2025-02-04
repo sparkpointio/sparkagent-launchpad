@@ -20,6 +20,7 @@
     "@web3-storage/w3up-client": "^17.1.2",
     "axios": "^1.7.9",
     "decimal.js": "^10.5.0",
+    "ethereum-blockies": "^0.1.1",
     "framer-motion": "^12.0.1",
     "isomorphic-dompurify": "^2.20.0",
     "lucide-react": "^0.473.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/ethereum-blockies": "^0.1.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
