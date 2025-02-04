@@ -19,6 +19,7 @@ import { getContract } from "thirdweb";
 import { useReadContract } from "thirdweb/react";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { convertCryptoToFiat } from "../lib/utils/utils";
+import { placeholder_token } from "../lib/assets";
 
 interface AgentCardProps {
 	title: string;
@@ -129,7 +130,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							className="object-cover"
 							onLoadingComplete={() => setIsLoading(false)}
 							onError={() => {
-								setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
+								setImgSrc(placeholder_token.src);
 								setIsLoading(false);
 							}}
 						/>
