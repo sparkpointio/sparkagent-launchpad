@@ -48,6 +48,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
     const [walletConfirmationStatus, setWalletConfirmationStatus] = useState(0);
 
     const [swapType, setSwapType] = useState<"buy" | "sell">("buy");
+    const [swapTransactionHash, setSwapTransactionHash] = useState("");
 
     useEffect(() => {
         setImgSrc(swapType === "buy" ? new_sparkpoint_logo.src : `https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
@@ -197,9 +198,12 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                     setWalletConfirmationStatus(0)
                     console.error("Swap transaction failed:", error);
                 },
-                onSuccess: () => {
+                onSuccess: (tx) => {
                     setWalletConfirmationStatus(5);
+                    setSwapTransactionHash(tx?.transactionHash);
+
                     console.log("Swap transaction successful!");
+                    console.log("Transaction Hash:", tx?.transactionHash);
                 },
             });
         } catch (error) {
@@ -255,6 +259,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                 swapType={swapType}
                 ticker={ticker}
                 setWalletConfirmationStatus={setWalletConfirmationStatus}
+                swapTransactionHash={swapTransactionHash}
             />
         </motion.div>
     );

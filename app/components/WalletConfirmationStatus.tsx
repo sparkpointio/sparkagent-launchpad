@@ -3,15 +3,18 @@ import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {buttonVariants} from "@/app/components/variants/button-variants";
+import Link from "next/link";
+import React from "react";
 
 interface WalletConfirmationStatusProps {
     walletConfirmationStatus: number;
     setWalletConfirmationStatus: React.Dispatch<React.SetStateAction<number>>;
     swapType: string;
     ticker: string;
+    swapTransactionHash: string;
 }
 
-const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ walletConfirmationStatus, swapType, ticker, setWalletConfirmationStatus }) => {
+const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ walletConfirmationStatus, swapType, ticker, setWalletConfirmationStatus, swapTransactionHash }) => {
     return (
         <Dialog.Root
             open={walletConfirmationStatus > 0}>
@@ -79,7 +82,11 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                             {walletConfirmationStatus === 5 && (
                                 <>
                                     <br />
-                                    <button
+
+                                    <Link
+                                        href={(process.env.NEXT_PUBLIC_ARBISCAN ?? "") + "tx/" + swapTransactionHash}
+                                        target="_blank"
+                                        rel="noreferrer"
                                         className={buttonVariants({
                                             variant: "outline",
                                             size: "md",
@@ -87,8 +94,8 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                         })}
                                         onClick={() => setWalletConfirmationStatus(0)}
                                     >
-                                        Done
-                                    </button>
+                                        View Transaction
+                                    </Link>
                                 </>
                             )}
                         </Dialog.Description>
