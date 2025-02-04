@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { new_sparkpoint_logo, placeholder_token } from "../lib/assets";
+import { new_sparkpoint_logo } from "../lib/assets";
 import { motion } from "framer-motion";
 import {useEffect, useState} from "react";
 import { prepareContractCall, getContract } from "thirdweb";
@@ -9,6 +9,7 @@ import {client} from "@/app/client";
 import {arbitrumSepolia} from "thirdweb/chains";
 import {useActiveAccount, useSendTransaction} from "thirdweb/react";
 import {readContract} from "thirdweb";
+import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 
 const unsparkingAIContract = getContract({
@@ -49,6 +50,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
 
     const [swapType, setSwapType] = useState<"buy" | "sell">("buy");
     const [swapTransactionHash, setSwapTransactionHash] = useState("");
+
+    const blockiesIcon = blockies.create({ seed: contractAddress, size: 16, scale: 8 });
 
     useEffect(() => {
         setImgSrc(swapType === "buy" ? new_sparkpoint_logo.src : `https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
@@ -246,7 +249,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                     alt={`${swapType === "buy" ? "SparkPoint" : ticker} Logo`}
                     className="absolute right-4"
                     onError={() => {
-                        setImgSrc(placeholder_token.src);
+                        setImgSrc(blockiesIcon.toDataURL());
                     }}
                     width={32}
                     height={32}

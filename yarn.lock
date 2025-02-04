@@ -3003,6 +3003,11 @@ esutils@^2.0.2:
   resolved "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
+ethereum-blockies@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/ethereum-blockies/-/ethereum-blockies-0.1.1.tgz"
+  integrity sha512-ED+noMZ6z7RrzzhvrQna1L30C27MX+ZsdB5c/d5vygXtHjEyAQjQS2TgCYhPxs+z3U+u2YQsL9PiRkNl1f+ugg==
+
 eventemitter3@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-5.0.1.tgz"

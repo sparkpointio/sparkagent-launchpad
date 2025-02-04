@@ -14,8 +14,8 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import blockies from "ethereum-blockies";
 import { convertCryptoToFiat } from "../lib/utils/utils";
-import {placeholder_token} from "../lib/assets";
 
 interface AgentStatsProps {
 	title: string;
@@ -63,6 +63,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const [error, setError] = useState<string | null>(null);
 	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
+	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 
 	useEffect(() => {
 		const convertMarketCap = async () => {
@@ -138,7 +139,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							objectFit="cover"
 							className="object-cover"
 							onError={() => {
-								setImgSrc(placeholder_token.src);
+								setImgSrc(blockiesIcon.toDataURL());
 								setIsLoading(false);
 							}}
 						/>

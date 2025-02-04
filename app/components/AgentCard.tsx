@@ -14,12 +14,12 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import blockies from "ethereum-blockies";
 import { client } from "../client";
 import { getContract } from "thirdweb";
 import { useReadContract } from "thirdweb/react";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { convertCryptoToFiat } from "../lib/utils/utils";
-import { placeholder_token } from "../lib/assets";
 
 interface AgentCardProps {
 	title: string;
@@ -61,6 +61,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [error, setError] = useState<string | null>(null);
 	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
+	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
+
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
@@ -130,7 +132,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							className="object-cover"
 							onLoadingComplete={() => setIsLoading(false)}
 							onError={() => {
-								setImgSrc(placeholder_token.src);
+								setImgSrc(blockiesIcon.toDataURL());
 								setIsLoading(false);
 							}}
 						/>
