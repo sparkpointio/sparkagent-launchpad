@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { convertCryptoToFiat } from "../lib/utils/utils";
+import {placeholder_token} from "../lib/assets";
 
 interface AgentStatsProps {
 	title: string;
@@ -137,7 +138,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							objectFit="cover"
 							className="object-cover"
 							onError={() => {
-								setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
+								setImgSrc(placeholder_token.src);
 								setIsLoading(false);
 							}}
 						/>

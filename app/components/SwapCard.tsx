@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { new_sparkpoint_logo } from "../lib/assets";
+import { new_sparkpoint_logo, placeholder_token } from "../lib/assets";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { prepareContractCall, getContract } from "thirdweb";
 import {client} from "@/app/client";
 import {arbitrumSepolia} from "thirdweb/chains";
-import {useActiveAccount, useSendTransaction, useReadContract} from "thirdweb/react";
+import {useActiveAccount, useSendTransaction} from "thirdweb/react";
+import {readContract} from "thirdweb";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 
 const unsparkingAIContract = getContract({
@@ -43,9 +44,15 @@ interface SwapCardProps {
 const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) => {
     const { mutate: sendTransaction } = useSendTransaction();
 
+    const [imgSrc, setImgSrc] = useState(new_sparkpoint_logo.src);
     const [walletConfirmationStatus, setWalletConfirmationStatus] = useState(0);
 
     const [swapType, setSwapType] = useState<"buy" | "sell">("buy");
+
+    useEffect(() => {
+        setImgSrc(swapType === "buy" ? new_sparkpoint_logo.src : `https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+    }, [swapType, image]);
+
     const [amount, setAmount] = useState("");
 
     const headerProperties = "flex text-xl justify-right";
@@ -63,54 +70,6 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         alert("Please connect your wallet first.");
         return;
     }
-
-    /* eslint-disable react-hooks/rules-of-hooks */
-    const { data: unsparkingAIContractAllowanceForSRKTemp } = useReadContract({
-        contract: srkContract,
-        method: "function allowance(address owner, address spender) returns (uint256)",
-        params: [account.address, unsparkingAIContract.address],
-    });
-
-    const { data: factoryContractAllowanceForSRKTemp } = useReadContract({
-        contract: srkContract,
-        method: "function allowance(address owner, address spender) returns (uint256)",
-        params: [account.address, factoryContract.address],
-    });
-
-    const { data: pairContractAllowanceForSRKTemp } = useReadContract({
-        contract: srkContract,
-        method: "function allowance(address owner, address spender) returns (uint256)",
-        params: [account.address, pairContract.address],
-    });
-    /* eslint-enable react-hooks/rules-of-hooks */
-
-    const unsparkingAIContractAllowanceForSRK = BigInt(unsparkingAIContractAllowanceForSRKTemp ?? "0");
-    const factoryContractAllowanceForSRK = BigInt(factoryContractAllowanceForSRKTemp ?? "0");
-    const pairContractAllowanceForSRK = BigInt(pairContractAllowanceForSRKTemp ?? "0");
-
-    /* eslint-disable react-hooks/rules-of-hooks */
-    const { data: unsparkingAIContractAllowanceForUnsparkedTokenTemp } = useReadContract({
-        contract: srkContract,
-        method: "function allowance(address owner, address spender) returns (uint256)",
-        params: [account.address, unsparkingAIContract.address],
-    });
-
-    const { data: factoryContractAllowanceForUnsparkedTokenTemp } = useReadContract({
-        contract: srkContract,
-        method: "function allowance(address owner, address spender) returns (uint256)",
-        params: [account.address, factoryContract.address],
-    });
-
-    const { data: pairContractAllowanceForUnsparkedTokenTemp } = useReadContract({
-        contract: srkContract,
-        method: "function allowance(address owner, address spender) returns (uint256)",
-        params: [account.address, pairContract.address],
-    });
-    /* eslint-enable react-hooks/rules-of-hooks */
-
-    const unsparkingAIContractAllowanceForUnsparkedToken = BigInt(unsparkingAIContractAllowanceForUnsparkedTokenTemp ?? "0");
-    const factoryContractAllowanceForUnsparkedToken = BigInt(factoryContractAllowanceForUnsparkedTokenTemp ?? "0");
-    const pairContractAllowanceForUnsparkedToken = BigInt(pairContractAllowanceForUnsparkedTokenTemp ?? "0");
 
     const getParsedAmount = () => {
         return BigInt(amount || "0") * BigInt("1000000000000000000"); // Convert to Wei
@@ -166,17 +125,53 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
             return;
         }
 
-        console.log("Approval 1 Checked");
-        setWalletConfirmationStatus(5);
-        approveIfNeeded(unsparkingAIContract.address, swapType === "buy" ? unsparkingAIContractAllowanceForSRK : unsparkingAIContractAllowanceForUnsparkedToken, () => {
-            console.log("Approval 2 Checked");
-            setWalletConfirmationStatus(2);
-            approveIfNeeded(factoryContract.address, swapType === "buy" ? factoryContractAllowanceForSRK : factoryContractAllowanceForUnsparkedToken, () => {
-                console.log("Approval 3 Checked");
-                setWalletConfirmationStatus(3);
-                approveIfNeeded(pairContract.address, swapType === "buy" ? pairContractAllowanceForSRK : pairContractAllowanceForUnsparkedToken);
+        console.log("Fetching latest allowances...");
+
+        try {
+            // Fetch latest allowances before approving transactions
+            const contract = (swapType === "buy") ? srkContract : unsparkedTokenContract;
+
+            console.log("Approval 1 Checked");
+            setWalletConfirmationStatus(1);
+
+            const unsparkingAIAllowance = await readContract({
+                contract: contract,
+                method: "function allowance(address owner, address spender) returns (uint256)",
+                params: [account.address, unsparkingAIContract.address],
             });
-        });
+
+            const updatedUnsparkingAIAllowance = BigInt(unsparkingAIAllowance ?? "0");
+
+            approveIfNeeded(unsparkingAIContract.address, updatedUnsparkingAIAllowance, async () => {
+                console.log("Approval 2 Checked");
+                setWalletConfirmationStatus(2);
+
+                const factoryAllowance = await readContract({
+                    contract: contract,
+                    method: "function allowance(address owner, address spender) returns (uint256)",
+                    params: [account.address, factoryContract.address],
+                });
+
+                const updatedFactoryAllowance = BigInt(factoryAllowance ?? "0");
+
+                approveIfNeeded(factoryContract.address, updatedFactoryAllowance, async () => {
+                    console.log("Approval 3 Checked");
+                    setWalletConfirmationStatus(3);
+
+                    const pairAllowance = await readContract({
+                        contract: contract,
+                        method: "function allowance(address owner, address spender) returns (uint256)",
+                        params: [account.address, pairContract.address],
+                    });
+
+                    const updatedPairAllowance = BigInt(pairAllowance ?? "0");
+
+                    approveIfNeeded(pairContract.address, updatedPairAllowance);
+                });
+            });
+        } catch (error) {
+            console.error("Error fetching allowances:", error);
+        }
     };
 
     const proceedWithSwap = () => {
@@ -185,6 +180,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                 swapType === "buy"
                     ? "function buy(uint256 amountIn, address tokenAddress)"
                     : "function sell(uint256 amountIn, address tokenAddress)";
+
+            console.log([getParsedAmount(), contractAddress]);
 
             const swapTx = prepareContractCall({
                 contract: unsparkingAIContract,
@@ -241,9 +238,12 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                     className="flex-1 px-4 py-3 w-full rounded-lg focus:outline-none focus:ring focus:ring-gray bg-transparent"
                 />
                 <Image
-                    src={swapType === "buy" ? new_sparkpoint_logo : image}
+                    src={imgSrc}
                     alt={`${swapType === "buy" ? "SparkPoint" : ticker} Logo`}
                     className="absolute right-4"
+                    onError={() => {
+                        setImgSrc(placeholder_token.src);
+                    }}
                     width={32}
                     height={32}
                 />
