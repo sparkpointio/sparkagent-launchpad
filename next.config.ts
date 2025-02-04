@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "gateway.pinata.cloud",
+        port: "",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "aquamarine-used-bear-228.mypinata.cloud",
+        port: "",
+        pathname: "**",
+      },
     ],
   },
 };

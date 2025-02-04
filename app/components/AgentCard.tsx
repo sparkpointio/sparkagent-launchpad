@@ -9,7 +9,8 @@ import {
 	IconCopy,
 	IconWorld,
 	IconCircleCheck,
-	IconBrandYoutube
+	IconBrandYoutube,
+	IconLoader3
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -57,6 +58,23 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+	const [isLoading, setIsLoading] = useState(true);
+	useEffect(() => {
+		const convertMarketCap = async () => {
+			try {
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate);
+				setConvertedMarketCap(result.toFixed(2));
+			} catch (err) {
+				setError("Error converting market cap to USD: " + err);
+				console.log(error);
+			}
+		};
+	
+		if (marketCap > 0) {
+			convertMarketCap();
+		}
+	}, [certificate, error, marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
@@ -75,24 +93,9 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const { data: srkHoldings } = useReadContract({
 		contract: srkToken,
 		method: "function balanceOf(address) returns (uint256)",
-		params: [pairAddress],
+		params: [pairAddress], 
 	});
 
-	useEffect(() => {
-		const convertMarketCap = async () => {
-			try {
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD");
-				setConvertedMarketCap(result.toFixed(2));
-			} catch (err) {
-				setError("Error converting market cap to USD: " + err);
-				console.log(error);
-			}
-		};
-
-		if (marketCap > 0) {
-			convertMarketCap();
-		}
-	}, [error, marketCap]);
 	return (
 		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
 			whileTap={{ scale: 0.9 }} className="group dark:bg-[#1a1d21] dark:text-white bg-white border-2 border-black rounded-2xl shadow-md hover:shadow-sparkyOrange hover:border-sparkyOrange-500 duration-200 flex flex-col justify-between h-full relative">
@@ -102,74 +105,97 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					certificate,
 				}
 			}}>
-				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden">
-					<Image
-						src={image}
-						alt={imageAlt || "Card image"}
-						layout="fill"
-						objectFit="cover"
-						className="object-cover"
-					/>
+				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden flex items-center justify-center">
+					{isLoading && (
+						<motion.div
+							className="flex items-center justify-center absolute inset-0"
+							animate={{ rotate: 360 }}
+							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+						>
+							<IconLoader3 size={64} />
+						</motion.div>
+					)}
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: isLoading ? 0 : 1 }}
+						transition={{ duration: 0.5 }}
+						className="w-full h-full"
+					>
+						<Image
+							src={imgSrc}
+							alt={imageAlt || "Card image"}
+							layout="fill"
+							objectFit="cover"
+							className="object-cover"
+							onLoadingComplete={() => setIsLoading(false)}
+							onError={() => {
+								setImgSrc('https://images.pexels.com/photos/1183992/pexels-photo-1183992.jpeg');
+								setIsLoading(false);
+							}}
+						/>
+					</motion.div>
 				</div>
 			</Link>
 			<div className="p-5 flex flex-col flex-grow">
 				<div>
 					<div className="flex justify-between items-center">
-						<Link href={{
-							pathname: "/agent",
-							query: {
-								certificate,
-							}
-						}}>
-							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
+						<div className="flex-1 min-w-0">
+							<Link href={{
+								pathname: "/agent",
+								query: {
+									certificate,
+								}
+							}}>
+							<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600 truncate">
 								{title}
 							</h2>
 						</Link>
-						<div className="flex space-x-1">
-							{website && (
-								<button
-									onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="Website"
-								>
-									<IconWorld size={socialIconSize} />
-								</button>
-							)}
-							{telegram && (
-								<button
-									onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="Telegram"
-								>
-									<IconBrandTelegram size={socialIconSize} />
-								</button>
-							)}
-							{twitter && (
-								<button
-									onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="X"
-								>
-									<IconBrandX size={socialIconSize} />
-								</button>
-							)}
-							{youtube && (
-								<button
-									onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
-									className={socialButtonProperties}
-									title="YouTube"
-								>
-									<IconBrandYoutube size={socialIconSize} />
-								</button>
-							)}
-						</div>
 					</div>
+					<div className="flex space-x-1">
+						{website && (
+							<button
+								onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="Website"
+							>
+								<IconWorld size={socialIconSize} />
+							</button>
+						)}
+						{telegram && (
+							<button
+								onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="Telegram"
+							>
+								<IconBrandTelegram size={socialIconSize} />
+							</button>
+						)}
+						{twitter && (
+							<button
+								onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="X"
+							>
+								<IconBrandX size={socialIconSize} />
+							</button>
+						)}
+						{youtube && (
+							<button
+								onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
+								className={socialButtonProperties}
+								title="YouTube"
+							>
+								<IconBrandYoutube size={socialIconSize} />
+							</button>
+						)}
+					</div>
+				</div>
 
 					<h3 className="mb-2 text-xl tracking-tight truncate w-full flex items-center">
 						<span className="pr-2">CA:</span>
 						<button
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-							onClick={() => { copyToClipboard(certificate); }}
+							onClick={() => { copyToClipboard(certificate);}}
 						>
 							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 							{copied ? (

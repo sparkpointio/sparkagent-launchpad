@@ -11,7 +11,6 @@ import {
 } from "thirdweb/react";
 import { getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
-import { AGENTS } from "@/app/lib/utils/agents-sample-data";
 import { getSparkingProgress } from "@/app/lib/utils/formatting";
 import NotFound from "@/app/components/ui/not-found";
 
@@ -127,7 +126,7 @@ const AgentPage = () => {
             <AgentStats
               title={agent._tokenName}
               ticker={agent.tokenTicker}
-              image={AGENTS[1].image}
+              image={agent.image}
               imageAlt={agent.tokenName}
               certificate={agent.certificate}
               description={agent.description}
@@ -146,22 +145,19 @@ const AgentPage = () => {
         </div>
 
         {/* Second Column */}
-        <div className="flex flex-col gap-4">
+				<div className="flex flex-col gap-4">
           {agent && (
-            <>
               <SwapCard
-                contractAddress={agent.certificate}
-                ticker={agent.tokenTicker}
-                image={AGENTS[1].image}
+                  contractAddress={agent.certificate}
+                  ticker={agent.tokenTicker}
+                  image={agent.image}
               />
-              <SparkingProgressCard sparkingProgress={agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0} />
-            </>
           )}
-
-        </div>
-      </div>
-    </div>
-  );
+          <SparkingProgressCard sparkingProgress={agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0} />
+				</div>
+			</div>
+		</div>
+	);
 }
 
 const Page = () => {
