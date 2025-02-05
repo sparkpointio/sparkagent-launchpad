@@ -387,7 +387,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								</span>
 							</div>
 						</div>
-						<p className="font-normal text-sm line-clamp-3 my-2">{description + "Lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum dolor wait lorem ipsum "}</p>
+						<p className="font-normal text-sm my-2">{description}</p>
 					</div>
 					<div className="truncate -mx-5 flex justify-end space-x-2 px-5">
 						<p className="font-normal text-gray-400 text-xs text-right mr-2">
