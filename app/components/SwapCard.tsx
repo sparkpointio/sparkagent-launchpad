@@ -9,6 +9,7 @@ import {client} from "@/app/client";
 import {arbitrumSepolia} from "thirdweb/chains";
 import {useActiveAccount, useSendTransaction} from "thirdweb/react";
 import {readContract} from "thirdweb";
+import { toEther, toWei } from "thirdweb";
 import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 
@@ -63,8 +64,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
     const buttonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyGreen-500 dark:hover:bg-sparkyGreen-600 transition-all p-4";
     const activeButton = "bg-sparkyGreen-500 dark:bg-sparkyGreen-600 text-white";
 
-    const srkBalance = "2,935.35";
-    const agentBalance = "1,833,435.45";
+    const [srkBalance, setSRKBalance] = useState("");
+    const [agentBalance, setAgentBalance] = useState("");
 
     const unsparkedTokenContract = getContract({
         client,
@@ -78,8 +79,30 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         return;
     }
 
+    const getAccountBalances = async () => {
+        const accountSRKBalance = await readContract({
+            contract: srkContract,
+            method: "function balanceOf(address account) returns (uint256)",
+            params: [account.address],
+        });
+
+        setSRKBalance(BigInt(accountSRKBalance ?? "0").toString());
+
+        console.log("Account SRK Balance: " + BigInt(accountSRKBalance ?? "0").toString());
+
+        const accountAgentBalance = await readContract({
+            contract: unsparkedTokenContract,
+            method: "function balanceOf(address account) returns (uint256)",
+            params: [account.address],
+        });
+
+        setAgentBalance(BigInt(accountAgentBalance ?? "0").toString());
+
+        console.log("Account Agent Balance: " + BigInt(accountAgentBalance ?? "0").toString());
+    };
+
     const getParsedAmount = () => {
-        return BigInt(amount || "0") * BigInt("1000000000000000000"); // Convert to Wei
+        return toWei(amount || "0")
     };
 
     const approveIfNeeded = (contractAddress: string, allowance: bigint, nextApproval?: () => void) => {
@@ -126,10 +149,9 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         }
     };
 
-        const handleSwap = async () => {
-        if (!amount || BigInt(amount) <= 0) {
+    const handleSwap = async () => {
+        if (!amount || Number(toWei(amount)) <= 0) {
           console.error("Invalid amount");
-          toast.warning("Invalid amount");
           return
         }
 
@@ -218,11 +240,20 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         }
     };
 
+    const getFormattedEther = (balance: string) => {
+        return new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        }).format(Number(balance));
+    };
+
+    getAccountBalances();
+
     return (
         <motion.div initial={{opacity: 0, scale: 0.95}} animate={{opacity: 1, scale: 1}}
                     className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 m:p-6">
             <h2 className={`${headerProperties} font-bold mb-4`}>Swap</h2>
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4 mb-4">
                 <button
                     type="button"
                     className={`${buttonProperties} ${swapType === "buy" ? activeButton : ""}`}
@@ -238,12 +269,18 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                     Sell
                 </button>
             </div>
-            {swapType === "buy" && (
-                <p className="text-sm text-gray-800 dark:text-gray-200">
+
+            {swapType === "buy" ?
+                <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">
                     You&apos;ll need $SRK to buy {ticker}
                 </p>
-            )}
-            <div className="relative flex flex-col gap-4 mb-12">
+                :
+                <p className="text-sm mb-2">
+                    &nbsp;
+                </p>
+                }
+
+            <div className="relative flex flex-col gap-2 mb-5">
                 <div className="flex items-center bg-gray-200 dark:bg-gray-700 dark:placeholder-gray-400 p-2 rounded-lg">
                     <input
                         type="number"
@@ -266,7 +303,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                 </div>
 
                 {/* Quick action buttons and balance */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between text-sm">
                     <div className="flex gap-4">
                         <button
                             onClick={() => setAmount("")}
@@ -278,9 +315,9 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(srkBalance.replace(/,/g, ""))
-                                        : Number.parseFloat(agentBalance.replace(/,/g, ""))
-                                setAmount((balance * 0.25).toString())
+                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance))).replace(/,/g, ""))
+                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance))).replace(/,/g, ""))
+                                setAmount((balance * 0.25).toFixed(2).toString())
                             }}
                             className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
                         >
@@ -290,9 +327,9 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(srkBalance.replace(/,/g, ""))
-                                        : Number.parseFloat(agentBalance.replace(/,/g, ""))
-                                setAmount((balance * 0.5).toString())
+                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance))).replace(/,/g, ""))
+                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance))).replace(/,/g, ""))
+                                setAmount((balance * 0.5).toFixed(2).toString())
                             }}
                             className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
                         >
@@ -302,9 +339,9 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(srkBalance.replace(/,/g, ""))
-                                        : Number.parseFloat(agentBalance.replace(/,/g, ""))
-                                setAmount(balance.toString())
+                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance))).replace(/,/g, ""))
+                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance))).replace(/,/g, ""))
+                                setAmount(balance.toFixed(2).toString())
                             }}
                             className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
                         >
@@ -312,7 +349,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                         </button>
                     </div>
                     <div className="text-gray-800 dark:text-gray-200">
-                        {swapType === "buy" ? `${srkBalance} SRK` : `${agentBalance} ${ticker}`}
+                        {swapType === "buy" ? `${getFormattedEther(toEther(BigInt(srkBalance)))} SRK` : `${getFormattedEther(toEther(BigInt(agentBalance)))} ${ticker}`}
                     </div>
                 </div>
             </div>
@@ -324,6 +361,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                 swapType={swapType}
                 ticker={ticker}
                 setWalletConfirmationStatus={setWalletConfirmationStatus}
+                swapTransactionHash={swapTransactionHash}
             />
     </motion.div>
   )
