@@ -2,12 +2,12 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Form from "@radix-ui/react-form";
 import Link from 'next/link'
 import { buttonVariants } from '../components/variants/button-variants';
-import { FormEvent, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { prepareContractCall, getContract } from "thirdweb";
+import { prepareContractCall, getContract, waitForReceipt } from "thirdweb";
 import {useActiveAccount, useSendTransaction} from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
@@ -29,7 +29,6 @@ const srkContract = getContract({
 export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [statusMessage, setStatusMessage] = useState("");
     const [validationError, setValidationError] = useState("");
     const { mutate: sendTransaction } = useSendTransaction();
     const [transactionPhase, setTransactionPhase] = useState(1);
@@ -52,6 +51,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     const [style, setStyle] = useState("");
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
+
+    const [launchedContractAddress, setLaunchedContractAddress] = useState("");
 
     const account = useActiveAccount();
 
@@ -197,9 +198,27 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 handleDialogClose();
                 console.error(error);
             },
-            onSuccess: () => {
-                setCurrentPage(4)
-            }
+            onSuccess: async (tx) => {
+                console.log("Transaction sent! Hash:", tx.transactionHash);
+
+                const receipt = await waitForReceipt({
+                    client,
+                    chain: arbitrumSepolia,
+                    transactionHash: tx.transactionHash,
+                });
+
+                console.log(receipt)
+
+                const contractAddress = receipt?.logs[2].address;
+                if (contractAddress) {
+                    console.log("Deployed Contract Address:", contractAddress);
+
+                    setLaunchedContractAddress(contractAddress);
+                    setCurrentPage(4);
+                } else {
+                    console.log("Contract address not found in receipt.");
+                }
+            },
         });
 
         console.log("Launch transaction receipt:", launchReceipt);
@@ -253,35 +272,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
         return true;
     }
-
-  function handleJoinWaitlist(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string;
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setStatusMessage("Please provide a valid email address.");
-      return;
-    }
-
-    // fetch("/api/subscribe", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ email }),
-    // }).then(async (response) => {
-    //   const data = await response.json();
-    //   if (response.ok) {
-    //     setStatusMessage("Thank you for joining our waitlist!");
-    //   } else {
-    //     setStatusMessage(data.error || "An error occurred.");
-    //   }
-    // })
-    // .catch(() => {
-    //   setStatusMessage("Failed to connect to the server. Please try again.");
-    // });
-  }
 
   const handleDialogClose = () => {
       setIsOpen(false)
@@ -366,7 +356,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                   </div>
               )}
 
-              <Form.Root className="w-full flex flex-col items-center" onSubmit={handleJoinWaitlist}>
+              <Form.Root className="w-full flex flex-col items-center">
               {currentPage === 1 && (
                       <>
                           <Form.Field className="w-full mb-2" name="name">
@@ -845,28 +835,17 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                   {currentPage === 4 && (
                       <Link
-                          href={"/agent"}
+                          href={"/agent?certificate=" + launchedContractAddress}
                           className={buttonVariants({
                               variant: "outline",
                               size: "md",
                               className: "mt-1 bg-white border w-[70%] border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1",
                           })}
                       >
-                          View Token Page
+                          View Agent Page
                       </Link>
                   )}
               </Form.Root>
-              {statusMessage && (
-                  <p
-                      className={`mt-4 ${
-                          statusMessage.includes("error") || statusMessage.includes("Failed")
-                              ? "text-red-500"
-                              : "text-green-600"
-                      }`}
-                  >
-                      {statusMessage}
-                  </p>
-              )}
           </div>
         </Dialog.Content>
       </Dialog.Portal>
