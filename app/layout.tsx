@@ -5,6 +5,7 @@ import { ThirdwebProvider } from "thirdweb/react";
 import Header from "./components/Header";
 import { Footer } from "./components/Footer";
 import LightDarkToggle from "./components/layout/light-dark-toggle";
+import { Toaster } from 'sonner'
 
 const rubik = Rubik({
   weight: '400',
@@ -62,6 +63,7 @@ export default function RootLayout({
         <body
           className={`${rubik.variable} ${poppins.variable} ${righteous.variable} antialiased`}
         >
+          <Toaster position="top-center" richColors />
           <LightDarkToggle />
           <Header />
           {children}

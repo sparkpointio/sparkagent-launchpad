@@ -16,6 +16,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { convertCryptoToFiat } from "../lib/utils/utils";
+import { toast } from "sonner";
 
 interface AgentStatsProps {
 	title: string;
@@ -37,7 +38,7 @@ interface AgentStatsProps {
 }
 
 const socialButtonProperties =
-	"w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-all dark:border-gray-700";
+	"w-8 h-8 group flex items-center stroke-white justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-colors dark:border-gray-700";
 const socialIconSize = 20;
 
 const AgentStats: React.FC<AgentStatsProps> = ({
@@ -108,12 +109,13 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		if (text) {
 			navigator.clipboard.writeText(text);
 			setCopied(true);
+			toast.success("Copied to clipboard!");
 			setTimeout(() => setCopied(false), 3000);
 		}
 	};
 
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="group bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
+		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<div className="relative w-32 h-32 rounded-full overflow-hidden mr-4">
@@ -163,10 +165,10 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								{website && (
 									<button
 										className={socialButtonProperties}
-										onClick={() => window.open(website, "_blank", "noopener, noreferrer" )}
+										onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
 										title="Website"
 									>
-										<IconWorld size={socialIconSize} />
+										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{telegram && (
@@ -175,7 +177,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
 										title="Telegram"
 									>
-										<IconBrandTelegram size={socialIconSize} />
+										<IconBrandTelegram size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{twitter && (
@@ -184,7 +186,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
 										title="X"
 									>
-										<IconBrandX size={socialIconSize} />
+										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{youtube && (
@@ -193,49 +195,47 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
 										title="YouTube"
 									>
-										<IconBrandYoutube size={socialIconSize} />
+										<IconBrandYoutube size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 							</div>
 						</div>
 
-						<div className="mb-2 w-full flex items-center justify-between space-x-4">
-							<div className="flex flex-col flex-1">
+						<div className="mb-2 flex flex-wrap items-center justify-between space-x-4">
+							<div className="flex flex-col w-full sm:w-auto">
 								<span>Contract Address</span>
 								<button
-									className="flex items-center space-x-2 truncate px-2 text-sm font-medium text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all"
+									className="flex group items-center space-x-2 truncate px-2 text-sm text-black font-medium dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all"
 									onClick={() => { copyToClipboard(certificate); }}
 								>
-									<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
+									<span className="dark:group-hover:text-black">{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 									{copied ? (
-										<IconCircleCheck size={16} />
+										<IconCircleCheck size={16} className="dark:group-hover:stroke-black " />
 									) : (
-										<IconCopy size={16} />
+										<IconCopy size={16} className="dark:group-hover:stroke-black " />
 									)}
 								</button>
 							</div>
-							<div className="flex flex-col flex-1">
+							<div className="flex flex-col w-full sm:w-auto">
 								<span>Market Cap USD</span>
 								<span className="font-bold">
 									{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 								</span>
 							</div>
-							<div className="flex flex-col flex-1">
+							<div className="flex flex-col w-full sm:w-auto">
 								<span>Price USD</span>
 								<span className="font-bold">
 									{convertedTokenPrice ? `$${formatNumber(convertedTokenPrice)}` : "Fetching..."}
 								</span>
 							</div>
-							<div className="flex flex-col flex-1">
+							<div className="flex flex-col w-full sm:w-auto">
 								<span>Price</span>
 								<span className="font-bold">
 									{formatNumber(tokenPrice) + " SRK"}
 								</span>
 							</div>
 						</div>
-						<p className="font-normal text-small truncate">{description}</p>
-					</div>
-
+						<p className="font-normal text-sm line-clamp-3 my-2">{description}</p>					</div>
 					<div className="truncate -mx-5 flex justify-end space-x-2 px-5">
 						<p className="font-normal text-gray-400 text-xs text-right mr-2">
 							{`Created at`}
@@ -254,10 +254,10 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				src={`https://www.geckoterminal.com/sepolia-testnet/pools/${certificate}?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
 			></iframe>*/}
 			<div
-			  style={{ height: "60vh", width: "100%" }}
-			  className="bg-[radial-gradient(theme(colors.gray.300)_10%,transparent_10%)] bg-[length:16px_16px] flex border border-gray-300 justify-center items-center"
+				style={{ height: "60vh", width: "100%" }}
+				className="bg-[radial-gradient(theme(colors.gray.300)_10%,transparent_10%)] bg-[length:16px_16px] flex border border-gray-300 justify-center items-center"
 			>
-			  <p className="text-center">Charts are not available as of the moment.</p>
+				<p className="text-center">Charts are not available as of the moment.</p>
 			</div>
 		</motion.div>
 	);

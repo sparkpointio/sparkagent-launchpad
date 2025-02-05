@@ -62,6 +62,13 @@ body {
 #light-dark-toggle-container .checkbox:checked + .checkbox-label .ball {
   transform: translateX(24px);
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 h1, h2, h3, h4, h5, h6 {
   @apply font-sans;
   font-family: var(--font-rubik);
