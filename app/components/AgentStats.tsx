@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { convertCryptoToFiat } from "../lib/utils/utils";
+import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { toast } from "sonner";
 
 interface AgentStatsProps {
@@ -62,9 +62,13 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [convertedTokenPrice, setConvertedTokenPrice] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
-	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+	const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
+
+	useEffect(() => {
+		updateImageSrc(image, blockiesIcon, setImgSrc);
+	}, [image, blockiesIcon]);
 
 	useEffect(() => {
 		const convertMarketCap = async () => {

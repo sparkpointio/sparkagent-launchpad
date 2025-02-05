@@ -19,7 +19,7 @@ import { client } from "../client";
 import { getContract } from "thirdweb";
 import { useReadContract } from "thirdweb/react";
 import { arbitrumSepolia } from "thirdweb/chains";
-import { convertCryptoToFiat } from "../lib/utils/utils";
+import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 
 interface AgentCardProps {
 	title: string;
@@ -59,9 +59,13 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
-	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+	const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
+
+	useEffect(() => {
+		updateImageSrc(image, blockiesIcon, setImgSrc);
+	}, [image, blockiesIcon]);
 
 	useEffect(() => {
 		const convertMarketCap = async () => {
@@ -130,7 +134,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							layout="fill"
 							objectFit="cover"
 							className="object-cover"
-							onLoadingComplete={() => setIsLoading(false)}
+							sizes="(max-width: 768px) 100vw, 33vw"
+							onLoad={() => setIsLoading(false)}
 							onError={() => {
 								setImgSrc(blockiesIcon.toDataURL());
 								setIsLoading(false);
