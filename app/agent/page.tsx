@@ -142,7 +142,7 @@ const AgentPage = () => {
     };
 
     fetchAgentData();
-  }, [agentData]);
+  }, [agentData, gradThreshold]);
 
   return (
     <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">

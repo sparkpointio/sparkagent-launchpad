@@ -113,7 +113,7 @@ const Agents = () => {
                 setAgentsData((prevAgentsData) => [...prevAgentsData, parsedData]);
             }
         }
-    }, [agentData]);    
+    }, [agentData, gradThreshold]);    
 
     useEffect(() => {
         if (index > 0 && !data) {

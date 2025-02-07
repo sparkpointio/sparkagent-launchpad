@@ -1,5 +1,3 @@
-import { toEther } from "thirdweb";
-
 export function getTimeAgo(date: Date): string {
   const now = new Date();
   const diffInMilliseconds = now.getTime() - date.getTime();
