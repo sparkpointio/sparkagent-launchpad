@@ -83,16 +83,12 @@ export const updateImageSrc = async (image: string, blockiesIcon: HTMLCanvasElem
 
     if (image.startsWith('https')) {
         setImgSrc(blockiesIcon.toDataURL());
-        console.log("Blockies has been used: " + blockiesIcon.toDataURL());
     } else if (await checkImage(option1)) {
         setImgSrc(option1);
-        console.log("Option 1 has been used: " + option1);
     } else if (await checkImage(option2)) {
         setImgSrc(option2);
-        console.log("Option 2 has been used: " + option2);
     } else {
         setImgSrc(blockiesIcon.toDataURL());
-        console.log("Blockies has been used: " + blockiesIcon.toDataURL());
     }
 
     setIsLoading(false);
