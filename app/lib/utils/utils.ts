@@ -1,4 +1,4 @@
-const oneDayInMilliseconds = 1000;
+const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
 
 const getCache = (key: string) => {
     const cached = localStorage.getItem(key);
