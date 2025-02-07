@@ -265,15 +265,15 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
-								className={`h-full rounded-full
+								className={`h-full rounded-full transition-all duration-1000 ease-in-out
 									${
-									(!trading)
-										? "bg-sparkyOrange"
-										: reserveA
-											? (getSparkingProgress(reserveA, totalSupply, gradThreshold) >= 100 || !trading
-												? "bg-sparkyOrange"
-												: "bg-sparkyGreen-200")
-											: 0 
+										(!trading)
+											? "bg-sparkyOrange"
+											: reserveA
+												? (getSparkingProgress(reserveA, totalSupply, gradThreshold) >= 100 || !trading
+													? "bg-sparkyOrange"
+													: "bg-sparkyGreen-200")
+												: 0 
 									}`}
 								style={{
 									width: `${Math.min(
