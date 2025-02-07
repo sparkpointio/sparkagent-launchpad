@@ -294,7 +294,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
       </Dialog.Trigger>
       <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[100]" />
-        <Dialog.Content className={'fixed bg-white dark:bg-[#1a1d21] dark:text-white left-[50%] top-[50%] z-[101] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-black shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-2xl sm:px-6 sm:py-10 p-4 max-h-[calc(100vh-40px)] overflow-auto'}
+        <Dialog.Content className={'fixed bg-white dark:bg-[#1a1d21] dark:text-white left-[50%] top-[50%] z-[101] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-black border-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-2xl sm:px-6 sm:py-10 p-4 max-h-[calc(100vh-40px)] overflow-auto'}
             onInteractOutside={(event) => {
                 event.preventDefault();
             }}>
@@ -304,7 +304,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                     className={buttonVariants({
                         variant: "outline",
                         size: "sm",
-                        className: 'absolute z-[99] top-4 right-4 w-8 active:drop-shadow-none py-3 border border-black transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-white hover:shadow-[0.25rem_0.25rem_#000] hover:bg-red-500 active:translate-x-0 active:translate-y-0 active:shadow-none button-2',
+                        className: 'absolute z-[99] top-4 right-4 w-8 active:drop-shadow-none py-3 border border-black dark:bg-white transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-white hover:shadow-[0.25rem_0.25rem_#000] dark:hover:bg-red-500 hover:bg-red-500 active:translate-x-0 active:translate-y-0 active:shadow-none button-2',
                     })}
                 >
                     <FontAwesomeIcon icon={faTimes} size='sm' />
