@@ -16,8 +16,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { client } from "../client";
-import { getContract } from "thirdweb";
-import { useReadContract } from "thirdweb/react";
+import {getContract, readContract} from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 
@@ -35,6 +34,8 @@ interface AgentCardProps {
 	telegram: string;
 	youtube: string;
 	pairAddress: string;
+	trading: boolean;
+	gradThreshold: bigint;
 }
 
 const socialButtonProperties =
@@ -55,6 +56,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	telegram,
 	youtube,
 	pairAddress,
+	trading,
+	gradThreshold,
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
@@ -63,6 +66,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
+	const [reserveA, setReserveA] = useState(BigInt(0));
+	const [totalSupply, setTotalSupply] = useState(BigInt(0));
 
     useEffect(() => {
 		if (prevImageRef.current === image) return;
@@ -94,17 +99,36 @@ const AgentCard: React.FC<AgentCardProps> = ({
 		}
 	};
 
-	const srkToken = getContract({
+	const agentPairContract = getContract({
 		client,
 		chain: arbitrumSepolia,
-		address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
+		address: pairAddress,
 	});
 
-	const { data: srkHoldings } = useReadContract({
-		contract: srkToken,
-		method: "function balanceOf(address) returns (uint256)",
-		params: [pairAddress], 
+	const tokenContract = getContract({
+		client,
+		chain: arbitrumSepolia,
+		address: certificate,
 	});
+
+	const getDataForSparkingProgress = async () => {
+		const _reserveA = await readContract({
+			contract: agentPairContract,
+			method: "function balance() returns (uint256)",
+			params: [],
+		});
+
+		const _totalSupply = await readContract({
+			contract: tokenContract,
+			method: "function totalSupply() returns (uint256)",
+			params: [],
+		});
+
+		setReserveA(_reserveA)
+		setTotalSupply(_totalSupply)
+	};
+
+	getDataForSparkingProgress();
 
 	return (
 		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
@@ -237,17 +261,27 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</p>
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
 					<div className="px-5">
-						<p className="font-normal text-sm">{`Sparking Progress: ${srkHoldings ? getSparkingProgress(srkHoldings) : 0}%`}</p>
+						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserveA ? getSparkingProgress(reserveA, totalSupply, gradThreshold) : 0}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
-								className={`h-full rounded-full ${srkHoldings ? getSparkingProgress(srkHoldings) : 0 >= 100
-									? "bg-sparkyOrange"
-									: "bg-sparkyGreen-200"
+								className={`h-full rounded-full
+									${
+									(!trading)
+										? "bg-sparkyOrange"
+										: reserveA
+											? (getSparkingProgress(reserveA, totalSupply, gradThreshold) >= 100 || !trading
+												? "bg-sparkyOrange"
+												: "bg-sparkyGreen-200")
+											: 0 
 									}`}
 								style={{
 									width: `${Math.min(
-										srkHoldings ? getSparkingProgress(srkHoldings) : 0,
+										(!trading)
+											? 100
+											: reserveA
+												? getSparkingProgress(reserveA, totalSupply, gradThreshold)
+												: 0,
 										100
 									)}%`,
 								}}

@@ -12,6 +12,8 @@ import {readContract} from "thirdweb";
 import { toEther, toWei } from "thirdweb";
 import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
+import { getFormattedEther } from "../lib/utils/formatting";
+import Link from "next/link";
 
 const unsparkingAIContract = getContract({
     client,
@@ -41,9 +43,10 @@ interface SwapCardProps {
     contractAddress: string;
     ticker: string;
     image: string;
+    trading: boolean;
 }
 
-const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) => {
+const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, trading }) => {
     const { mutate: sendTransaction } = useSendTransaction();
 
     const [imgSrc, setImgSrc] = useState(new_sparkpoint_logo.src);
@@ -240,13 +243,6 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
         }
     };
 
-    const getFormattedEther = (balance: string) => {
-        return new Intl.NumberFormat("en-US", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-        }).format(Number(balance));
-    };
-
     getAccountBalances();
 
     return (
@@ -256,15 +252,17 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
             <div className="flex flex-row gap-4 mb-4">
                 <button
                     type="button"
-                    className={`${buttonProperties} ${swapType === "buy" ? activeButton : ""}`}
+                    className={`${buttonProperties} ${swapType === "buy" ? activeButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
                     onClick={() => setSwapType("buy")}
+                    disabled={!trading}
                 >
                     Buy
                 </button>
                 <button
                     type="button"
-                    className={`${buttonProperties} ${swapType === "sell" ? activeButton : ""}`}
+                    className={`${buttonProperties} ${swapType === "sell" ? activeButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
                     onClick={() => setSwapType("sell")}
+                    disabled={!trading}
                 >
                     Sell
                 </button>
@@ -288,7 +286,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder={`Enter amount in ${swapType === "buy" ? "SRK" : ticker}`}
-                        className="flex-1 px-4 py-3 w-full rounded-lg focus:outline-none focus:ring focus:ring-gray bg-transparent"
+                        className={`flex-1 px-4 py-3 w-full rounded-lg focus:outline-none focus:ring focus:ring-gray bg-transparent ${!trading ? 'cursor-not-allowed' : ''}`}
+                        disabled={!trading}
                     />
                     <Image
                         src={imgSrc}
@@ -307,7 +306,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                     <div className="flex gap-4">
                         <button
                             onClick={() => setAmount("")}
-                            className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
+                            disabled={!trading}
                         >
                             Reset
                         </button>
@@ -315,11 +315,12 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance))).replace(/,/g, ""))
-                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance))).replace(/,/g, ""))
+                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance)), 2).replace(/,/g, ""))
+                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
                                 setAmount((balance * 0.25).toFixed(2).toString())
                             }}
-                            className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
+                            disabled={!trading}
                         >
                             25%
                         </button>
@@ -327,11 +328,12 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance))).replace(/,/g, ""))
-                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance))).replace(/,/g, ""))
+                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance)), 2).replace(/,/g, ""))
+                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
                                 setAmount((balance * 0.5).toFixed(2).toString())
                             }}
-                            className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
+                            disabled={!trading}
                         >
                             50%
                         </button>
@@ -339,22 +341,38 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image }) =
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance))).replace(/,/g, ""))
-                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance))).replace(/,/g, ""))
+                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance)), 2).replace(/,/g, ""))
+                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
                                 setAmount(balance.toFixed(2).toString())
                             }}
-                            className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
+                            disabled={!trading}
                         >
                             Max
                         </button>
                     </div>
                     <div className="text-gray-800 dark:text-gray-200">
-                        {swapType === "buy" ? `${getFormattedEther(toEther(BigInt(srkBalance)))} SRK` : `${getFormattedEther(toEther(BigInt(agentBalance)))} ${ticker}`}
+                        {swapType === "buy" ? `${getFormattedEther(toEther(BigInt(srkBalance)), 2)} SRK` : `${getFormattedEther(toEther(BigInt(agentBalance)), 2)} ${ticker}`}
                     </div>
                 </div>
             </div>
 
-            <button type="button" className={buttonProperties} onClick={handleSwap}> Swap</button>
+            <button type="button" className={`${buttonProperties} ${!trading ? 'cursor-not-allowed' : ''}`} onClick={handleSwap} disabled={!trading}>Swap</button>
+
+            {!trading && (
+                <div className={'bg-[#00d7b2] mt-4 text-white px-3 py-2 text-center text-[0.9em] flex justify-between items-center'}>
+                    <div className={'flex-grow pe-2'}>Liquidity deposited into Camelot. Trading is now disabled.</div>
+                    <div>
+                        <Link
+                            href={'#'}
+                            type="button"
+                            className={`py-2 bg-white text-black px-5 text-[0.9em] ${buttonProperties}}`}
+                        >
+                            Camelot
+                        </Link>
+                    </div>
+                </div>
+            )}
 
             <WalletConfirmationStatus
                 walletConfirmationStatus={walletConfirmationStatus}

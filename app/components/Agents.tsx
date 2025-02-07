@@ -48,6 +48,7 @@ const Agents = () => {
         website: string;
         trading: boolean;
         tradingOnUniSwap: boolean;
+        gradThreshold: bigint;
     }
 
     const [agentsData, setAgentsData] = useState<AgentData[]>([]);
@@ -62,6 +63,12 @@ const Agents = () => {
         contract: unsparkingAIContract,
         method: "function tokenInfo(address) returns (address, address, address, address, (address, string, string, string, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256), string, string, string, string, string, string, bool, bool)",
         params: [address],
+    });
+
+    const { data: gradThreshold } = useReadContract({
+        contract: unsparkingAIContract,
+        method: "function gradThreshold() returns (uint256)",
+        params: [],
     });
 
     useEffect(() => {
@@ -101,11 +108,12 @@ const Agents = () => {
                     website: agentData[10].toString(),
                     trading: agentData[11].valueOf(),
                     tradingOnUniSwap: agentData[12]?.valueOf(),
+                    gradThreshold: gradThreshold ?? BigInt(0),
                 };
                 setAgentsData((prevAgentsData) => [...prevAgentsData, parsedData]);
             }
         }
-    }, [agentData]);    
+    }, [agentData, gradThreshold]);    
 
     useEffect(() => {
         if (index > 0 && !data) {
@@ -169,7 +177,7 @@ const Agents = () => {
 
         // Apply sparked filter
         if (filterType === 'sparked' && value === true) {
-            filtered = filtered.filter(agent => agent.trading);
+            filtered = filtered.filter(agent => !agent.trading);
         }
 
         setFilteredAgents(filtered);
@@ -254,6 +262,8 @@ const Agents = () => {
                                         telegram={agent.telegram}
                                         youtube={agent.youtube}
                                         pairAddress={agent.pair}
+                                        trading={agent.trading}
+                                        gradThreshold={agent.gradThreshold}
                                     />
                                 ))
                         ) : (
