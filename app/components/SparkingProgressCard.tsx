@@ -55,12 +55,12 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
                         <>
                             {`Tokens must be sold until the remaining supply reaches `}
                             <strong>{ getFormattedEther(toEther(gradThreshold), 0) } { ticker }</strong>
-                            {`. At that point, all liquidity from the bonding curve will be deposited into Uniswap. Progression increases as more tokens are sold and the supply decreases.`}
+                            {`. At that point, all liquidity from the bonding curve will be deposited into Camelot. Progression increases as more tokens are sold and the supply decreases.`}
                         </>
                     :   <>
                             {`The remaining supply has reached `}
                             <strong>{ getFormattedEther(toEther(gradThreshold), 0) } { ticker }</strong>
-                            {`, and all liquidity from the bonding curve has been deposited into Uniswap.`}
+                            {`, and all liquidity from the bonding curve has been deposited into Camelot.`}
                         </>
                 }
             </p>

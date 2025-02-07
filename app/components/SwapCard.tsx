@@ -361,14 +361,14 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
             {!trading && (
                 <div className={'bg-[#00d7b2] mt-4 text-white px-3 py-2 text-center text-[0.9em] flex justify-between items-center'}>
-                    <div className={'flex-grow'}>Liquidity deposited into Uniswap.<br/> Trading is now disabled.</div>
+                    <div className={'flex-grow pe-2'}>Liquidity deposited into Camelot. Trading is now disabled.</div>
                     <div>
                         <Link
                             href={'#'}
                             type="button"
                             className={`py-2 bg-white text-black px-5 text-[0.9em] ${buttonProperties}}`}
                         >
-                            UniSwap
+                            Camelot
                         </Link>
                     </div>
                 </div>
