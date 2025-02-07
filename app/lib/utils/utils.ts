@@ -75,9 +75,11 @@ export const checkImage = async (url: string) => {
     }
 };
 
-export const updateImageSrc = async (image: string, blockiesIcon: HTMLCanvasElement, setImgSrc: (src: string) => void) => {
+export const updateImageSrc = async (image: string, blockiesIcon: HTMLCanvasElement, setImgSrc: (src: string) => void, setIsLoading: (loading: boolean) => void) => {
     const option1 = `https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`;
     const option2 = `https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`;
+
+    setIsLoading(true);
 
     if (image.startsWith('https')) {
         setImgSrc(blockiesIcon.toDataURL());
@@ -92,4 +94,6 @@ export const updateImageSrc = async (image: string, blockiesIcon: HTMLCanvasElem
         setImgSrc(blockiesIcon.toDataURL());
         console.log("Blockies has been used: " + blockiesIcon.toDataURL());
     }
+
+    setIsLoading(false);
 };

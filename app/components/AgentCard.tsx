@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -62,10 +62,13 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
+	const prevImageRef = useRef<string | null>(null);
 
-	useEffect(() => {
-		updateImageSrc(image, blockiesIcon, setImgSrc);
-	}, [image, blockiesIcon]);
+    useEffect(() => {
+		if (prevImageRef.current === image) return;
+		prevImageRef.current = image;
+		updateImageSrc(image, blockiesIcon, setImgSrc, setIsLoading);
+	}, [image, blockiesIcon, imgSrc]);
 
 	useEffect(() => {
 		const convertMarketCap = async () => {
@@ -136,10 +139,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							className="object-cover"
 							sizes="(max-width: 768px) 100vw, 33vw"
 							onLoad={() => setIsLoading(false)}
-							onError={() => {
-								setImgSrc(blockiesIcon.toDataURL());
-								setIsLoading(false);
-							}}
 						/>
 					</motion.div>
 				</div>
