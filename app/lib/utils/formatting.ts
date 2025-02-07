@@ -1,5 +1,3 @@
-import { toEther } from "thirdweb";
-
 export function getTimeAgo(date: Date): string {
   const now = new Date();
   const diffInMilliseconds = now.getTime() - date.getTime();
@@ -63,10 +61,14 @@ export function truncateHash(hash: string, maxLength: number = 10, left?: number
 
 import { Decimal } from "decimal.js";
 
-export function getSparkingProgress(number: bigint): number {
-  const numberToETH = new Decimal(toEther(number));
-  const sparkingProgress = numberToETH.dividedBy(150000000).times(100);
-
-  // Cap at 100 and truncate to at least 7 decimal places
+export function getSparkingProgress(reserveA: bigint, totalSupply: bigint, gradThreshold: bigint): number {
+  const sparkingProgress = (Number(totalSupply - reserveA) / Number(totalSupply - gradThreshold)) * 100;
   return Decimal.min(sparkingProgress, 100).toDecimalPlaces(2, Decimal.ROUND_DOWN).toNumber();
+}
+
+export function getFormattedEther(balance: string, maxDecimal: number) {
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: maxDecimal,
+  }).format(Number(balance));
 }
