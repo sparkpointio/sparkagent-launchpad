@@ -9,7 +9,7 @@ import { client } from "@/app/client";
 import {
   useReadContract,
 } from "thirdweb/react";
-import { getContract, toEther } from "thirdweb";
+import { readContract, getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { getSparkingProgress } from "@/app/lib/utils/formatting";
 import NotFound from "@/app/components/ui/not-found";
@@ -39,14 +39,15 @@ interface AgentData {
   website: string;
   trading: boolean;
   tradingOnUniSwap: boolean;
-  srkHoldings: bigint;
+  reserveA: bigint;
+  totalSupply: bigint;
+  gradThreshold: bigint;
 }
 
 const AgentPage = () => {
   const searchParams = useSearchParams();
   const certificate = searchParams.get("certificate");
 
-  const [pairAddress, setPairAddress] = useState<string>("");
   const [agent, setAgent] = useState<AgentData>();
 
   const unsparkingAIContract = getContract({
@@ -61,56 +62,87 @@ const AgentPage = () => {
     params: [certificate || ""],
   });
 
-  const srkToken = getContract({
-    client,
-    chain: arbitrumSepolia,
-    address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
-  });
-
-  const { data: srkHoldings } = useReadContract({
-    contract: srkToken,
-    method: "function balanceOf(address) returns (uint256)",
-    params: [pairAddress], // use dynamic pair address from agent
+  const { data: gradThreshold } = useReadContract({
+    contract: unsparkingAIContract,
+    method: "function gradThreshold() returns (uint256)",
+    params: [],
   });
 
   useEffect(() => {
-    if (agentData) {
-      console.log("Raw agent data:", agentData);
-      const parsedData: AgentData = {
-        creator: agentData[0].toString(),
-        certificate: agentData[1].toString(),
-        pair: agentData[2].toString(),
-        agentToken: agentData[3].toString(),
-        token: agentData[4][0].toString(),
-        tokenName: agentData[4][1].toString(),
-        _tokenName: agentData[4][2].toString(),
-        tokenTicker: agentData[4][3].toString(),
-        supply: parseInt(agentData[4][4].toString()),
-        price: parseInt(agentData[4][5].toString()),
-        marketCap: parseInt(toEther(agentData[4][6])),  // todo: further convert to USD
-        liquidity: parseInt(agentData[4][7].toString()),
-        volume: parseInt(agentData[4][8].toString()),
-        volume24H: parseInt(agentData[4][9].toString()),
-        prevPrice: parseInt(agentData[4][10].toString()),
-        lastUpdated: new Date(parseInt(agentData[4][11].toString()) * 1000),
-        description: agentData[5].toString(),
-        image: agentData[6].toString(),
-        twitter: agentData[7].toString(),
-        telegram: agentData[8].toString(),
-        youtube: agentData[9].toString(),
-        website: agentData[10].toString(),
-        trading: agentData[11].valueOf(),
-        tradingOnUniSwap: agentData[12]?.valueOf(),
-        srkHoldings: srkHoldings ?? BigInt(0), // Set SRK holdings for agent
-      };
-      console.log("AGENT CERTIFICATE: " + agentData[1].toString());
-      console.log("AGENT PAIR ADDRESS: " + agentData[2].toString());
-      console.log("SRK HOLDINGS: " + parsedData.srkHoldings);
-      setPairAddress(agentData[2].toString());
-      setAgent(parsedData);
-      console.log("SRK HOLDINGS: " + parsedData.srkHoldings);
-    }
-  }, [agentData, srkHoldings]);
+    const fetchAgentData = async () => {
+      if (agentData) {
+        console.log("Raw agent data:", agentData);
+
+        const agentPairContract = getContract({
+          client,
+          chain: arbitrumSepolia,
+          address: agentData[2].toString(),
+        });
+
+        const tokenContract = getContract({
+          client,
+          chain: arbitrumSepolia,
+          address: agentData[1].toString(),
+        });
+
+        try {
+          const reserveA = await readContract({
+            contract: agentPairContract,
+            method: "function balance() returns (uint256)",
+            params: [],
+          });
+
+          const totalSupply = await readContract({
+            contract: tokenContract,
+            method: "function totalSupply() returns (uint256)",
+            params: [],
+          });
+
+          const parsedData: AgentData = {
+            creator: agentData[0].toString(),
+            certificate: agentData[1].toString(),
+            pair: agentData[2].toString(),
+            agentToken: agentData[3].toString(),
+            token: agentData[4][0].toString(),
+            tokenName: agentData[4][1].toString(),
+            _tokenName: agentData[4][2].toString(),
+            tokenTicker: agentData[4][3].toString(),
+            supply: parseInt(agentData[4][4].toString()),
+            price: parseInt(agentData[4][5].toString()),
+            marketCap: parseInt(toEther(agentData[4][6])), // todo: further convert to USD
+            liquidity: parseInt(agentData[4][7].toString()),
+            volume: parseInt(agentData[4][8].toString()),
+            volume24H: parseInt(agentData[4][9].toString()),
+            prevPrice: parseInt(agentData[4][10].toString()),
+            lastUpdated: new Date(parseInt(agentData[4][11].toString()) * 1000),
+            description: agentData[5].toString(),
+            image: agentData[6].toString(),
+            twitter: agentData[7].toString(),
+            telegram: agentData[8].toString(),
+            youtube: agentData[9].toString(),
+            website: agentData[10].toString(),
+            trading: agentData[11].valueOf(),
+            tradingOnUniSwap: agentData[12]?.valueOf(),
+            reserveA,
+            totalSupply,
+            gradThreshold: gradThreshold ?? BigInt(0)
+          };
+
+          console.log("AGENT CERTIFICATE: " + agentData[1].toString());
+          console.log("AGENT PAIR ADDRESS: " + agentData[2].toString());
+          console.log("RESERVE A: " + parsedData.reserveA);
+
+          setAgent(parsedData);
+
+          console.log("RESERVE A: " + parsedData.reserveA);
+        } catch (error) {
+          console.error("Error fetching reserveA:", error);
+        }
+      }
+    };
+
+    fetchAgentData();
+  }, [agentData]);
 
   return (
     <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
@@ -152,9 +184,15 @@ const AgentPage = () => {
                     contractAddress={agent.certificate}
                     ticker={agent.tokenTicker}
                     image={agent.image}
+                    trading={agent.trading}
                 />
 
-                <SparkingProgressCard sparkingProgress={agent?.srkHoldings ? getSparkingProgress(agent.srkHoldings) : 0} />
+                <SparkingProgressCard
+                    sparkingProgress={agent?.reserveA ? getSparkingProgress(agent.reserveA, agent.totalSupply, agent.gradThreshold) : 0}
+                    ticker={agent.tokenTicker}
+                    gradThreshold={agent.gradThreshold}
+                    trading={agent.trading}
+                />
               </>
           )}
 				</div>
