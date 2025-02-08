@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -18,7 +18,7 @@ import blockies from "ethereum-blockies";
 import { client } from "../client";
 import {getContract, readContract} from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
-import { convertCryptoToFiat } from "../lib/utils/utils";
+import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 
 interface AgentCardProps {
 	title: string;
@@ -62,11 +62,18 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [error, setError] = useState<string | null>(null);
-	const [imgSrc, setImgSrc] = useState(`https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+	const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
+	const prevImageRef = useRef<string | null>(null);
 	const [reserveA, setReserveA] = useState(BigInt(0));
 	const [totalSupply, setTotalSupply] = useState(BigInt(0));
+
+    useEffect(() => {
+		if (prevImageRef.current === image) return;
+		prevImageRef.current = image;
+		updateImageSrc(image, blockiesIcon, setImgSrc, setIsLoading);
+	}, [image, blockiesIcon, imgSrc]);
 
 	useEffect(() => {
 		const convertMarketCap = async () => {
@@ -154,11 +161,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							layout="fill"
 							objectFit="cover"
 							className="object-cover"
-							onLoadingComplete={() => setIsLoading(false)}
-							onError={() => {
-								setImgSrc(blockiesIcon.toDataURL());
-								setIsLoading(false);
-							}}
+							sizes="(max-width: 768px) 100vw, 33vw"
+							onLoad={() => setIsLoading(false)}
 						/>
 					</motion.div>
 				</div>
@@ -261,15 +265,15 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
-								className={`h-full rounded-full
+								className={`h-full rounded-full transition-all duration-1000 ease-in-out
 									${
-									(!trading)
-										? "bg-sparkyOrange"
-										: reserveA
-											? (getSparkingProgress(reserveA, totalSupply, gradThreshold) >= 100 || !trading
-												? "bg-sparkyOrange"
-												: "bg-sparkyGreen-200")
-											: 0 
+										(!trading)
+											? "bg-sparkyOrange"
+											: reserveA
+												? (getSparkingProgress(reserveA, totalSupply, gradThreshold) >= 100 || !trading
+													? "bg-sparkyOrange"
+													: "bg-sparkyGreen-200")
+												: 0 
 									}`}
 								style={{
 									width: `${Math.min(

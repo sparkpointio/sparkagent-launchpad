@@ -147,11 +147,11 @@ const AgentPage = () => {
   return (
     <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-        <div className="col-span-3">
-          {!agent && (
+        {!agent && (
+          <div className="col-span-3">
             <NotFound />
-          )}
-        </div>
+          </div>
+        )}    
         {/* First Column */}
         <div className="lg:col-span-2 w-full space-x-1.5">
           {agent && (
