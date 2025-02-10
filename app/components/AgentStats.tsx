@@ -17,6 +17,8 @@ import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { toast } from "sonner";
+import { cardProperties } from "../lib/utils/style/customStyles";
+import { socialButtonProperties } from "../lib/utils/style/customStyles";
 
 interface AgentStatsProps {
 	title: string;
@@ -37,8 +39,6 @@ interface AgentStatsProps {
 	pair: string;
 }
 
-const socialButtonProperties =
-	"w-8 h-8 group flex items-center stroke-white justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-colors dark:border-gray-700";
 const socialIconSize = 20;
 
 const AgentStats: React.FC<AgentStatsProps> = ({
@@ -122,7 +122,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	};
 
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
+		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={cardProperties}>
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden mr-4 hidden md:block">

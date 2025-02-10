@@ -19,6 +19,7 @@ import { client } from "../client";
 import {getContract, readContract} from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
+import { socialButtonProperties } from "../lib/utils/style/customStyles";
 
 interface AgentCardProps {
 	title: string;
@@ -38,8 +39,6 @@ interface AgentCardProps {
 	gradThreshold: bigint;
 }
 
-const socialButtonProperties =
-	"w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-all";
 const socialIconSize = 20;
 
 const AgentCard: React.FC<AgentCardProps> = ({

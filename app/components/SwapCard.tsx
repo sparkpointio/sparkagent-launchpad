@@ -14,6 +14,7 @@ import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 import { getFormattedEther } from "../lib/utils/formatting";
 import Link from "next/link";
+import { cardProperties } from "../lib/utils/style/customStyles";
 
 const unsparkingAIContract = getContract({
     client,
@@ -246,8 +247,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
     getAccountBalances();
 
     return (
-        <motion.div initial={{opacity: 0, scale: 0.95}} animate={{opacity: 1, scale: 1}}
-                    className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 m:p-6">
+        <motion.div initial={{opacity: 0, scale: 0.95}} animate={{opacity: 1, scale: 1}} className={cardProperties}>
             <h2 className={`${headerProperties} font-bold mb-4`}>Swap</h2>
             <div className="flex flex-row gap-4 mb-4">
                 <button
