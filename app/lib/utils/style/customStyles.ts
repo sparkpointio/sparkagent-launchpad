@@ -1,0 +1,2 @@
+export const cardProperties = "bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 m:p-6"
+export const socialButtonProperties = "w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-all"
