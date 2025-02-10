@@ -21,6 +21,15 @@ export function getTimeAgo(date: Date): string {
   return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
 }
 
+export function formatTimestamp(formatTimestamp: Date): string {
+  const hours = formatTimestamp.getHours();
+  const minutes = formatTimestamp.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  return `${formatTimestamp.getDate()}/${formatTimestamp.getMonth() + 1}/${formatTimestamp.getFullYear()}, ${formattedHours}:${formattedMinutes} ${ampm}`;
+}
+
 export function formatNumber(number: number): string {
   if (number >= 1_000_000_000_000_000_000) {
     return (number / 1_000_000_000_000_000_000).toFixed(1) + ' Qi';
