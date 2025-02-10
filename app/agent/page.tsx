@@ -13,6 +13,7 @@ import { readContract, getContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { getSparkingProgress } from "@/app/lib/utils/formatting";
 import NotFound from "@/app/components/ui/not-found";
+import Forums from "../components/Forums";
 
 interface AgentData {
   creator: string;
@@ -153,7 +154,7 @@ const AgentPage = () => {
           </div>
         )}    
         {/* First Column */}
-        <div className="lg:col-span-2 w-full space-x-1.5">
+        <div className="lg:col-span-2 w-full space-y-4">
           {agent && (
             <AgentStats
               title={agent._tokenName}
@@ -173,6 +174,16 @@ const AgentPage = () => {
               youtube={agent.youtube}
               pair={agent.pair}
             />
+          )}         
+
+          {agent && (
+            <div className="hidden md:block w-full space-y-4">
+                <Forums
+                  agentCertificate={agent.certificate}
+                  agentName={agent._tokenName}
+                  agentImage={agent.image}
+                />
+              </div>
           )}
         </div>
 
@@ -195,6 +206,17 @@ const AgentPage = () => {
                 />
               </>
           )}
+
+          <div className="md:hidden w-full space-y-4">
+            {agent && (
+              <Forums
+                agentCertificate={agent.certificate}
+                agentName={agent._tokenName}
+                agentImage={agent.image}
+              />
+            )}
+          </div>
+
 				</div>
 			</div>
 		</div>
