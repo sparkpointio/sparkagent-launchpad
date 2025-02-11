@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -139,7 +139,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const chartInstanceRef = useRef<IChartApi>(null); // Store chart instance
 	const [chartData, setChartData] = useState<{ blockNumber: bigint; value: number; timestamp: number }[]>([]);
 
-	const fetchStoredEvents = async () => {
+	const fetchStoredEvents = useCallback(async () => {
 		try {
 			const response = await axios.get(`https://laravel-boilerplate.kinameansbusiness.com/api/storage/get/swap_events_${pair}`);
 
@@ -155,9 +155,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			console.error("Error fetching stored events:", error);
 			return [];
 		}
-	};
+	}, [pair]);
 
-	const saveSwapEvents = async (events: { blockNumber: bigint; value: bigint; timestamp: bigint }[]) => {
+	const saveSwapEvents = useCallback(async (events: { blockNumber: bigint; value: bigint; timestamp: bigint }[]) => {
 		try {
 			// Convert BigInt values to string
 			const sanitizedEvents = events.map(event => ({
@@ -173,9 +173,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		} catch (error) {
 			console.error("Error saving swap events:", error);
 		}
-	};
+	}, [pair]);
 
-	const fetchNewSwapEvents = async (latestBlockStored: bigint | null) => {
+	const fetchNewSwapEvents = useCallback(async (latestBlockStored: bigint | null) => {
 		try {
 			const fromBlock = latestBlockStored ? latestBlockStored + BigInt("1") : BigInt("118602497");
 
@@ -230,9 +230,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			console.error("Error fetching new swap events:", error);
 			return [];
 		}
-	};
+	}, [pair]);
 
-	const initializeSwapEvents = async () => {
+	const initializeSwapEvents = useCallback(async () => {
 		const storedEvents = await fetchStoredEvents();
 		const latestBlockStored = storedEvents.length ? storedEvents[storedEvents.length - 1].blockNumber : null;
 
@@ -250,7 +250,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 		await saveSwapEvents(mergedEvents); // Save merged data to API
 		setChartData(mergedEvents); // Update UI with stored data
-	};
+	}, [fetchNewSwapEvents, fetchStoredEvents, saveSwapEvents]);
 
 	const getEventTimestamps = async (events: { blockNumber: bigint; value: number }[]) =>{
 		return await Promise.all(
@@ -286,7 +286,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 	useEffect(() => {
 		initializeSwapEvents();
-	}, []);
+	}, [initializeSwapEvents]);
 
 	const [isDarkMode, setIsDarkMode] = useState(false);
 
