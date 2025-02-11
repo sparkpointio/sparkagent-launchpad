@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { formatNumber, getTimeAgo, truncateHash } from "../lib/utils/formatting";
 import {
@@ -17,6 +17,15 @@ import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { toast } from "sonner";
+import { getContract, getContractEvents } from "thirdweb";
+import { arbitrumSepolia } from "thirdweb/chains";
+import {client} from "@/app/client";
+import { Hex } from "viem";
+import { createChart, AreaSeries, IChartApi, Time } from "lightweight-charts";
+import { createPublicClient, http } from "viem";
+import { arbitrumSepolia as arbitrumSepoliaFromViem } from "viem/chains";
+import axios from "axios";
+import { toTokens, toWei } from "thirdweb";
 
 interface AgentStatsProps {
 	title: string;
@@ -28,7 +37,6 @@ interface AgentStatsProps {
 	createdBy: string;
 	marketCap: number;
 	datePublished: Date;
-	sparkingProgress: number;
 	tokenPrice: number;
 	website: string;
 	twitter: string;
@@ -36,6 +44,11 @@ interface AgentStatsProps {
 	youtube: string;
 	pair: string;
 }
+
+const client2 = createPublicClient({
+	chain: arbitrumSepoliaFromViem,
+	transport: http(),
+});
 
 const socialButtonProperties =
 	"w-8 h-8 group flex items-center stroke-white justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-colors dark:border-gray-700";
@@ -56,6 +69,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	twitter,
 	telegram,
 	youtube,
+	pair,
 }) => {
 	const [copied, setCopied] = useState(false);
 	//const [isDarkMode, setIsDarkMode] = useState(false);
@@ -121,24 +135,251 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		}
 	};
 
+	const chartContainerRef = useRef<HTMLDivElement | null>(null);
+	const chartInstanceRef = useRef<IChartApi>(null); // Store chart instance
+	const [chartData, setChartData] = useState<{ blockNumber: bigint; value: number; timestamp: number }[]>([]);
+
+	const fetchStoredEvents = useCallback(async () => {
+		try {
+			const response = await axios.get(`https://laravel-boilerplate.kinameansbusiness.com/api/storage/get/swap_events_${pair}`);
+
+			console.log("fetchStoredEvents");
+			console.log(response.data);
+
+			return (response.data.data ?? []).map((event: { blockNumber: bigint; timestamp: number; }) => ({
+				...event,
+				blockNumber: BigInt(event.blockNumber), // Convert string back to BigInt
+				timestamp: Number(event.timestamp), // Convert back to number
+			}));
+		} catch (error) {
+			console.error("Error fetching stored events:", error);
+			return [];
+		}
+	}, [pair]);
+
+	const saveSwapEvents = useCallback(async (events: { blockNumber: bigint; value: bigint; timestamp: bigint }[]) => {
+		try {
+			// Convert BigInt values to string
+			const sanitizedEvents = events.map(event => ({
+				...event,
+				blockNumber: event.blockNumber.toString(), // Convert BigInt to string
+				timestamp: event.timestamp.toString(), // Just in case
+			}));
+
+			await axios.post("https://laravel-boilerplate.kinameansbusiness.com/api/storage/set", {
+				key: "swap_events_" + pair,
+				value: sanitizedEvents,
+			});
+		} catch (error) {
+			console.error("Error saving swap events:", error);
+		}
+	}, [pair]);
+
+	const fetchNewSwapEvents = useCallback(async (latestBlockStored: bigint | null) => {
+		try {
+			const fromBlock = latestBlockStored ? latestBlockStored + BigInt("1") : BigInt("118602497");
+
+			const contract = getContract({ client, address: pair, chain: arbitrumSepolia });
+			const swapEventTopic: Hex =
+				"0x298c349c742327269dc8de6ad66687767310c948ea309df826f5bd103e19d207";
+
+			const swapEventAbi = {
+				anonymous: false,
+				name: "Swap",
+				type: "event",
+				inputs: [
+					{ indexed: false, internalType: "uint256", name: "amount0In", type: "uint256" },
+					{ indexed: false, internalType: "uint256", name: "amount0Out", type: "uint256" },
+					{ indexed: false, internalType: "uint256", name: "amount1In", type: "uint256" },
+					{ indexed: false, internalType: "uint256", name: "amount1Out", type: "uint256" },
+				],
+			} as const;
+
+			const preparedEvent = { abiEvent: swapEventAbi, hash: swapEventTopic, topics: [] as Hex[] };
+
+			const events = await getContractEvents({
+				contract,
+				fromBlock,
+				toBlock: "latest",
+				events: [preparedEvent],
+			});
+
+			console.log("Raw Fetched Events")
+			console.log(events)
+
+			const formattedData = events.map((event) => {
+				const { amount0In, amount0Out, amount1In, amount1Out } = event.args;
+				let price = 0;
+
+				if (Number(amount0Out) > 0 && Number(amount1In) > 0) {
+					// Buy Agent Token (SRK → Agent Token)
+					price = Number(amount1In) / Number(amount0Out);
+				} else if (Number(amount1Out) > 0 && Number(amount0In) > 0) {
+					// Sell Agent Token (Agent Token → SRK)
+					price = Number(amount1Out) / Number(amount0In);
+				}
+
+				return {
+					blockNumber: event.blockNumber,
+					value: price,
+				};
+			});
+
+			return await getEventTimestamps(formattedData);
+		} catch (error) {
+			console.error("Error fetching new swap events:", error);
+			return [];
+		}
+	}, [pair]);
+
+	const initializeSwapEvents = useCallback(async () => {
+		const storedEvents = await fetchStoredEvents();
+		const latestBlockStored = storedEvents.length ? storedEvents[storedEvents.length - 1].blockNumber : null;
+
+		console.log("latestBlockStored: " + latestBlockStored);
+
+		const newEvents = await fetchNewSwapEvents(latestBlockStored);
+
+		console.log("newEvents");
+		console.log(newEvents);
+
+		// Merge and remove duplicates
+		const mergedEvents = [...storedEvents, ...newEvents]
+			.sort((a, b) => a.timestamp - b.timestamp)
+			.filter((event, index, self) => index === self.findIndex((e) => e.timestamp === event.timestamp));
+
+		await saveSwapEvents(mergedEvents); // Save merged data to API
+		setChartData(mergedEvents); // Update UI with stored data
+	}, [fetchNewSwapEvents, fetchStoredEvents, saveSwapEvents]);
+
+	const getEventTimestamps = async (events: { blockNumber: bigint; value: number }[]) =>{
+		return await Promise.all(
+			events.map(async (event: { blockNumber: bigint; value: number }) => {
+				const block = await client2.getBlock({ blockNumber: event.blockNumber });
+				return {
+					...event,
+					timestamp: Number(block.timestamp), // Convert BigInt to number
+				};
+			})
+		);
+	}
+
+	const groupDataByTime = (data: { timestamp: number; value: number }[]) => {
+		const groupedData: Record<number, number> = {};
+
+		for (const event of data) {
+			const timestamp = Number(event.timestamp); // Ensure timestamp is a number
+			const roundedTime = Math.floor(timestamp / 600) * 600; // Round to the nearest 10-minute mark
+
+			// Always take the latest price for the given time slot
+			groupedData[roundedTime] = event.value;
+		}
+
+		// Convert grouped data to an array and sort by time
+		return Object.entries(groupedData)
+			.map(([time, value]) => ({
+				time: Number(time) as Time,
+				value: Number(toTokens(toWei(value.toString()), 9)),
+			}))
+			.sort((a, b) => Number(a.time) - Number(b.time));
+	};
+
+	useEffect(() => {
+		initializeSwapEvents();
+	}, [initializeSwapEvents]);
+
+	const [isDarkMode, setIsDarkMode] = useState(false);
+
+	useEffect(() => {
+		if (!chartInstanceRef.current && chartContainerRef.current && chartData.length > 0) {
+			// Initialize chart
+			const chart = createChart(chartContainerRef.current, {
+				autoSize: true,
+				height: 300,
+				timeScale: {
+					timeVisible: true,
+					secondsVisible: false,
+				},
+				layout: {
+					background: { color: isDarkMode ? '#1a1d21' : '#ffffff' },
+					textColor: isDarkMode ? '#ffffff' : '#000000', // Set label color
+				},
+			});
+
+			chartInstanceRef.current = chart;
+
+			const areaSeries = chart.addSeries(AreaSeries, {
+				lineColor: '#00d7b2',
+				topColor: '#00d7b2',
+				bottomColor: 'rgba(0, 215, 178, 0.28)'
+			});
+
+			const formattedChartData = groupDataByTime(chartData);
+
+			console.log("formattedChartData", formattedChartData);
+			areaSeries.setData(formattedChartData);
+
+			chart.timeScale().fitContent();
+			chart.timeScale().applyOptions({ rightOffset: 0 });
+		}
+
+		// Apply background and label color updates when isDarkMode changes
+		if (chartInstanceRef.current) {
+			chartInstanceRef.current.applyOptions({
+				layout: {
+					background: { color: isDarkMode ? '#1a1d21' : '#ffffff' },
+					textColor: isDarkMode ? '#ffffff' : '#000000', // Update label color dynamically
+				},
+			});
+		}
+	}, [chartData, isDarkMode]);
+
+	useEffect(() => {
+		const htmlElement = document.documentElement;
+
+		// Function to check if the .dark class is present
+		const checkDarkMode = () => {
+			setIsDarkMode(htmlElement.classList.contains("dark"));
+		};
+
+		// Initial check
+		checkDarkMode();
+
+		// Create a MutationObserver to watch for class changes
+		const observer = new MutationObserver(() => {
+			checkDarkMode(); // Update state when class changes
+		});
+
+		// Observe attribute changes in the `class` attribute
+		observer.observe(htmlElement, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+
+		return () => {
+			observer.disconnect(); // Cleanup observer on unmount
+		};
+	}, []);
+
 	return (
-		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
+		<motion.div initial={{opacity: 0, scale: 0.95}} animate={{opacity: 1, scale: 1}}
+					className="bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden mr-4 hidden md:block">
 					{isLoading && (
 						<motion.div
 							className="absolute inset-0 flex items-center justify-center"
-							animate={{ rotate: 360 }}
-							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+							animate={{rotate: 360}}
+							transition={{repeat: Infinity, duration: 1, ease: "linear"}}
 						>
-							<IconLoader3 size={32} />
+							<IconLoader3 size={32}/>
 						</motion.div>
 					)}
 					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: isLoading ? 0 : 1 }}
-						transition={{ duration: 0.5 }}
+						initial={{opacity: 0}}
+						animate={{opacity: isLoading ? 0 : 1}}
+						transition={{duration: 0.5}}
 						className="w-full h-full"
 					>
 						<Image
@@ -293,7 +534,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						</div>
 					</div>
 				</div>
-				
+
 				<div className="flex flex-col flex-grow hidden md:flex">
 					<div>
 						<div className="flex justify-between items-center mb-4">
@@ -306,7 +547,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								<div className="flex items-center space-x-2 mr-8">
 									<p>Created by:</p>
 									<Link href="">
-										<span className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
+										<span
+											className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
 									</Link>
 								</div>
 								{website && (
@@ -315,7 +557,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
 										title="Website"
 									>
-										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black" />
+										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
 								{telegram && (
@@ -324,7 +566,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
 										title="Telegram"
 									>
-										<IconBrandTelegram size={socialIconSize} className="dark:group-hover:stroke-black" />
+										<IconBrandTelegram size={socialIconSize}
+														   className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
 								{twitter && (
@@ -333,7 +576,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
 										title="X"
 									>
-										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black" />
+										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
 								{youtube && (
@@ -342,7 +585,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
 										title="YouTube"
 									>
-										<IconBrandYoutube size={socialIconSize} className="dark:group-hover:stroke-black" />
+										<IconBrandYoutube size={socialIconSize}
+														  className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
 							</div>
@@ -353,13 +597,16 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 								<span>Contract Address</span>
 								<button
 									className="flex group items-center space-x-2 truncate px-2 text-sm text-black font-medium dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-									onClick={() => { copyToClipboard(certificate); }}
+									onClick={() => {
+										copyToClipboard(certificate);
+									}}
 								>
-									<span className="dark:group-hover:text-black">{`${truncateHash(certificate, 12, 6, 6)}`}</span>
+									<span
+										className="dark:group-hover:text-black">{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 									{copied ? (
-										<IconCircleCheck size={16} className="dark:group-hover:stroke-black " />
+										<IconCircleCheck size={16} className="dark:group-hover:stroke-black "/>
 									) : (
-										<IconCopy size={16} className="dark:group-hover:stroke-black " />
+										<IconCopy size={16} className="dark:group-hover:stroke-black "/>
 									)}
 								</button>
 							</div>
@@ -401,11 +648,31 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				title="GeckoTerminal Embed"
 				src={`https://www.geckoterminal.com/sepolia-testnet/pools/${certificate}?embed=1&info=0&swaps=0&grayscale=0&light_chart=${isDarkMode ? '0' : '1'}`}
 			></iframe>*/}
-			<div
-				style={{ height: "60vh", width: "100%" }}
-				className="bg-[radial-gradient(theme(colors.gray.300)_10%,transparent_10%)] bg-[length:16px_16px] flex border border-gray-300 justify-center items-center"
-			>
-				<p className="text-center">Charts are not available as of the moment.</p>
+			{/*<div*/}
+			{/*	id="chart-container"*/}
+			{/*	style={{height: "60vh", width: "100%"}}*/}
+			{/*	className="bg-[radial-gradient(theme(colors.gray.300)_10%,transparent_10%)] bg-[length:16px_16px] flex border border-gray-300 justify-center items-center"*/}
+			{/*>*/}
+			{/*	<p className="text-center">Charts are not available as of the moment.</p>*/}
+			{/*</div>*/}
+
+			<div style={{position: "relative"}}>
+				<div ref={chartContainerRef} style={{height: "60vh", width: "100%", paddingRight:"20px"}}/>
+
+				<div
+					className="text-[#000000] dark:text-[#ffffff]"
+					style={{
+						position: "absolute",
+						top: "50%",
+						right: "-45px", // Align to the right side
+						transform: "translateY(-50%) rotate(90deg)", // Rotate text vertically
+						padding: "2px 4px",
+						fontSize: "12px",
+						zIndex:99,
+					}}
+				>
+					Price in SRK (Gwei)
+				</div>
 			</div>
 		</motion.div>
 	);

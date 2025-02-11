@@ -366,7 +366,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                         <Link
                             href={'#'}
                             type="button"
-                            className={`py-2 bg-white text-black px-5 text-[0.9em] ${buttonProperties}}`}
+                            className={`py-2 bg-white text-black px-5 text-[0.9em] dark:text-[#ffffff] ${buttonProperties}}`}
                         >
                             Camelot
                         </Link>
