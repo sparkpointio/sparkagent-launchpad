@@ -165,7 +165,6 @@ const AgentPage = () => {
               createdBy={agent.creator}
               marketCap={agent.marketCap}
               datePublished={new Date(agent.lastUpdated)}
-              sparkingProgress={agent.trading ? 50 : 0}
               tokenPrice={agent.price}
               website={agent.website}
               twitter={agent.twitter}
