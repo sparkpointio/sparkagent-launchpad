@@ -672,24 +672,49 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			{/*	<p className="text-center">Charts are not available as of the moment.</p>*/}
 			{/*</div>*/}
 
-			<div style={{position: "relative"}}>
-				<div ref={chartContainerRef} className="h-[30vh] sm:h-[60vh]"style={{width: "100%", paddingRight:"20px"}}/>
+			{chartData.length > 0 ? (
+				<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} style={{ position: "relative" }}>
+					<div ref={chartContainerRef} className="h-[30vh] sm:h-[60vh]" style={{ width: "100%", paddingRight: "20px" }} />
 
-				<div
-					className="text-[#000000] dark:text-[#ffffff]"
-					style={{
-						position: "absolute",
-						top: "50%",
-						right: "-50px", // Align to the right side
-						transform: "translateY(-50%) rotate(90deg)", // Rotate text vertically
-						padding: "2px 4px",
-						fontSize: "12px",
-						zIndex:99,
-					}}
-				>
-					Price in SRK (Gwei)
+					<div
+						className="text-[#000000] dark:text-[#ffffff]"
+						style={{
+							position: "absolute",
+							top: "50%",
+							right: "-50px", // Align to the right side
+							transform: "translateY(-50%) rotate(90deg)", // Rotate text vertically
+							padding: "2px 4px",
+							fontSize: "12px",
+							zIndex: 99,
+						}}
+					>
+						Price in SRK (Gwei)
+					</div>
+				</motion.div>
+			) : (
+				<div className="flex items-center justify-center h-[30vh] sm:h-[60vh]">
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.5 }}
+					>
+						<motion.div
+							className="flex items-center justify-center mr-2"
+							animate={{ rotate: 360 }}
+							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+						>
+							<IconLoader3 size={64} />
+						</motion.div>
+						<motion.span
+							className="text-lg"
+							animate={{ y: [0, -5, 0] }}
+							transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+						>
+							Loading Chart Data...
+						</motion.span>
+					</motion.div>
 				</div>
-			</div>
+			)}
 		</motion.div>
 	);
 };
