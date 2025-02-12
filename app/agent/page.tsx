@@ -157,19 +157,25 @@ const AgentPage = () => {
       {isLoading ? (
         <div className="flex items-center justify-center h-[80vh]">
           <motion.div
-            className="flex items-center justify-center mr-2"
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            <IconLoader3 size={64} />
-          </motion.div>
-          <motion.span
-              className="text-lg"
-              animate={{ y: [0, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+            <motion.div
+              className="flex items-center justify-center mr-2"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
             >
-              Loading Agent Data...
-          </motion.span>
+              <IconLoader3 size={64} />
+            </motion.div>
+            <motion.span
+                className="text-lg"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+              >
+                Loading Agent Data...
+            </motion.span>
+          </motion.div>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
