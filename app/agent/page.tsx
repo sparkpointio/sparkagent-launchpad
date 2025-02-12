@@ -15,6 +15,9 @@ import { getSparkingProgress } from "@/app/lib/utils/formatting";
 import NotFound from "@/app/components/ui/not-found";
 import Forums from "../components/Forums";
 
+import { IconLoader3 } from "@tabler/icons-react";
+import { motion } from "framer-motion";
+
 interface AgentData {
   creator: string;
   certificate: string;
@@ -50,6 +53,7 @@ const AgentPage = () => {
   const certificate = searchParams.get("certificate");
 
   const [agent, setAgent] = useState<AgentData>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const unsparkingAIContract = getContract({
     client,
@@ -71,22 +75,22 @@ const AgentPage = () => {
 
   useEffect(() => {
     const fetchAgentData = async () => {
-      if (agentData) {
-        console.log("Raw agent data:", agentData);
-
-        const agentPairContract = getContract({
-          client,
-          chain: arbitrumSepolia,
-          address: agentData[2].toString(),
-        });
-
-        const tokenContract = getContract({
-          client,
-          chain: arbitrumSepolia,
-          address: agentData[1].toString(),
-        });
-
-        try {
+      try {
+        if (agentData) {
+          console.log("Raw agent data:", agentData);
+  
+          const agentPairContract = getContract({
+            client,
+            chain: arbitrumSepolia,
+            address: agentData[2].toString(),
+          });
+  
+          const tokenContract = getContract({
+            client,
+            chain: arbitrumSepolia,
+            address: agentData[1].toString(),
+          });
+  
           const reserveA = await readContract({
             contract: agentPairContract,
             method: "function balance() returns (uint256)",
@@ -110,7 +114,7 @@ const AgentPage = () => {
             tokenTicker: agentData[4][3].toString(),
             supply: parseInt(agentData[4][4].toString()),
             price: parseInt(agentData[4][5].toString()),
-            marketCap: parseInt(toEther(agentData[4][6])), // todo: further convert to USD
+            marketCap: parseInt(toEther(agentData[4][6])),
             liquidity: parseInt(agentData[4][7].toString()),
             volume: parseInt(agentData[4][8].toString()),
             volume24H: parseInt(agentData[4][9].toString()),
@@ -134,10 +138,13 @@ const AgentPage = () => {
           console.log("RESERVE A: " + parsedData.reserveA);
 
           setAgent(parsedData);
-
-          console.log("RESERVE A: " + parsedData.reserveA);
-        } catch (error) {
-          console.error("Error fetching reserveA:", error);
+        }
+      } catch (error) {
+        console.error("Error fetching agent data:", error);
+      } finally {
+        if (gradThreshold)
+        {
+          setIsLoading(false);
         }
       }
     };
@@ -147,79 +154,90 @@ const AgentPage = () => {
 
   return (
     <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-        {!agent && (
-          <div className="col-span-3">
-            <NotFound />
-          </div>
-        )}    
-        {/* First Column */}
-        <div className="lg:col-span-2 w-full space-y-4">
-          {agent && (
-            <AgentStats
-              title={agent._tokenName}
-              ticker={agent.tokenTicker}
-              image={agent.image}
-              imageAlt={agent.tokenName}
-              certificate={agent.certificate}
-              description={agent.description}
-              createdBy={agent.creator}
-              marketCap={agent.marketCap}
-              datePublished={new Date(agent.lastUpdated)}
-              tokenPrice={agent.price}
-              website={agent.website}
-              twitter={agent.twitter}
-              telegram={agent.telegram}
-              youtube={agent.youtube}
-              pair={agent.pair}
-            />
-          )}         
-
-          {agent && (
-            <div className="hidden md:block w-full space-y-4">
-                <Forums
-                  agentCertificate={agent.certificate}
-                  agentName={agent._tokenName}
-                  agentImage={agent.image}
-                />
-              </div>
-          )}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-[80vh]">
+          <motion.div
+            className="flex items-center justify-center mr-2"
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          >
+            <IconLoader3 size={64} />
+          </motion.div>
+          <motion.span
+              className="text-lg"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+            >
+              Loading Agent Data...
+          </motion.span>
         </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+          {!agent ? (
+            <div className="col-span-3">
+              <NotFound />
+            </div>
+          ) : (
+            <>
+              {/* First Column */}
+              <div className="lg:col-span-2 w-full space-y-4">
+                <AgentStats
+                  title={agent._tokenName}
+                  ticker={agent.tokenTicker}
+                  image={agent.image}
+                  imageAlt={agent.tokenName}
+                  certificate={agent.certificate}
+                  description={agent.description}
+                  createdBy={agent.creator}
+                  marketCap={agent.marketCap}
+                  datePublished={new Date(agent.lastUpdated)}
+                  tokenPrice={agent.price}
+                  website={agent.website}
+                  twitter={agent.twitter}
+                  telegram={agent.telegram}
+                  youtube={agent.youtube}
+                  pair={agent.pair}
+                />
 
-        {/* Second Column */}
-				<div className="flex flex-col gap-4">
-          {agent && (
-              <>
+                <div className="hidden md:block w-full space-y-4">
+                  <Forums
+                    agentCertificate={agent.certificate}
+                    agentName={agent._tokenName}
+                    agentImage={agent.image}
+                  />
+                </div>
+              </div>
+
+              {/* Second Column */}
+              <div className="flex flex-col gap-4">
                 <SwapCard
-                    contractAddress={agent.certificate}
-                    ticker={agent.tokenTicker}
-                    image={agent.image}
-                    trading={agent.trading}
+                  contractAddress={agent.certificate}
+                  ticker={agent.tokenTicker}
+                  image={agent.image}
+                  trading={agent.trading}
                 />
 
                 <SparkingProgressCard
-                    sparkingProgress={agent?.reserveA ? getSparkingProgress(agent.reserveA, agent.totalSupply, agent.gradThreshold) : 0}
-                    ticker={agent.tokenTicker}
-                    gradThreshold={agent.gradThreshold}
-                    trading={agent.trading}
+                  sparkingProgress={agent?.reserveA ? getSparkingProgress(agent.reserveA, agent.totalSupply, agent.gradThreshold) : 0}
+                  ticker={agent.tokenTicker}
+                  gradThreshold={agent.gradThreshold}
+                  trading={agent.trading}
                 />
-              </>
+
+                <div className="md:hidden w-full space-y-4">
+                  <Forums
+                    agentCertificate={agent.certificate}
+                    agentName={agent._tokenName}
+                    agentImage={agent.image}
+                  />
+                </div>
+              </div>
+            </>
           )}
-
-          <div className="md:hidden w-full space-y-4">
-            {agent && (
-              <Forums
-                agentCertificate={agent.certificate}
-                agentName={agent._tokenName}
-                agentImage={agent.image}
-              />
-            )}
-          </div>
-
-				</div>
-			</div>
-		</div>
-	);
+        </div>
+      )}
+    </div>
+  );
 }
 
 const Page = () => {
