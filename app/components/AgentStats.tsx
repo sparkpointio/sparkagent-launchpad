@@ -673,7 +673,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			{/*</div>*/}
 
 			<div style={{position: "relative"}}>
-				<div ref={chartContainerRef} style={{height: "60vh", width: "100%", paddingRight:"20px"}}/>
+				<div ref={chartContainerRef} className="h-[30vh] sm:h-[60vh]"style={{width: "100%", paddingRight:"20px"}}/>
 
 				<div
 					className="text-[#000000] dark:text-[#ffffff]"
