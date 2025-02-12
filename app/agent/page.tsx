@@ -161,13 +161,9 @@ const AgentPage = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <motion.div
-              className="flex items-center justify-center mr-2"
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            >
-              <IconLoader3 size={64} />
-            </motion.div>
+            <div className="flex items-center justify-center mr-2">
+              <IconLoader3 size={64} className="animate-spin"/>
+            </div>
             <motion.span
                 className="text-lg"
                 animate={{ y: [0, -5, 0] }}

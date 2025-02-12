@@ -384,13 +384,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			<div className="flex flex-row mb-2">
 				<div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden mr-4 hidden md:block">
 					{isLoading && (
-						<motion.div
-							className="absolute inset-0 flex items-center justify-center"
-							animate={{rotate: 360}}
-							transition={{repeat: Infinity, duration: 1, ease: "linear"}}
-						>
-							<IconLoader3 size={32}/>
-						</motion.div>
+						<div className="absolute inset-0 flex items-center justify-center">
+							<IconLoader3 size={32} className="animate-spin"/>
+						</div>
 					)}
 					<motion.div
 						initial={{opacity: 0}}
@@ -413,13 +409,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				<div className="flex flex-col flex-grow md:hidden">
 					<div className="relative w-32 h-32 rounded-full overflow-hidden flex justify-center items-center mx-auto">
 						{isLoading && (
-							<motion.div
-								className="flex items-center justify-center absolute inset-0"
-								animate={{ rotate: 360 }}
-								transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-							>
+							<div className="flex items-center justify-center absolute inset-0">
 								<IconLoader3 size={64} />
-							</motion.div>
+							</div>
 						)}
 						<motion.div
 							initial={{ opacity: 0 }}
@@ -698,13 +690,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.5 }}
 					>
-						<motion.div
-							className="flex items-center justify-center mr-2"
-							animate={{ rotate: 360 }}
-							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-						>
-							<IconLoader3 size={64} />
-						</motion.div>
+						<div className="flex items-center justify-center mr-2">
+							<IconLoader3 size={64} className="animate-spin"/>
+						</div>
 						<motion.span
 							className="text-lg"
 							animate={{ y: [0, -5, 0] }}

@@ -73,17 +73,9 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
                             <div className="flex items-center">
                                 <div className="relative w-14 h-14 flex-shrink-0 rounded-full overflow-hidden mr-4 md:block">
                                     {isLoading && (
-                                        <motion.div
-                                            className="absolute inset-0 flex items-center justify-center"
-                                            animate={{ rotate: 360 }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 1,
-                                                ease: "linear",
-                                            }}
-                                        >
-                                            <IconLoader3 size={24} />
-                                        </motion.div>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <IconLoader3 size={24} className="animate-spin"/>
+                                        </div>
                                     )}
                                     <motion.div
                                         initial={{ opacity: 0 }}
