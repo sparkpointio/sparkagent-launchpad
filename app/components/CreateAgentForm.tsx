@@ -12,6 +12,7 @@ import {useActiveAccount, useSendTransaction} from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
+import { formsTextBoxProperties, formsDialogContentProperties, formsDialogBackgroundOverlayProperties } from "../lib/utils/style/customStyles";
 import axios from "axios";
 
 const unsparkingAIContract = getContract({
@@ -278,8 +279,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
       setCurrentPage(1)
   };
 
-  const textBoxStyling = "bg-gray-200 dark:bg-gray-700 rounded-xl border border-black dark:border-transparent bg-white dark:text-white";
-
   return (
     <Dialog.Root
         open={isOpen}
@@ -293,8 +292,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         {children}
       </Dialog.Trigger>
       <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[100]" />
-        <Dialog.Content className={'fixed bg-white dark:bg-[#1a1d21] dark:text-white left-[50%] top-[50%] z-[101] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-black border-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-2xl sm:px-6 sm:py-10 p-4 max-h-[calc(100vh-40px)] overflow-auto'}
+      <Dialog.Overlay className={formsDialogBackgroundOverlayProperties} />
+        <Dialog.Content className={formsDialogContentProperties}
             onInteractOutside={(event) => {
                 event.preventDefault();
             }}>
@@ -377,7 +376,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="name"
                                       value={name}
@@ -404,7 +403,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <textarea
-                                      className={`w-full h-[5.7rem] mb-0 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-[5.7rem] mb-0 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="description"
                                       value={description}
                                       onChange={(e) => setDescription(e.target.value)} // Handle email change
@@ -430,7 +429,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="ticker"
                                       value={ticker}
@@ -459,7 +458,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                   <button
                                       type="button"
                                       onClick={() => document.getElementById("iconInput")?.click()}
-                                      className={`text-start px-5 py-3 text-[0.9em] transition w-full ${textBoxStyling}`}
+                                      className={`text-start px-5 py-3 text-[0.9em] transition w-full ${formsTextBoxProperties}`}
                                   >
                                       Select Image
                                   </button>
@@ -516,7 +515,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="number"
                                       name="purchase_amount"
                                       value={purchaseAmount}
@@ -542,7 +541,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="website_link"
                                       value={websiteLink}
@@ -568,7 +567,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="x_link"
                                       value={xLink}
@@ -595,7 +594,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="telegram_link"
                                       value={telegramLink}
@@ -622,7 +621,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="youtube_link"
                                       value={youtubeLink}
@@ -671,7 +670,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="personality"
                                       value={personality}
@@ -698,7 +697,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="first_message"
                                       value={firstMessage}
@@ -725,7 +724,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="lore"
                                       value={lore}
@@ -752,7 +751,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="style"
                                       value={style}
@@ -779,7 +778,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="adjective"
                                       value={adjective}
@@ -806,7 +805,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </div>
                               <Form.Control asChild>
                                   <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${textBoxStyling}`}
+                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       type="text"
                                       name="knowledge"
                                       value={knowledge}
