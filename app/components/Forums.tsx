@@ -144,10 +144,11 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                         <button
                             type="button"
                             onClick={handleShowMore}
+                            disabled={isShowMoreLoading}
                             className={buttonVariants({
                                 variant: "outline",
                                 size: "lg",
-                                className: "w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2",
+                                className: `w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2 ${isShowMoreLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
                             })}
                         >
                             {isShowMoreLoading ? (
