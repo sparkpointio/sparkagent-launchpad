@@ -2,6 +2,7 @@
 import { buttonVariants } from "./variants/button-variants";
 import ForumEntry from "./ForumEntry";
 import { useState } from "react";
+import { CommentForm } from "./CommentForm";
 
 interface ForumsProps {
     agentCertificate: string;
@@ -15,6 +16,7 @@ const Forums: React.FC<ForumsProps> = ({
     agentImage,
 }) => {
     const [visibleEntries, setVisibleEntries] = useState(5);
+    const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
 
     const numberOfForumEntries = 20;
 
@@ -22,9 +24,20 @@ const Forums: React.FC<ForumsProps> = ({
         setVisibleEntries((prev) => Math.min(prev + 5, numberOfForumEntries));
     };
 
+    const handleCommentButtonClick = () => {
+        setIsCommentFormOpen(true);
+    };
+
     return (
         <div className="flex flex-col space-y-4 justify-center items-center">
-            <button className={buttonVariants({ variant: "outline", size: "xl", className: 'w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2' })}>
+            <button
+                onClick={handleCommentButtonClick}
+                className={buttonVariants({
+                    variant: "outline",
+                    size: "xl",
+                    className: 'w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2'
+                })}
+            >
                 <span>Comment <br />(Burn 10,000 SRK)</span>
             </button>
             {Array.from({ length: visibleEntries }).map((_, index) => (
@@ -44,6 +57,7 @@ const Forums: React.FC<ForumsProps> = ({
                     <span>Show More</span>
                 </button>
             )}
+            <CommentForm isOpen={isCommentFormOpen} onClose={() => setIsCommentFormOpen(false)} />
         </div>
     );
 };
