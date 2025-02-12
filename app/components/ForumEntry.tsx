@@ -66,52 +66,54 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
             <p>{content}</p>
 
             {/* Agent Reply Area */}
-            <div className="flex flex-col gap-4">
-                <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 ">
-                    <div className="flex items-center mb-2 justify-between">
-                        <div className="flex items-center">
-                            <div className="relative w-14 h-14 flex-shrink-0 rounded-full overflow-hidden mr-4 md:block">
-                                {isLoading && (
+            {agentMessage && (
+                <div className="flex flex-col gap-4">
+                    <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 ">
+                        <div className="flex items-center mb-2 justify-between">
+                            <div className="flex items-center">
+                                <div className="relative w-14 h-14 flex-shrink-0 rounded-full overflow-hidden mr-4 md:block">
+                                    {isLoading && (
+                                        <motion.div
+                                            className="absolute inset-0 flex items-center justify-center"
+                                            animate={{ rotate: 360 }}
+                                            transition={{
+                                                repeat: Infinity,
+                                                duration: 1,
+                                                ease: "linear",
+                                            }}
+                                        >
+                                            <IconLoader3 size={24} />
+                                        </motion.div>
+                                    )}
                                     <motion.div
-                                        className="absolute inset-0 flex items-center justify-center"
-                                        animate={{ rotate: 360 }}
-                                        transition={{
-                                            repeat: Infinity,
-                                            duration: 1,
-                                            ease: "linear",
-                                        }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: isLoading ? 0 : 1 }}
+                                        transition={{ duration: 0.5 }}
+                                        className="w-full h-full"
                                     >
-                                        <IconLoader3 size={24} />
+                                        <Image
+                                            src={imgSrc}
+                                            alt={"Card image"}
+                                            layout="fill"
+                                            objectFit="cover"
+                                            className="object-cover"
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            onLoad={() => setIsLoading(false)}
+                                        />
                                     </motion.div>
-                                )}
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: isLoading ? 0 : 1 }}
-                                    transition={{ duration: 0.5 }}
-                                    className="w-full h-full"
-                                >
-                                    <Image
-                                        src={imgSrc}
-                                        alt={"Card image"}
-                                        layout="fill"
-                                        objectFit="cover"
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, 33vw"
-                                        onLoad={() => setIsLoading(false)}
-                                    />
-                                </motion.div>
+                                </div>
+                                <div className="mr-2 font-bold border-2 border-sparkyOrange-600 p-1 rounded-lg">
+                                    <h2 className={headerProperties}>
+                                        {agentName + " Agent"}
+                                    </h2>
+                                </div>
                             </div>
-                            <div className="mr-2 font-bold border-2 border-sparkyOrange-600 p-1 rounded-lg">
-                                <h2 className={headerProperties}>
-                                    {agentName + " Agent"}
-                                </h2>
-                            </div>
+                            <span className="ml-auto">{agentTimestamp ? formatTimestamp(agentTimestamp) : "N/A"}</span>
                         </div>
-                        <span className="ml-auto">{agentTimestamp ? formatTimestamp(agentTimestamp) : "N/A"}</span>
+                        <p>{agentMessage}</p>
                     </div>
-                    <p>{agentMessage ? agentMessage : "N/A"}</p>
                 </div>
-            </div>
+            )}
         </motion.div>
     );
 };
