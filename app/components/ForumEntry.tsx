@@ -11,21 +11,25 @@ import { cardProperties } from "../lib/utils/style/customStyles";
 
 interface ForumEntryProps {
     id: string;
-    user: string;
-    message: string;
-    timestamp: Date;
     agentCertificate: string;
+    sender: string;
+    content: string;
+    messageTimestamp: Date;
     agentName: string;
     agentImage: string;
-}
+    agentMessage?: string;
+    agentTimestamp?: Date;
+};
 
 const ForumEntry: React.FC<ForumEntryProps> = ({
-    user,
-    message,
-    timestamp,
+    sender,
+    content,
+    messageTimestamp,
     agentCertificate,
     agentName,
     agentImage,
+    agentMessage,
+    agentTimestamp,
 }) => {
     const blockiesIcon = blockies.create({
         seed: agentCertificate,
@@ -50,16 +54,16 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
         <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={cardProperties + " space-y-4"}>
+            className={cardProperties + " space-y-4 w-full"}>
             {/* User Reply Area */}
             <div className="flex items-center">
                 <div className="font-bold border-2 border-sparkyOrange-600 p-1 rounded-lg truncate">
-                    <h2 className={`${headerProperties} hidden md:block`}>{user}</h2>
-                    <h2 className={`${headerProperties} md:hidden`}>{truncateHash(user, 6)}</h2>
+                    <h2 className={`${headerProperties} hidden md:block`}>{sender}</h2>
+                    <h2 className={`${headerProperties} md:hidden`}>{truncateHash(sender, 6)}</h2>
                 </div>
-                <span className="ml-auto">{formatTimestamp(timestamp)}</span>
+                <span className="ml-auto">{formatTimestamp(messageTimestamp)}</span>
             </div>
-            <p>{message}</p>
+            <p>{content}</p>
 
             {/* Agent Reply Area */}
             <div className="flex flex-col gap-4">
@@ -103,9 +107,9 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
                                 </h2>
                             </div>
                         </div>
-                        <span className="ml-auto">{formatTimestamp(timestamp)}</span>
+                        <span className="ml-auto">{agentTimestamp ? formatTimestamp(agentTimestamp) : "N/A"}</span>
                     </div>
-                    <p>{message}</p>
+                    <p>{agentMessage ? agentMessage : "N/A"}</p>
                 </div>
             </div>
         </motion.div>

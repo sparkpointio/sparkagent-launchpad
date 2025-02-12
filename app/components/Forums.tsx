@@ -1,7 +1,8 @@
 "use client";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { buttonVariants } from "./variants/button-variants";
 import ForumEntry from "./ForumEntry";
-import { useState } from "react";
 import { CommentForm } from "./CommentForm";
 
 interface ForumsProps {
@@ -10,28 +11,58 @@ interface ForumsProps {
     agentImage: string;
 }
 
-const Forums: React.FC<ForumsProps> = ({
-    agentCertificate,
-    agentName,
-    agentImage,
-}) => {
+interface ForumMessage {
+    id: string;
+    sender: string;
+    forumToken: string;
+    content: string;
+    timestamp: string;
+    llmresponse?: {
+        message: string;
+        timestamp: string;
+    };
+}
+
+const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage }) => {
+    const [forumMessages, setForumMessages] = useState<ForumMessage[]>([]);
     const [visibleEntries, setVisibleEntries] = useState(5);
     const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
+    const forumToken = agentCertificate;
+    const numberOfMessages = 5;
+    const direction = "up";
 
-    const numberOfForumEntries = 20;
+    useEffect(() => {
+        const fetchForumMessages = async () => {
+            try {
+                const response = await axios.get(`/api/forums/fetch-forum-messages-via-starting-index-number-of-messages-and-direction`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    params: {
+                        forumToken,
+                        startingIndex: 0,
+                        numberOfMessages,
+                        direction,
+                    },
+                });
+        
+                setForumMessages(response.data);
+            } catch (error) {
+                console.error("Error fetching forum messages:", error);
+            }
+        };
+
+        fetchForumMessages();
+    }, [forumToken]);
 
     const handleShowMore = () => {
-        setVisibleEntries((prev) => Math.min(prev + 5, numberOfForumEntries));
-    };
-
-    const handleCommentButtonClick = () => {
-        setIsCommentFormOpen(true);
+        setVisibleEntries((prev) => Math.min(prev + 5, forumMessages.length));
     };
 
     return (
         <div className="flex flex-col space-y-4 justify-center items-center">
             <button
-                onClick={handleCommentButtonClick}
+                onClick={() => setIsCommentFormOpen(true)}
                 className={buttonVariants({
                     variant: "outline",
                     size: "xl",
@@ -40,23 +71,35 @@ const Forums: React.FC<ForumsProps> = ({
             >
                 <span>Comment <br />(Burn 10,000 SRK)</span>
             </button>
-            {Array.from({ length: visibleEntries }).map((_, index) => (
+
+            {forumMessages.slice(0, visibleEntries).map((message, index) => (
                 <ForumEntry
-                    key={index}
-                    id={String(index + 1)}
-                    user="0x73C0BE869A2f057939d3484E2Ca98C6cbECE4405"
-                    message="Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                    timestamp={new Date()}
+                    key={message.id || index}
+                    id={message.id}
+                    sender={message.sender}
+                    content={message.content}
+                    messageTimestamp={new Date(Number(message.timestamp))}
                     agentCertificate={agentCertificate}
                     agentName={agentName}
                     agentImage={agentImage}
+                    agentMessage={message.llmresponse?.message}
+                    agentTimestamp={message.llmresponse ? new Date(Number(message.llmresponse.timestamp)) : undefined}
                 />
             ))}
-            {visibleEntries < numberOfForumEntries && (
-                <button onClick={handleShowMore} className={buttonVariants({ variant: "outline", size: "lg", className: 'w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2' })}>
+
+            {visibleEntries < forumMessages.length && (
+                <button
+                    onClick={handleShowMore}
+                    className={buttonVariants({
+                        variant: "outline",
+                        size: "lg",
+                        className: "w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2",
+                    })}
+                >
                     <span>Show More</span>
                 </button>
             )}
+
             <CommentForm isOpen={isCommentFormOpen} onClose={() => setIsCommentFormOpen(false)} />
         </div>
     );
