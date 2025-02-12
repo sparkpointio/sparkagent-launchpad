@@ -5,7 +5,7 @@ import { buttonVariants } from "./variants/button-variants";
 import ForumEntry from "./ForumEntry";
 import { CommentForm } from "./CommentForm";
 import { motion } from "framer-motion";
-import { IconLoader3 } from "@tabler/icons-react";
+import { IconLoader2 } from "@tabler/icons-react";
 import { useCallback } from "react";
 
 interface ForumsProps {
@@ -152,7 +152,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                             })}
                         >
                             {isShowMoreLoading ? (
-                                <IconLoader3 className="animate-spin" />
+                                <IconLoader2 className="animate-spin" />
                             ) : (
                                 <span>Show More</span>
                             )}

@@ -15,7 +15,7 @@ import { getSparkingProgress } from "@/app/lib/utils/formatting";
 import NotFound from "@/app/components/ui/not-found";
 import Forums from "../components/Forums";
 
-import { IconLoader3 } from "@tabler/icons-react";
+import { IconLoader2 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 
 interface AgentData {
@@ -161,16 +161,12 @@ const AgentPage = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center justify-center mr-2">
-              <IconLoader3 size={64} className="animate-spin"/>
+            <div className="flex items-center justify-center mb-1">
+              <IconLoader2 size={64} className="animate-spin"/>
             </div>
-            <motion.span
-                className="text-lg"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
-              >
-                Loading Agent Data...
-            </motion.span>
+            <span className="text-xl">
+              Loading Agent Data...
+            </span>
           </motion.div>
         </div>
       ) : (
