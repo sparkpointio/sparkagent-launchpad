@@ -304,6 +304,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					background: { color: isDarkMode ? '#1a1d21' : '#ffffff' },
 					textColor: isDarkMode ? '#ffffff' : '#000000', // Set label color
 				},
+				grid: {
+					vertLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
+					horzLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
+				},
 			});
 
 			chartInstanceRef.current = chart;
@@ -329,6 +337,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				layout: {
 					background: { color: isDarkMode ? '#1a1d21' : '#ffffff' },
 					textColor: isDarkMode ? '#ffffff' : '#000000', // Update label color dynamically
+				},
+				grid: {
+					vertLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
+					horzLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
 				},
 			});
 		}
@@ -664,7 +680,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					style={{
 						position: "absolute",
 						top: "50%",
-						right: "-45px", // Align to the right side
+						right: "-50px", // Align to the right side
 						transform: "translateY(-50%) rotate(90deg)", // Rotate text vertically
 						padding: "2px 4px",
 						fontSize: "12px",
