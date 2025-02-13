@@ -62,17 +62,7 @@ export function truncateHash(hash: string, maxLength: number = 10, left?: number
 import { Decimal } from "decimal.js";
 
 export function getSparkingProgress(reserveB: bigint, gradThreshold: bigint): number {
-  console.log("reserveB");
-  console.log(reserveB);
-  console.log("gradThreshold");
-  console.log(gradThreshold);
-
-  gradThreshold = BigInt("50000000000000000000000");
-
   const sparkingProgress = (Number(reserveB) / Number(gradThreshold)) * 100;
-
-  console.log("sparkingProgress");
-  console.log(sparkingProgress);
 
   return Decimal.min(sparkingProgress, 100).toDecimalPlaces(2, Decimal.ROUND_DOWN).toNumber();
 }
