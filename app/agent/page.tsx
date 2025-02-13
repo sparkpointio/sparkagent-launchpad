@@ -188,7 +188,6 @@ const AgentPage = () => {
 
                 <SparkingProgressCard
                     sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold) : 0}
-                    ticker={agent.tokenTicker}
                     gradThreshold={agent.gradThreshold}
                     trading={agent.trading}
                 />

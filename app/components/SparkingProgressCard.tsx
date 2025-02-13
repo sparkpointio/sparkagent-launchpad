@@ -7,14 +7,12 @@ import { getFormattedEther } from "../lib/utils/formatting";
 interface SparkingProgressCardProps {
     sparkingProgress: number;
     gradThreshold: bigint;
-    ticker: string;
     trading: boolean;
 }
 
 const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
     sparkingProgress,
     gradThreshold,
-    ticker,
     trading,
 }) => {
     const headerProperties = "flex text-3xl justify-right font-bold";
