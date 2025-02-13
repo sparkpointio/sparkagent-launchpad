@@ -39,7 +39,7 @@ interface AgentData {
   website: string;
   trading: boolean;
   tradingOnUniSwap: boolean;
-  reserveA: bigint;
+  reserves: [bigint, bigint];
   totalSupply: bigint;
   gradThreshold: bigint;
 }
@@ -86,9 +86,9 @@ const AgentPage = () => {
         });
 
         try {
-          const reserveA = await readContract({
+          const reserves = await readContract({
             contract: agentPairContract,
-            method: "function balance() returns (uint256)",
+            method: "function getReserves() returns (uint256, uint256)",
             params: [],
           });
 
@@ -123,20 +123,20 @@ const AgentPage = () => {
             website: agentData[10].toString(),
             trading: agentData[11].valueOf(),
             tradingOnUniSwap: agentData[12]?.valueOf(),
-            reserveA,
+            reserves: [reserves[0], reserves[1]],
             totalSupply,
             gradThreshold: gradThreshold ?? BigInt(0)
           };
 
           console.log("AGENT CERTIFICATE: " + agentData[1].toString());
           console.log("AGENT PAIR ADDRESS: " + agentData[2].toString());
-          console.log("RESERVE A: " + parsedData.reserveA);
+          console.log("RESERVE A: " + parsedData.reserves[1]);
 
           setAgent(parsedData);
 
-          console.log("RESERVE A: " + parsedData.reserveA);
+          console.log("RESERVE A: " + parsedData.reserves[1]);
         } catch (error) {
-          console.error("Error fetching reserveA:", error);
+          console.error("Error fetching reserves:", error);
         }
       }
     };
@@ -187,7 +187,7 @@ const AgentPage = () => {
                 />
 
                 <SparkingProgressCard
-                    sparkingProgress={agent?.reserveA ? getSparkingProgress(agent.reserveA, agent.totalSupply, agent.gradThreshold) : 0}
+                    sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold) : 0}
                     ticker={agent.tokenTicker}
                     gradThreshold={agent.gradThreshold}
                     trading={agent.trading}
