@@ -35,6 +35,8 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
     const [startingIndex, setStartingIndex] = useState(0);
     
     const hasFetchedInitialMessages = useRef(false);
+    const hasFetchedMessagesCount = useRef(false);
+
     const forumToken = agentCertificate;
     const numberOfMessages = 5;
     const direction = "up";
@@ -86,7 +88,10 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
             }
         };
 
-        fetchForumMessagesCount();
+        if (!hasFetchedMessagesCount.current) {
+            fetchForumMessagesCount();
+            hasFetchedMessagesCount.current = true;
+        }
     }, [forumToken]);
 
     const handleShowMore = () => {
