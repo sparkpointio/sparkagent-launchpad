@@ -104,7 +104,6 @@ const Agents = () => {
                 if (!response.ok) throw new Error("Failed to fetch data");
 
                 const jsonResponse = await response.json();
-                console.log("API Response:", jsonResponse);
 
                 if (!jsonResponse.tokens || !Array.isArray(jsonResponse.tokens)) {
                     throw new Error("API response does not contain 'tokens' array.");
