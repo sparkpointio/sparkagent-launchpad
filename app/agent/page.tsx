@@ -75,22 +75,22 @@ const AgentPage = () => {
 
   useEffect(() => {
     const fetchAgentData = async () => {
-      if (agentData) {
-        console.log("Raw agent data:", agentData);
+      try {
+        if (agentData) {
+          console.log("Raw agent data:", agentData);
 
-        const agentPairContract = getContract({
-          client,
-          chain: arbitrumSepolia,
-          address: agentData[2].toString(),
-        });
+          const agentPairContract = getContract({
+            client,
+            chain: arbitrumSepolia,
+            address: agentData[2].toString(),
+          });
 
-        const tokenContract = getContract({
-          client,
-          chain: arbitrumSepolia,
-          address: agentData[1].toString(),
-        });
+          const tokenContract = getContract({
+            client,
+            chain: arbitrumSepolia,
+            address: agentData[1].toString(),
+          });
 
-        try {
           const reserves = await readContract({
             contract: agentPairContract,
             method: "function getReserves() returns (uint256, uint256)",
@@ -140,15 +140,15 @@ const AgentPage = () => {
           setAgent(parsedData);
 
           console.log("RESERVE A: " + parsedData.reserves[1]);
-        } catch (error) {
-          console.error("Error fetching reserves:", error);
-        } finally {
-          if (gradThreshold)
-          {
-            setIsLoading(false);
-          }
-        } 
-      }
+        }
+      } catch (error) {
+        console.error("Error fetching reserves:", error);
+      } finally {
+        if (gradThreshold)
+        {
+          setIsLoading(false);
+        }
+      } 
     };
 
     fetchAgentData();
