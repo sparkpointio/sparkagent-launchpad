@@ -54,6 +54,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                     direction,
                 },
             });
+            console.log('Forum messages:', response.data);
             setForumMessages(prevMessages => [...prevMessages, ...response.data]);
         } catch (error) {
             console.error("Error fetching forum messages:", error);
@@ -165,7 +166,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                     )}
                 </>
             )}
-            <CommentForm isOpen={isCommentFormOpen} onClose={() => setIsCommentFormOpen(false)} />
+            <CommentForm forumToken={agentCertificate} isOpen={isCommentFormOpen} onClose={() => setIsCommentFormOpen(false)} />
         </div>
     );
 };

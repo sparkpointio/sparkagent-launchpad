@@ -3,15 +3,92 @@ import * as Form from "@radix-ui/react-form";
 import { buttonVariants } from '../components/variants/button-variants';
 import { useState } from "react";
 import { formsDialogBackgroundOverlayProperties, formsDialogContentProperties, formsTextBoxProperties } from "../lib/utils/style/customStyles";
+import { getContract, prepareContractCall } from "thirdweb";
+import { useSendTransaction, useActiveAccount} from "thirdweb/react";
+import { client } from '../client';
+import { arbitrumSepolia } from "thirdweb/chains";
+import { IconLoader2 } from "@tabler/icons-react";
 
 interface CommentFormProps {
     isOpen: boolean;
     onClose: () => void;
+    forumToken: string;
 }
 
-export function CommentForm({ isOpen, onClose }: CommentFormProps) {
+const forumContract = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_SPARKINGAI as string,
+});
+
+const srkContract = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
+});
+
+export function CommentForm({ isOpen, onClose, forumToken }: CommentFormProps) {
     const [comment, setComment] = useState("");
     const [validationError, setValidationError] = useState("");
+    const { mutate: sendTransaction } = useSendTransaction();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const account = useActiveAccount();
+
+    if (!account) {
+        return null;
+    }
+
+    const approveSRK = async () => {
+        setIsLoading(true);
+        const approveSrk = prepareContractCall({
+            contract: srkContract,
+            method: "function approve(address spender, uint256 value)",
+            params: [
+                process.env.NEXT_PUBLIC_SPARKINGAI as string,
+                BigInt("1000000000000000000")
+            ],
+        });
+
+        const approveSRKReceipt = sendTransaction(approveSrk, {
+            onError: (error) => {
+                console.error(error);
+                setIsLoading(false);
+            },
+            onSuccess: () => {
+                console.log("Transaction successfully executed!");
+                submitComment();
+            },
+        });
+        console.log("Approval transaction receipt:", approveSRKReceipt);
+    }
+
+    const submitComment = async () => {      
+        const approveTx = prepareContractCall({
+            contract: forumContract,
+            method: "function sendForumMessage(address forumToken, string message)",
+            params: [
+                forumToken,
+                comment
+            ],
+        });
+    
+        console.log("Prepared approval transaction:", approveTx);
+
+        const approveReceipt = sendTransaction(approveTx, {
+            onError: (error) => {
+                console.error(error);
+                setIsLoading(false);
+            },
+            onSuccess: () => {
+                console.log("Transaction successfully executed!");
+                setIsLoading(false);
+                handleDialogClose();
+            },
+        });
+
+        console.log("Approval transaction receipt:", approveReceipt);
+    };
 
     const handleDialogClose = () => {
         onClose();
@@ -25,9 +102,9 @@ export function CommentForm({ isOpen, onClose }: CommentFormProps) {
             return;
         }
 
-        // Handle comment submission logic here
+        approveSRK();
+
         console.log("Comment submitted:", comment);
-        handleDialogClose();
     };
 
     return (
@@ -102,11 +179,11 @@ export function CommentForm({ isOpen, onClose }: CommentFormProps) {
                                 className={buttonVariants({
                                     variant: "outline",
                                     size: "md",
-                                    className: "mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1",
+                                    className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
                                 })}
                                 onClick={handleSubmit}
                             >
-                                Post Comment
+                                {!isLoading ? "Post Comment" : <IconLoader2 size={16} className="animate-spin" />}
                             </button>
                         </Form.Root>
                     </div>
