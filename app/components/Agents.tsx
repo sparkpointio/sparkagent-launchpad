@@ -4,6 +4,7 @@ import AgentSearchBar from "./AgentSearchBar";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
 import { client } from "../client";
+import { IconLoader3 } from "@tabler/icons-react";
 
 const unsparkingAIContract = getContract({
     client,
@@ -88,6 +89,7 @@ const Agents = () => {
     const [agentsData, setAgentsData] = useState<AgentData[]>([]);
     const [filteredAgents, setFilteredAgents] = useState<AgentData[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     const parseAgentData = useCallback((agent: RawAgentData, gradThreshold?: bigint): AgentData => {
         const data = agent.data; // Extract `data` array
@@ -152,6 +154,7 @@ const Agents = () => {
 
                 setAgentsData(parsedAgents);
                 setFilteredAgents(parsedAgents);
+                setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching agents:", error);
             }
@@ -274,63 +277,76 @@ const Agents = () => {
                         />
                     </div>
 
-                    {/* Agent Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-3 gap-6 w-full">
-                        {currentAgents.length > 0 ? (
-                            currentAgents
-                                .map((agent, index) => (
-                                    <AgentCard
-                                        key={`${currentPage}-${index}`}
-                                        title={agent._tokenName}
-                                        image={agent.image}
-                                        imageAlt={agent._tokenName}
-                                        certificate={agent.certificate}
-                                        description={agent.description}
-                                        createdBy={agent.creator}
-                                        marketCap={agent.marketCap}
-                                        datePublished={agent.lastUpdated}
-                                        website={agent.website}
-                                        twitter={agent.twitter}
-                                        telegram={agent.telegram}
-                                        youtube={agent.youtube}
-                                        trading={agent.trading}
-                                        gradThreshold={agent.gradThreshold}
-                                        reserveB={agent.reserveB}
-                                    />
-                                ))
-                        ) : (
-                            <div className="col-span-full text-xl text-center py-8 text-gray-500">
-                                No agents found
+                    {isLoading && (
+                        <div className="py-[100px]">
+                            <div className="flex items-center justify-center inset-0 mb-2">
+                                <IconLoader3 size={64} className="animate-spin text-gray-600 dark:text-[#ffffff]" />
                             </div>
-                        )}
-                    </div>
+                            <p className="text-center dark:text-[#ffffff]">Loading Agent Tokens</p>
+                        </div>
+                    )}
 
-                    {/* Pagination */}
-                    <div className="flex justify-center mt-6">
-                        <button
-                            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                            className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === 1 ? "bg-gray-100 text-gray-300 dark:bg-gray-800 dark:text-gray-600" : "bg-gray-200 text-gray-700 hover:bg-sparkyOrange-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"} `}
-                            disabled={currentPage === 1}
-                        >
-                            {<IconArrowLeft />}
-                        </button>
-                        {getPageNumbers().map((pageNumber) => (
-                            <button
-                                key={pageNumber}
-                                onClick={() => handlePageChange(pageNumber)}
-                                className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
-                            >
-                                {pageNumber}
-                            </button>
-                        ))}
-                        <button
-                            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                            className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"
-                            disabled={currentPage === totalPages}
-                        >
-                            {<IconArrowRight />}
-                        </button>
-                    </div>
+                    {/* Agent Cards */}
+                    {!isLoading && (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-3 gap-6 w-full">
+                                {currentAgents.length > 0 ? (
+                                    currentAgents
+                                        .map((agent, index) => (
+                                            <AgentCard
+                                                key={`${currentPage}-${index}`}
+                                                title={agent._tokenName}
+                                                image={agent.image}
+                                                imageAlt={agent._tokenName}
+                                                certificate={agent.certificate}
+                                                description={agent.description}
+                                                createdBy={agent.creator}
+                                                marketCap={agent.marketCap}
+                                                datePublished={agent.lastUpdated}
+                                                website={agent.website}
+                                                twitter={agent.twitter}
+                                                telegram={agent.telegram}
+                                                youtube={agent.youtube}
+                                                trading={agent.trading}
+                                                gradThreshold={agent.gradThreshold}
+                                                reserveB={agent.reserveB}
+                                            />
+                                        ))
+                                ) : (
+                                    <div className="col-span-full text-xl text-center py-8 text-gray-500">
+                                        No agents found
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Pagination */}
+                            <div className="flex justify-center mt-6">
+                                <button
+                                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                    className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === 1 ? "bg-gray-100 text-gray-300 dark:bg-gray-800 dark:text-gray-600" : "bg-gray-200 text-gray-700 hover:bg-sparkyOrange-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"} `}
+                                    disabled={currentPage === 1}
+                                >
+                                    {<IconArrowLeft />}
+                                </button>
+                                {getPageNumbers().map((pageNumber) => (
+                                    <button
+                                        key={pageNumber}
+                                        onClick={() => handlePageChange(pageNumber)}
+                                        className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
+                                    >
+                                        {pageNumber}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                    className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"
+                                    disabled={currentPage === totalPages}
+                                >
+                                    {<IconArrowRight />}
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </section>
