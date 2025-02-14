@@ -11,15 +11,12 @@ const unsparkingAIContract = getContract({
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
 });
 
-import { useReadContract } from "thirdweb/react";
-import { getContract, toEther } from "thirdweb";
+import { getContract, readContract, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import SparkAgentLogo from "./SparkAgentLogo";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 const Agents = () => {
-    const [index, setIndex] = useState(0);
-    const [address, setAddress] = useState<string>("");
     const [currentPage, setCurrentPage] = useState(1);
     const agentsPerPage = 6;
 
@@ -49,80 +46,120 @@ const Agents = () => {
         trading: boolean;
         tradingOnUniSwap: boolean;
         gradThreshold: bigint;
+        reserveB: bigint;
+    }
+
+    interface RawAgentData {
+        address: string;
+        data: [
+            string, // creator
+            string, // certificate
+            string, // pair
+            string, // agentToken
+            [
+                string, // token
+                string, // tokenName
+                string, // _tokenName
+                string, // tokenTicker
+                string, // supply
+                string, // price
+                string, // marketCap
+                string, // liquidity
+                string, // volume
+                string, // volume24H
+                string, // prevPrice
+                string  // lastUpdated (Unix timestamp)
+            ],
+            string, // description
+            string, // image
+            string, // twitter
+            string, // telegram
+            string, // youtube
+            string, // website
+            boolean, // trading
+            boolean // tradingOnUniSwap
+        ];
+        reserves: [
+            string, // Reserve A
+            string, // Reserve B
+        ]
     }
 
     const [agentsData, setAgentsData] = useState<AgentData[]>([]);
-
-    const { data } = useReadContract({
-        contract: unsparkingAIContract,
-        method: "function tokenInfos(uint256) returns (address)",
-        params: [BigInt(index)],
-    });
-
-    const { data: agentData } = useReadContract({
-        contract: unsparkingAIContract,
-        method: "function tokenInfo(address) returns (address, address, address, address, (address, string, string, string, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256), string, string, string, string, string, string, bool, bool)",
-        params: [address],
-    });
-
-    const { data: gradThreshold } = useReadContract({
-        contract: unsparkingAIContract,
-        method: "function gradThreshold() returns (uint256)",
-        params: [],
-    });
-
-    useEffect(() => {
-        if (data) {
-            setIndex((prevIndex) => prevIndex + 1);
-            setAddress(data.toString());
-        }
-    }, [data]);
-
-    useEffect(() => {
-        if (agentData !== undefined) {
-            console.log("Agent data:", agentData);
-            const certificate = agentData[1].toString();
-            if (certificate !== "0x0000000000000000000000000000000000000000") {
-                const parsedData: AgentData = {
-                    creator: agentData[0].toString(),
-                    certificate: certificate,
-                    pair: agentData[2].toString(),
-                    agentToken: agentData[3].toString(),
-                    token: agentData[4][0].toString(),
-                    tokenName: agentData[4][1].toString(),
-                    _tokenName: agentData[4][2].toString(),
-                    tokenTicker: agentData[4][3].toString(),
-                    supply: parseInt(agentData[4][4].toString()),
-                    price: parseInt(agentData[4][5].toString()),
-                    marketCap: parseInt(toEther(agentData[4][6])), // todo: further convert to USD
-                    liquidity: parseInt(agentData[4][7].toString()),
-                    volume: parseInt(agentData[4][8].toString()),
-                    volume24H: parseInt(agentData[4][9].toString()),
-                    prevPrice: parseInt(agentData[4][10].toString()),
-                    lastUpdated: new Date(parseInt(agentData[4][11].toString()) * 1000),
-                    description: agentData[5].toString(),
-                    image: agentData[6].toString(),
-                    twitter: agentData[7].toString(),
-                    telegram: agentData[8].toString(),
-                    youtube: agentData[9].toString(),
-                    website: agentData[10].toString(),
-                    trading: agentData[11].valueOf(),
-                    tradingOnUniSwap: agentData[12]?.valueOf(),
-                    gradThreshold: gradThreshold ?? BigInt(0),
-                };
-                setAgentsData((prevAgentsData) => [...prevAgentsData, parsedData]);
-            }
-        }
-    }, [agentData, gradThreshold]);    
-
-    useEffect(() => {
-        if (index > 0 && !data) {
-            console.log("No more addresses found");
-        }
-    }, [index, data]);
-
-    const [searchQuery, setSearchQuery] = useState("");
     const [filteredAgents, setFilteredAgents] = useState<AgentData[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    useEffect(() => {
+        const fetchAgents = async () => {
+            try {
+                const [response, gradThresholdValue] = await Promise.all([
+                    fetch(`api/tokens`),
+                    readContract({
+                        contract: unsparkingAIContract,
+                        method: "function gradThreshold() returns (uint256)",
+                        params: [],
+                    }),
+                ]);
+
+                if (!response.ok) throw new Error("Failed to fetch data");
+
+                const jsonResponse = await response.json();
+                console.log("API Response:", jsonResponse);
+
+                if (!jsonResponse.tokens || !Array.isArray(jsonResponse.tokens)) {
+                    throw new Error("API response does not contain 'tokens' array.");
+                }
+
+                const rawAgents: RawAgentData[] = jsonResponse.tokens;
+
+                // Convert raw data to `AgentData` type
+                const parsedAgents: AgentData[] = rawAgents.map((agent) =>
+                    parseAgentData(agent, gradThresholdValue ?? BigInt(0))
+                );
+
+                setAgentsData(parsedAgents);
+                setFilteredAgents(parsedAgents);
+            } catch (error) {
+                console.error("Error fetching agents:", error);
+            }
+        };
+
+        fetchAgents();
+    }, []);
+
+    const parseAgentData = (agent: RawAgentData, gradThreshold?: bigint): AgentData => {
+        const data = agent.data; // Extract `data` array
+        const tokenData = data[4]; // Extract the nested token data
+
+        return {
+            creator: data[0],
+            certificate: data[1],
+            pair: data[2],
+            agentToken: data[3],
+            token: tokenData[0],
+            tokenName: tokenData[1],
+            _tokenName: tokenData[2],
+            tokenTicker: tokenData[3],
+            supply: Number(tokenData[4]),
+            price: Number(tokenData[5]),
+            marketCap: parseInt(toEther(BigInt(tokenData[6]))), // TODO: Convert to USD
+            liquidity: Number(tokenData[7]),
+            volume: Number(tokenData[8]),
+            volume24H: Number(tokenData[9]),
+            prevPrice: Number(tokenData[10]),
+            lastUpdated: new Date(Number(tokenData[11]) * 1000), // Convert Unix timestamp to Date
+            description: data[5],
+            image: data[6],
+            twitter: data[7],
+            telegram: data[8],
+            youtube: data[9],
+            website: data[10],
+            trading: data[11],
+            tradingOnUniSwap: data[12],
+            gradThreshold: gradThreshold ?? BigInt(0),
+            reserveB: BigInt(agent.reserves[1]),
+        };
+    };
 
     const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
         let filtered = [...agentsData];
@@ -186,10 +223,6 @@ const Agents = () => {
     useEffect(() => {
         handleFilterChange('search', searchQuery);
     }, [searchQuery, handleFilterChange, agentsData]);
-
-    useEffect(() => {
-        setFilteredAgents(agentsData);
-    }, [agentsData]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
@@ -261,9 +294,9 @@ const Agents = () => {
                                         twitter={agent.twitter}
                                         telegram={agent.telegram}
                                         youtube={agent.youtube}
-                                        pairAddress={agent.pair}
                                         trading={agent.trading}
                                         gradThreshold={agent.gradThreshold}
+                                        reserveB={agent.reserveB}
                                     />
                                 ))
                         ) : (
