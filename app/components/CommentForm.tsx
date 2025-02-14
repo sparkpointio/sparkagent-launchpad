@@ -8,11 +8,14 @@ import { useSendTransaction, useActiveAccount} from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
 import { IconLoader2 } from "@tabler/icons-react";
+import { toast } from "sonner";
+import { ForumMessage } from "./Forums";
 
 interface CommentFormProps {
     isOpen: boolean;
     onClose: () => void;
     forumToken: string;
+    onCommentSubmitted: (newMessage: ForumMessage) => void;
 }
 
 const forumContract = getContract({
@@ -27,7 +30,7 @@ const srkContract = getContract({
     address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
 });
 
-export function CommentForm({ isOpen, onClose, forumToken }: CommentFormProps) {
+export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }: CommentFormProps) {
     const [comment, setComment] = useState("");
     const [validationError, setValidationError] = useState("");
     const { mutate: sendTransaction } = useSendTransaction();
@@ -80,10 +83,19 @@ export function CommentForm({ isOpen, onClose, forumToken }: CommentFormProps) {
                 console.error(error);
                 setIsLoading(false);
             },
-            onSuccess: () => {
+            onSuccess: (response) => {
                 console.log("Transaction successfully executed!");
                 setIsLoading(false);
                 handleDialogClose();
+                toast.success("Comment posted successfully!");
+                const newMessage: ForumMessage = {
+                    id: response.transactionHash,
+                    sender: account.address,
+                    forumToken,
+                    content: comment,
+                    timestamp: Date.now().toString(),
+                };
+                onCommentSubmitted(newMessage);
             },
         });
 

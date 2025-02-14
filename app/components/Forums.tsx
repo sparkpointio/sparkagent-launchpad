@@ -14,7 +14,7 @@ interface ForumsProps {
     agentImage: string;
 }
 
-interface ForumMessage {
+export interface ForumMessage {
     id: string;
     sender: string;
     forumToken: string;
@@ -39,7 +39,12 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
 
     const forumToken = agentCertificate;
     const numberOfMessages = 5;
-    const direction = "up";
+    const direction = "down";
+
+    const insertNewComment = (newMessage: ForumMessage) => {
+        setForumMessagesCount(prevCount => prevCount + 1);
+        setForumMessages(prevMessages => [newMessage, ...prevMessages]);
+    };
 
     const fetchForumMessages = useCallback(async (startIndex: number) => {
         try {
@@ -65,13 +70,6 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
     }, [forumToken]);
 
     useEffect(() => {
-        if (!hasFetchedInitialMessages.current) {
-            fetchForumMessages(0);
-            hasFetchedInitialMessages.current = true;
-        }
-    }, [fetchForumMessages]);
-
-    useEffect(() => {
         const fetchForumMessagesCount = async () => {
             try {
                 const response = await axios.get(`/api/forums/fetch-forum-messages-count`, {
@@ -84,6 +82,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                 });
                 console.log('Forum messages count:', response.data.messagesCount);
                 setForumMessagesCount(response.data.messagesCount);
+                setStartingIndex(response.data.messagesCount);
             } catch (error) {
                 console.error("Error fetching forum messages:", error);
             }
@@ -95,8 +94,15 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
         }
     }, [forumToken]);
 
+    useEffect(() => {
+        if (!hasFetchedInitialMessages.current && forumMessagesCount > 0) {
+            fetchForumMessages(forumMessagesCount);
+            hasFetchedInitialMessages.current = true;
+        }
+    }, [fetchForumMessages, forumMessagesCount]);
+
     const handleShowMore = () => {
-        const newIndex = startingIndex + numberOfMessages;
+        const newIndex = startingIndex - numberOfMessages;
         setStartingIndex(newIndex);
         setIsShowMoreLoading(true);
         fetchForumMessages(newIndex);
@@ -166,7 +172,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                     )}
                 </>
             )}
-            <CommentForm forumToken={agentCertificate} isOpen={isCommentFormOpen} onClose={() => setIsCommentFormOpen(false)} />
+            <CommentForm forumToken={agentCertificate} isOpen={isCommentFormOpen} onClose={() => setIsCommentFormOpen(false)} onCommentSubmitted={insertNewComment} />
         </div>
     );
 };
