@@ -21,7 +21,7 @@ interface CommentFormProps {
 const forumContract = getContract({
     client,
     chain: arbitrumSepolia,
-    address: process.env.NEXT_PUBLIC_SPARKINGAI as string,
+    address: process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
 });
 
 const srkContract = getContract({
@@ -48,7 +48,7 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
             contract: srkContract,
             method: "function approve(address spender, uint256 value)",
             params: [
-                process.env.NEXT_PUBLIC_SPARKINGAI as string,
+                process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
                 BigInt("1000000000000000000")
             ],
         });
