@@ -15,9 +15,6 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { client } from "../client";
-import {getContract, readContract} from "thirdweb";
-import { arbitrumSepolia } from "thirdweb/chains";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 
 interface AgentCardProps {

@@ -89,6 +89,40 @@ const Agents = () => {
     const [filteredAgents, setFilteredAgents] = useState<AgentData[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
 
+    const parseAgentData = useCallback((agent: RawAgentData, gradThreshold?: bigint): AgentData => {
+        const data = agent.data; // Extract `data` array
+        const tokenData = data[4]; // Extract the nested token data
+
+        return {
+            creator: data[0],
+            certificate: data[1],
+            pair: data[2],
+            agentToken: data[3],
+            token: tokenData[0],
+            tokenName: tokenData[1],
+            _tokenName: tokenData[2],
+            tokenTicker: tokenData[3],
+            supply: Number(tokenData[4]),
+            price: Number(tokenData[5]),
+            marketCap: parseInt(toEther(BigInt(tokenData[6]))), // TODO: Convert to USD
+            liquidity: Number(tokenData[7]),
+            volume: Number(tokenData[8]),
+            volume24H: Number(tokenData[9]),
+            prevPrice: Number(tokenData[10]),
+            lastUpdated: new Date(Number(tokenData[11]) * 1000), // Convert Unix timestamp to Date
+            description: data[5],
+            image: data[6],
+            twitter: data[7],
+            telegram: data[8],
+            youtube: data[9],
+            website: data[10],
+            trading: data[11],
+            tradingOnUniSwap: data[12],
+            gradThreshold: gradThreshold ?? BigInt(0),
+            reserveB: BigInt(agent.reserves[1]),
+        };
+    }, []);
+
     useEffect(() => {
         const fetchAgents = async () => {
             try {
@@ -124,41 +158,7 @@ const Agents = () => {
         };
 
         fetchAgents();
-    }, []);
-
-    const parseAgentData = (agent: RawAgentData, gradThreshold?: bigint): AgentData => {
-        const data = agent.data; // Extract `data` array
-        const tokenData = data[4]; // Extract the nested token data
-
-        return {
-            creator: data[0],
-            certificate: data[1],
-            pair: data[2],
-            agentToken: data[3],
-            token: tokenData[0],
-            tokenName: tokenData[1],
-            _tokenName: tokenData[2],
-            tokenTicker: tokenData[3],
-            supply: Number(tokenData[4]),
-            price: Number(tokenData[5]),
-            marketCap: parseInt(toEther(BigInt(tokenData[6]))), // TODO: Convert to USD
-            liquidity: Number(tokenData[7]),
-            volume: Number(tokenData[8]),
-            volume24H: Number(tokenData[9]),
-            prevPrice: Number(tokenData[10]),
-            lastUpdated: new Date(Number(tokenData[11]) * 1000), // Convert Unix timestamp to Date
-            description: data[5],
-            image: data[6],
-            twitter: data[7],
-            telegram: data[8],
-            youtube: data[9],
-            website: data[10],
-            trading: data[11],
-            tradingOnUniSwap: data[12],
-            gradThreshold: gradThreshold ?? BigInt(0),
-            reserveB: BigInt(agent.reserves[1]),
-        };
-    };
+    }, [parseAgentData]);
 
     const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
         let filtered = [...agentsData];
