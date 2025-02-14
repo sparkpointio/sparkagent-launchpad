@@ -34,7 +34,6 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
     const [isShowMoreLoading, setIsShowMoreLoading] = useState(false);
     const [startingIndex, setStartingIndex] = useState(0);
     
-    const hasFetchedInitialMessages = useRef(false);
     const hasFetchedMessagesCount = useRef(false);
 
     const forumToken = agentCertificate;
@@ -64,42 +63,40 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
         } catch (error) {
             console.error("Error fetching forum messages:", error);
         } finally {
-            setIsLoading(false);
             setIsShowMoreLoading(false);
         }
     }, [forumToken]);
 
-    useEffect(() => {
-        const fetchForumMessagesCount = async () => {
-            try {
-                const response = await axios.get(`/api/forums/fetch-forum-messages-count`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    params: {
-                        forumToken,
-                    },
-                });
-                console.log('Forum messages count:', response.data.messagesCount);
-                setForumMessagesCount(response.data.messagesCount);
-                setStartingIndex(response.data.messagesCount);
-            } catch (error) {
-                console.error("Error fetching forum messages:", error);
+    const fetchForumMessagesCount = useCallback(async () => {
+        try {
+            const response = await axios.get(`/api/forums/fetch-forum-messages-count`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                params: {
+                    forumToken,
+                },
+            });
+            console.log('Forum messages count:', response.data.messagesCount);
+            setForumMessagesCount(response.data.messagesCount);
+            setStartingIndex(response.data.messagesCount);
+            if (response.data.messagesCount > 0) {
+                await fetchForumMessages(response.data.messagesCount);
             }
-        };
+        } catch (error) {
+            console.error("Error fetching forum messages:", error);
+            setIsLoading(false);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [forumToken, fetchForumMessages]);
 
+    useEffect(() => {
         if (!hasFetchedMessagesCount.current) {
             fetchForumMessagesCount();
             hasFetchedMessagesCount.current = true;
         }
-    }, [forumToken]);
-
-    useEffect(() => {
-        if (!hasFetchedInitialMessages.current && forumMessagesCount > 0) {
-            fetchForumMessages(forumMessagesCount);
-            hasFetchedInitialMessages.current = true;
-        }
-    }, [fetchForumMessages, forumMessagesCount]);
+    }, [fetchForumMessagesCount]);
 
     const handleShowMore = () => {
         const newIndex = startingIndex - numberOfMessages;
