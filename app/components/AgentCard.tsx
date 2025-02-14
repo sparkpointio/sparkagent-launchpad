@@ -65,8 +65,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
-	const [reserveA, setReserveA] = useState(BigInt(0));
-	const [totalSupply, setTotalSupply] = useState(BigInt(0));
+	const [reserves, setReserves] = useState<bigint[]>([BigInt(0), BigInt(0)]);
 
     useEffect(() => {
 		if (prevImageRef.current === image) return;
@@ -104,27 +103,14 @@ const AgentCard: React.FC<AgentCardProps> = ({
 		address: pairAddress,
 	});
 
-	const tokenContract = getContract({
-		client,
-		chain: arbitrumSepolia,
-		address: certificate,
-	});
-
 	const getDataForSparkingProgress = async () => {
-		const _reserveA = await readContract({
+		const _reserves = await readContract({
 			contract: agentPairContract,
-			method: "function balance() returns (uint256)",
+			method: "function getReserves() returns (uint256, uint256)",
 			params: [],
 		});
 
-		const _totalSupply = await readContract({
-			contract: tokenContract,
-			method: "function totalSupply() returns (uint256)",
-			params: [],
-		});
-
-		setReserveA(_reserveA)
-		setTotalSupply(_totalSupply)
+		setReserves([_reserves[0], _reserves[1]])
 	};
 
 	getDataForSparkingProgress();
@@ -256,7 +242,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</p>
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
 					<div className="px-5">
-						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserveA ? getSparkingProgress(reserveA, totalSupply, gradThreshold) : 0}%`}</p>
+						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserves[1] ? getSparkingProgress(reserves[1], gradThreshold) : 0}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
@@ -264,8 +250,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 									${
 										(!trading)
 											? "bg-sparkyOrange"
-											: reserveA
-												? (getSparkingProgress(reserveA, totalSupply, gradThreshold) >= 100 || !trading
+											: reserves[1]
+												? (getSparkingProgress(reserves[1], gradThreshold) >= 100 || !trading
 													? "bg-sparkyOrange"
 													: "bg-sparkyGreen-200")
 												: 0 
@@ -274,8 +260,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 									width: `${Math.min(
 										(!trading)
 											? 100
-											: reserveA
-												? getSparkingProgress(reserveA, totalSupply, gradThreshold)
+											: reserves[1]
+												? getSparkingProgress(reserves[1], gradThreshold)
 												: 0,
 										100
 									)}%`,

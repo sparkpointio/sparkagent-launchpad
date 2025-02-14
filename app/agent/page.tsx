@@ -43,7 +43,7 @@ interface AgentData {
   website: string;
   trading: boolean;
   tradingOnUniSwap: boolean;
-  reserveA: bigint;
+  reserves: [bigint, bigint];
   totalSupply: bigint;
   gradThreshold: bigint;
 }
@@ -75,25 +75,25 @@ const AgentPage = () => {
 
   useEffect(() => {
     const fetchAgentData = async () => {
-      try {
-        if (agentData) {
-          console.log("Raw agent data:", agentData);
-  
-          const agentPairContract = getContract({
-            client,
-            chain: arbitrumSepolia,
-            address: agentData[2].toString(),
-          });
-  
-          const tokenContract = getContract({
-            client,
-            chain: arbitrumSepolia,
-            address: agentData[1].toString(),
-          });
-  
-          const reserveA = await readContract({
+      if (agentData) {
+        console.log("Raw agent data:", agentData);
+
+        const agentPairContract = getContract({
+          client,
+          chain: arbitrumSepolia,
+          address: agentData[2].toString(),
+        });
+
+        const tokenContract = getContract({
+          client,
+          chain: arbitrumSepolia,
+          address: agentData[1].toString(),
+        });
+
+        try {
+          const reserves = await readContract({
             contract: agentPairContract,
-            method: "function balance() returns (uint256)",
+            method: "function getReserves() returns (uint256, uint256)",
             params: [],
           });
 
@@ -128,24 +128,26 @@ const AgentPage = () => {
             website: agentData[10].toString(),
             trading: agentData[11].valueOf(),
             tradingOnUniSwap: agentData[12]?.valueOf(),
-            reserveA,
+            reserves: [reserves[0], reserves[1]],
             totalSupply,
             gradThreshold: gradThreshold ?? BigInt(0)
           };
 
           console.log("AGENT CERTIFICATE: " + agentData[1].toString());
           console.log("AGENT PAIR ADDRESS: " + agentData[2].toString());
-          console.log("RESERVE A: " + parsedData.reserveA);
+          console.log("RESERVE A: " + parsedData.reserves[1]);
 
           setAgent(parsedData);
-        }
-      } catch (error) {
-        console.error("Error fetching agent data:", error);
-      } finally {
-        if (gradThreshold)
-        {
-          setIsLoading(false);
-        }
+
+          console.log("RESERVE A: " + parsedData.reserves[1]);
+        } catch (error) {
+          console.error("Error fetching reserves:", error);
+        } finally {
+          if (gradThreshold)
+          {
+            setIsLoading(false);
+          }
+        } 
       }
     };
 
@@ -216,10 +218,9 @@ const AgentPage = () => {
                 />
 
                 <SparkingProgressCard
-                  sparkingProgress={agent?.reserveA ? getSparkingProgress(agent.reserveA, agent.totalSupply, agent.gradThreshold) : 0}
-                  ticker={agent.tokenTicker}
-                  gradThreshold={agent.gradThreshold}
-                  trading={agent.trading}
+                    sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold) : 0}
+                    gradThreshold={agent.gradThreshold}
+                    trading={agent.trading}
                 />
 
                 <div className="md:hidden w-full space-y-4">
