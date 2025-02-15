@@ -232,7 +232,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         }
 
         if ((BigInt(purchaseAmount) * BigInt("1000000000000000000")) <= currentFee) {
-            setValidationError("Purchase Amount must be greater that the fee.");
+            setValidationError("Purchase Amount must be greater than the fee.");
             return false;
         }
 
