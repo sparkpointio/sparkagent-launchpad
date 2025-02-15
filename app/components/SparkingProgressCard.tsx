@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { toEther } from "thirdweb";
 import { getFormattedEther } from "../lib/utils/formatting";
+import { cardProperties } from "../lib/utils/style/customStyles";
 
 interface SparkingProgressCardProps {
     sparkingProgress: number;
@@ -17,7 +18,7 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
 }) => {
     const headerProperties = "flex text-3xl justify-right font-bold";
     return (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#1a1d21] dark:text-white h-min border-2 border-black rounded-2xl shadow-md p-5 space-y-4 lg:space-y-6">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={cardProperties + " space-y-4 lg:space-y-6"}>
             <div className="flex items-center">
                 <h2 className={`${headerProperties} mr-2 text-[1.6em]`}>Sparking Progress:</h2>
                 <span className={`text-[1.6em] ${headerProperties} ${

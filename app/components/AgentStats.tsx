@@ -11,12 +11,15 @@ import {
 	IconCircleCheck,
 	IconBrandYoutube,
 	IconLoader3,
+	IconLoader2,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { toast } from "sonner";
+import { cardProperties } from "../lib/utils/style/customStyles";
+import { socialButtonProperties } from "../lib/utils/style/customStyles";
 import { getContract, getContractEvents } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import {client} from "@/app/client";
@@ -50,8 +53,6 @@ const client2 = createPublicClient({
 	transport: http(),
 });
 
-const socialButtonProperties =
-	"w-8 h-8 group flex items-center stroke-white justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-colors dark:border-gray-700";
 const socialIconSize = 20;
 
 const AgentStats: React.FC<AgentStatsProps> = ({
@@ -304,6 +305,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					background: { color: isDarkMode ? '#1a1d21' : '#ffffff' },
 					textColor: isDarkMode ? '#ffffff' : '#000000', // Set label color
 				},
+				grid: {
+					vertLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
+					horzLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
+				},
 			});
 
 			chartInstanceRef.current = chart;
@@ -329,6 +338,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				layout: {
 					background: { color: isDarkMode ? '#1a1d21' : '#ffffff' },
 					textColor: isDarkMode ? '#ffffff' : '#000000', // Update label color dynamically
+				},
+				grid: {
+					vertLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
+					horzLines: {
+						color: isDarkMode ? '#2B2B43' : '#E6E6E6',
+					},
 				},
 			});
 		}
@@ -363,18 +380,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 	return (
 		<motion.div initial={{opacity: 0, scale: 0.95}} animate={{opacity: 1, scale: 1}}
-					className="bg-white dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col h-full relative p-5 md:p-6">
+					className={ cardProperties }>
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden mr-4 hidden md:block">
 					{isLoading && (
-						<motion.div
-							className="absolute inset-0 flex items-center justify-center"
-							animate={{rotate: 360}}
-							transition={{repeat: Infinity, duration: 1, ease: "linear"}}
-						>
-							<IconLoader3 size={32}/>
-						</motion.div>
+						<div className="absolute inset-0 flex items-center justify-center">
+							<IconLoader3 size={32} className="animate-spin"/>
+						</div>
 					)}
 					<motion.div
 						initial={{opacity: 0}}
@@ -397,13 +410,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				<div className="flex flex-col flex-grow md:hidden">
 					<div className="relative w-32 h-32 rounded-full overflow-hidden flex justify-center items-center mx-auto">
 						{isLoading && (
-							<motion.div
-								className="flex items-center justify-center absolute inset-0"
-								animate={{ rotate: 360 }}
-								transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-							>
+							<div className="flex items-center justify-center absolute inset-0">
 								<IconLoader3 size={64} />
-							</motion.div>
+							</div>
 						)}
 						<motion.div
 							initial={{ opacity: 0 }}
@@ -656,24 +665,41 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			{/*	<p className="text-center">Charts are not available as of the moment.</p>*/}
 			{/*</div>*/}
 
-			<div style={{position: "relative"}}>
-				<div ref={chartContainerRef} style={{height: "60vh", width: "100%", paddingRight:"20px"}}/>
+			{chartData.length > 0 ? (
+				<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} style={{ position: "relative" }}>
+					<div ref={chartContainerRef} className="h-[30vh] sm:h-[60vh]" style={{ width: "100%", paddingRight: "20px" }} />
 
-				<div
-					className="text-[#000000] dark:text-[#ffffff]"
-					style={{
-						position: "absolute",
-						top: "50%",
-						right: "-45px", // Align to the right side
-						transform: "translateY(-50%) rotate(90deg)", // Rotate text vertically
-						padding: "2px 4px",
-						fontSize: "12px",
-						zIndex:99,
-					}}
-				>
-					Price in SRK (Gwei)
+					<div
+						className="text-[#000000] dark:text-[#ffffff]"
+						style={{
+							position: "absolute",
+							top: "50%",
+							right: "-50px", // Align to the right side
+							transform: "translateY(-50%) rotate(90deg)", // Rotate text vertically
+							padding: "2px 4px",
+							fontSize: "12px",
+							zIndex: 99,
+						}}
+					>
+						Price in SRK (Gwei)
+					</div>
+				</motion.div>
+			) : (
+				<div className="flex items-center justify-center h-[30vh] sm:h-[60vh]">
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.5 }}
+					>
+						<div className="flex items-center justify-center mb-1">
+							<IconLoader2 size={64} className="animate-spin"/>
+						</div>
+						<span className="text-xl">
+							Loading Chart Data...
+						</span>
+					</motion.div>
 				</div>
-			</div>
+			)}
 		</motion.div>
 	);
 };
