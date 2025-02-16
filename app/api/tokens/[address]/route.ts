@@ -3,10 +3,10 @@ import axios from 'axios';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { address: string } } // Corrected type
+    { params }: { params: Promise<{ address: string }> }
 ): Promise<NextResponse> {
     try {
-        const { address } = params;
+        const address = (await params).address
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
         if (!backendUrl) {
