@@ -65,8 +65,11 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
     const [amount, setAmount] = useState("");
 
     const headerProperties = "flex text-xl justify-right";
-    const buttonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyGreen-500 dark:hover:bg-sparkyGreen-600 transition-all p-4";
-    const activeButton = "bg-sparkyGreen-500 dark:bg-sparkyGreen-600 text-white";
+    const buyButtonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyGreen-500 dark:hover:bg-sparkyGreen-600 transition-all p-4";
+    const sellButtonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyRed-500 dark:hover:bg-sparkyRed-600 transition-all p-4";
+    const swapButtonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyOrange-500 dark:hover:bg-sparkyOrange-600 transition-all p-4";
+    const activeBuyButton = "bg-sparkyGreen-500 dark:bg-sparkyGreen-600 text-white";
+    const activeSellButton = "bg-sparkyRed-500 dark:bg-sparkyRed-600 text-white";
 
     const [srkBalance, setSRKBalance] = useState("");
     const [agentBalance, setAgentBalance] = useState("");
@@ -252,7 +255,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
             <div className="flex flex-row gap-4 mb-4">
                 <button
                     type="button"
-                    className={`${buttonProperties} ${swapType === "buy" ? activeButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
+                    className={`${buyButtonProperties} ${swapType === "buy" ? activeBuyButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
                     onClick={() => setSwapType("buy")}
                     disabled={!trading}
                 >
@@ -260,7 +263,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </button>
                 <button
                     type="button"
-                    className={`${buttonProperties} ${swapType === "sell" ? activeButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
+                    className={`${sellButtonProperties} ${swapType === "sell" ? activeSellButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
                     onClick={() => setSwapType("sell")}
                     disabled={!trading}
                 >
@@ -357,7 +360,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </div>
             </div>
 
-            <button type="button" className={`${buttonProperties} ${!trading ? 'cursor-not-allowed' : ''}`} onClick={handleSwap} disabled={!trading}>Swap</button>
+            <button type="button" className={`${swapButtonProperties} ${!trading ? 'cursor-not-allowed' : ''}`} onClick={handleSwap} disabled={!trading}>Swap</button>
 
             {!trading && (
                 <div className={'bg-[#00d7b2] mt-4 text-white px-3 py-2 text-center text-[0.9em] flex justify-between items-center'}>
@@ -366,7 +369,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                         <Link
                             href={'#'}
                             type="button"
-                            className={`py-2 bg-white text-black px-5 text-[0.9em] dark:text-[#ffffff] ${buttonProperties}}`}
+                            className={`py-2 bg-white text-black px-5 text-[0.9em] dark:text-[#ffffff] ${buyButtonProperties}}`}
                         >
                             Camelot
                         </Link>

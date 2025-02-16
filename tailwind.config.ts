@@ -36,6 +36,18 @@ export default {
           800: '#006E7C',
           900: '#005267',
         },
+        sparkyRed: {
+          DEFAULT: '#FF6B5E',
+          100: '#FFE3E0', // Lighter shade
+          200: '#FFBBB5',
+          300: '#FF958F',
+          400: '#FF7D78',
+          500: '#FF6B5E', // Main color
+          600: '#DB564C', // Darker shade
+          700: '#B7443B',
+          800: '#93342D',
+          900: '#7A2821',
+        },
       },
     },
   },
