@@ -15,9 +15,6 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { client } from "../client";
-import {getContract, readContract} from "thirdweb";
-import { arbitrumSepolia } from "thirdweb/chains";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
 
@@ -34,9 +31,9 @@ interface AgentCardProps {
 	twitter: string;
 	telegram: string;
 	youtube: string;
-	pairAddress: string;
 	trading: boolean;
 	gradThreshold: bigint;
+	reserveB: bigint;
 }
 
 const socialIconSize = 20;
@@ -54,9 +51,9 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	twitter,
 	telegram,
 	youtube,
-	pairAddress,
 	trading,
 	gradThreshold,
+	reserveB,
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
@@ -65,7 +62,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
-	const [reserves, setReserves] = useState<bigint[]>([BigInt(0), BigInt(0)]);
 
     useEffect(() => {
 		if (prevImageRef.current === image) return;
@@ -96,24 +92,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			setTimeout(() => setCopied(false), 3000);
 		}
 	};
-
-	const agentPairContract = getContract({
-		client,
-		chain: arbitrumSepolia,
-		address: pairAddress,
-	});
-
-	const getDataForSparkingProgress = async () => {
-		const _reserves = await readContract({
-			contract: agentPairContract,
-			method: "function getReserves() returns (uint256, uint256)",
-			params: [],
-		});
-
-		setReserves([_reserves[0], _reserves[1]])
-	};
-
-	getDataForSparkingProgress();
 
 	return (
 		<motion.div whileHover={{ scale: 1.02 }} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
@@ -242,7 +220,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</p>
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
 					<div className="px-5">
-						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserves[1] ? getSparkingProgress(reserves[1], gradThreshold) : 0}%`}</p>
+						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserveB ? getSparkingProgress(reserveB, gradThreshold) : 0}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
@@ -250,8 +228,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 									${
 										(!trading)
 											? "bg-sparkyOrange"
-											: reserves[1]
-												? (getSparkingProgress(reserves[1], gradThreshold) >= 100 || !trading
+											: reserveB
+												? (getSparkingProgress(reserveB, gradThreshold) >= 100 || !trading
 													? "bg-sparkyOrange"
 													: "bg-sparkyGreen-200")
 												: 0 
@@ -260,8 +238,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 									width: `${Math.min(
 										(!trading)
 											? 100
-											: reserves[1]
-												? getSparkingProgress(reserves[1], gradThreshold)
+											: reserveB
+												? getSparkingProgress(reserveB, gradThreshold)
 												: 0,
 										100
 									)}%`,

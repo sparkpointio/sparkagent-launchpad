@@ -148,7 +148,7 @@ const AgentPage = () => {
         {
           setIsLoading(false);
         }
-      } 
+      }
     };
 
     fetchAgentData();
@@ -181,23 +181,12 @@ const AgentPage = () => {
             <>
               {/* First Column */}
               <div className="lg:col-span-2 w-full space-y-4">
-                <AgentStats
-                  title={agent._tokenName}
-                  ticker={agent.tokenTicker}
-                  image={agent.image}
-                  imageAlt={agent.tokenName}
-                  certificate={agent.certificate}
-                  description={agent.description}
-                  createdBy={agent.creator}
-                  marketCap={agent.marketCap}
-                  datePublished={new Date(agent.lastUpdated)}
-                  tokenPrice={agent.price}
-                  website={agent.website}
-                  twitter={agent.twitter}
-                  telegram={agent.telegram}
-                  youtube={agent.youtube}
-                  pair={agent.pair}
-                />
+                  <AgentStats
+                      certificate={agent.certificate}
+                      image={agent.image}
+                      tokenName={agent._tokenName}
+                      ticker={agent.tokenTicker}
+                  />
 
                 <div className="hidden md:block w-full space-y-4">
                   <Forums
