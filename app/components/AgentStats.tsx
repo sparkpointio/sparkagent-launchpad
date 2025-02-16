@@ -28,21 +28,46 @@ import axios from "axios";
 import { toTokens, toWei } from "thirdweb";
 
 interface AgentStatsProps {
-	title: string;
-	ticker: string;
-	image: string;
-	imageAlt: string;
 	certificate: string;
-	description: string;
-	createdBy: string;
-	marketCap: number;
-	datePublished: Date;
-	tokenPrice: number;
-	website: string;
-	twitter: string;
-	telegram: string;
-	youtube: string;
-	pair: string;
+	image: string;
+	tokenName: string;
+	ticker: string;
+}
+
+interface RawAgentData {
+	address: string;
+	data: [
+		string, // creator
+		string, // certificate
+		string, // pair
+		string, // agentToken
+		[
+			string, // token
+			string, // tokenName
+			string, // _tokenName
+			string, // tokenTicker
+			string, // supply
+			string, // price
+			string, // marketCap
+			string, // liquidity
+			string, // volume
+			string, // volume24H
+			string, // prevPrice
+			string  // lastUpdated (Unix timestamp)
+		],
+		string, // description
+		string, // image
+		string, // twitter
+		string, // telegram
+		string, // youtube
+		string, // website
+		boolean, // trading
+		boolean // tradingOnUniSwap
+	];
+	reserves: [
+		string, // Reserve A
+		string, // Reserve B
+	]
 }
 
 const client2 = createPublicClient({
@@ -55,21 +80,10 @@ const socialButtonProperties =
 const socialIconSize = 20;
 
 const AgentStats: React.FC<AgentStatsProps> = ({
-	image,
-	imageAlt,
-	title,
-	ticker,
 	certificate,
-	description,
-	createdBy,
-	marketCap,
-	datePublished,
-	tokenPrice,
-	website,
-	twitter,
-	telegram,
-	youtube,
-	pair,
+	image,
+   	tokenName,
+	ticker,
 }) => {
 	const [copied, setCopied] = useState(false);
 	//const [isDarkMode, setIsDarkMode] = useState(false);
@@ -81,45 +95,73 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
 
-    useEffect(() => {
-		if (prevImageRef.current === image) return;
-		prevImageRef.current = image;
-		updateImageSrc(image, blockiesIcon, setImgSrc, setIsLoading);
-	}, [image, blockiesIcon, imgSrc]);
+	const [agentData, setAgentData] = useState<RawAgentData | null>(null);
+
+	useEffect(() => {
+		const fetchTokenData = async () => {
+			try {
+				setIsLoading(true);
+				const response = await fetch(`/api/tokens/${certificate}`);
+				const result = await response.json();
+
+				if (result.data) {
+					setAgentData(result.data);
+				}
+			} catch (error) {
+				console.error("Error fetching updated token data:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchTokenData();
+	}, [certificate]);
+
+	useEffect(() => {
+		if (agentData) {
+			if (prevImageRef.current === agentData.data[6]) return;
+			prevImageRef.current = agentData.data[6];
+			updateImageSrc(agentData.data[6], blockiesIcon, setImgSrc, setIsLoading);
+		}
+	}, [agentData, blockiesIcon, imgSrc]);
 
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				console.log("Certificate for Market Cap:", certificate); // Add this line
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate);
-				setConvertedMarketCap(result.toFixed(2));
+				if(agentData) {
+					console.log("Certificate for Market Cap:", certificate); // Add this line
+					const result = await convertCryptoToFiat(Number(agentData.data[4][6]), "SRK", "USD", certificate);
+					setConvertedMarketCap(result.toFixed(2));
+				}
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
 				console.log(error);
 			}
 		};
 	
-		if (marketCap > 0) {
+		if (agentData && Number(agentData.data[4][6]) > 0) {
 			convertMarketCap();
 		}
-	}, [certificate, error, marketCap]);
+	}, [certificate, error, agentData]);
 	
 	useEffect(() => {
 		const convertTokenPrice = async () => {
 			try {
-				console.log("Certificate for Token Price:", certificate); // Add this line
-				const result = await convertCryptoToFiat(tokenPrice, "SRK", "USD", certificate);
-				setConvertedTokenPrice(result.toFixed(2));
+				if (agentData) {
+					console.log("Certificate for Token Price:", certificate); // Add this line
+					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate);
+					setConvertedTokenPrice(result.toFixed(2));
+				}
 			} catch (err) {
 				setError("Error converting token price to USD: " + err);
 				console.log(error);
 			}
 		};
-	
-		if (tokenPrice > 0) {
+
+		if (agentData && Number(agentData.data[4][5]) > 0) {
 			convertTokenPrice();
 		}
-	}, [certificate, error, tokenPrice]);
+	}, [certificate, error, agentData]);
 
 	/*useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');
@@ -141,104 +183,110 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 	const fetchStoredEvents = useCallback(async () => {
 		try {
-			const response = await axios.get(`https://laravel-boilerplate.kinameansbusiness.com/api/storage/get/swap_events_${pair}`);
+			if(agentData) {
+				const response = await axios.get(`https://laravel-boilerplate.kinameansbusiness.com/api/storage/get/swap_events_${agentData.data[2]}`);
 
-			console.log("fetchStoredEvents");
-			console.log(response.data);
+				console.log("fetchStoredEvents");
+				console.log(response.data);
 
-			return (response.data.data ?? []).map((event: { blockNumber: bigint; timestamp: number; }) => ({
-				...event,
-				blockNumber: BigInt(event.blockNumber), // Convert string back to BigInt
-				timestamp: Number(event.timestamp), // Convert back to number
-			}));
+				return (response.data.data ?? []).map((event: { blockNumber: bigint; timestamp: number; }) => ({
+					...event,
+					blockNumber: BigInt(event.blockNumber), // Convert string back to BigInt
+					timestamp: Number(event.timestamp), // Convert back to number
+				}));
+			}
 		} catch (error) {
 			console.error("Error fetching stored events:", error);
 			return [];
 		}
-	}, [pair]);
+	}, [agentData]);
 
 	const saveSwapEvents = useCallback(async (events: { blockNumber: bigint; value: bigint; timestamp: bigint }[]) => {
 		try {
-			// Convert BigInt values to string
-			const sanitizedEvents = events.map(event => ({
-				...event,
-				blockNumber: event.blockNumber.toString(), // Convert BigInt to string
-				timestamp: event.timestamp.toString(), // Just in case
-			}));
+			if(agentData) {
+				// Convert BigInt values to string
+				const sanitizedEvents = events.map(event => ({
+					...event,
+					blockNumber: event.blockNumber.toString(), // Convert BigInt to string
+					timestamp: event.timestamp.toString(), // Just in case
+				}));
 
-			await axios.post("https://laravel-boilerplate.kinameansbusiness.com/api/storage/set", {
-				key: "swap_events_" + pair,
-				value: sanitizedEvents,
-			});
+				await axios.post("https://laravel-boilerplate.kinameansbusiness.com/api/storage/set", {
+					key: "swap_events_" + agentData.data[2],
+					value: sanitizedEvents,
+				});
+			}
 		} catch (error) {
 			console.error("Error saving swap events:", error);
 		}
-	}, [pair]);
+	}, [agentData]);
 
 	const fetchNewSwapEvents = useCallback(async (latestBlockStored: bigint | null) => {
 		try {
-			const fromBlock = latestBlockStored ? latestBlockStored + BigInt("1") : BigInt("118602497");
+			if(agentData) {
+				const fromBlock = latestBlockStored ? latestBlockStored + BigInt("1") : BigInt("118602497");
 
-			const contract = getContract({ client, address: pair, chain: arbitrumSepolia });
-			const swapEventTopic: Hex =
-				"0x298c349c742327269dc8de6ad66687767310c948ea309df826f5bd103e19d207";
+				const contract = getContract({client, address: agentData.data[2], chain: arbitrumSepolia});
+				const swapEventTopic: Hex =
+					"0x298c349c742327269dc8de6ad66687767310c948ea309df826f5bd103e19d207";
 
-			const swapEventAbi = {
-				anonymous: false,
-				name: "Swap",
-				type: "event",
-				inputs: [
-					{ indexed: false, internalType: "uint256", name: "amount0In", type: "uint256" },
-					{ indexed: false, internalType: "uint256", name: "amount0Out", type: "uint256" },
-					{ indexed: false, internalType: "uint256", name: "amount1In", type: "uint256" },
-					{ indexed: false, internalType: "uint256", name: "amount1Out", type: "uint256" },
-				],
-			} as const;
+				const swapEventAbi = {
+					anonymous: false,
+					name: "Swap",
+					type: "event",
+					inputs: [
+						{indexed: false, internalType: "uint256", name: "amount0In", type: "uint256"},
+						{indexed: false, internalType: "uint256", name: "amount0Out", type: "uint256"},
+						{indexed: false, internalType: "uint256", name: "amount1In", type: "uint256"},
+						{indexed: false, internalType: "uint256", name: "amount1Out", type: "uint256"},
+					],
+				} as const;
 
-			const preparedEvent = { abiEvent: swapEventAbi, hash: swapEventTopic, topics: [] as Hex[] };
+				const preparedEvent = {abiEvent: swapEventAbi, hash: swapEventTopic, topics: [] as Hex[]};
 
-			const events = await getContractEvents({
-				contract,
-				fromBlock,
-				toBlock: "latest",
-				events: [preparedEvent],
-			});
+				const events = await getContractEvents({
+					contract,
+					fromBlock,
+					toBlock: "latest",
+					events: [preparedEvent],
+				});
 
-			console.log("Raw Fetched Events")
-			console.log(events)
+				console.log("Raw Fetched Events")
+				console.log(events)
 
-			const formattedData = events.map((event) => {
-				const { amount0In, amount0Out, amount1In, amount1Out } = event.args;
-				let price = 0;
+				const formattedData = events.map((event) => {
+					const {amount0In, amount0Out, amount1In, amount1Out} = event.args;
+					let price = 0;
 
-				if (Number(amount0Out) > 0 && Number(amount1In) > 0) {
-					// Buy Agent Token (SRK → Agent Token)
-					price = Number(amount1In) / Number(amount0Out);
-				} else if (Number(amount1Out) > 0 && Number(amount0In) > 0) {
-					// Sell Agent Token (Agent Token → SRK)
-					price = Number(amount1Out) / Number(amount0In);
-				}
+					if (Number(amount0Out) > 0 && Number(amount1In) > 0) {
+						// Buy Agent Token (SRK → Agent Token)
+						price = Number(amount1In) / Number(amount0Out);
+					} else if (Number(amount1Out) > 0 && Number(amount0In) > 0) {
+						// Sell Agent Token (Agent Token → SRK)
+						price = Number(amount1Out) / Number(amount0In);
+					}
 
-				return {
-					blockNumber: event.blockNumber,
-					value: price,
-				};
-			});
+					return {
+						blockNumber: event.blockNumber,
+						value: price,
+					};
+				});
 
-			return await getEventTimestamps(formattedData);
+				return await getEventTimestamps(formattedData);
+			}
 		} catch (error) {
 			console.error("Error fetching new swap events:", error);
 			return [];
 		}
-	}, [pair]);
+	}, [agentData]);
 
 	const initializeSwapEvents = useCallback(async () => {
-		const storedEvents = await fetchStoredEvents();
+		const storedEvents = (await fetchStoredEvents()) || [];
 		const latestBlockStored = storedEvents.length ? storedEvents[storedEvents.length - 1].blockNumber : null;
 
 		console.log("latestBlockStored: " + latestBlockStored);
 
-		const newEvents = await fetchNewSwapEvents(latestBlockStored);
+		const newEvents = (await fetchNewSwapEvents(latestBlockStored)) || [];
 
 		console.log("newEvents");
 		console.log(newEvents);
@@ -384,7 +432,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					>
 						<Image
 							src={imgSrc}
-							alt={imageAlt || "Card image"}
+							alt={agentData ? agentData.data[4][2] : 'Card image'}
 							layout="fill"
 							objectFit="cover"
 							className="object-cover"
@@ -413,7 +461,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						>
 							<Image
 								src={imgSrc}
-								alt={imageAlt || "Card image"}
+								alt={tokenName}
 								layout="fill"
 								objectFit="cover"
 								className="object-cover"
@@ -433,14 +481,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										}
 									}}>
 										<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600 truncate whitespace-pre-line">
-											{title + " (" + ticker + ")"}
+											{(agentData ? agentData.data[4][2] : '') + " (" + (agentData ? agentData.data[4][3] : '') + ")"}
 										</h2>
 									</Link>
 								</div>
 								<div className="flex space-x-1 mb-4">
-									{website && (
+									{agentData && (
 										<button
-											onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[6] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="Website"
 											type="button"
@@ -448,9 +496,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											<IconWorld size={socialIconSize} />
 										</button>
 									)}
-									{telegram && (
+									{agentData && (
 										<button
-											onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[8] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="Telegram"
 											type="button"
@@ -458,9 +506,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											<IconBrandTelegram size={socialIconSize} />
 										</button>
 									)}
-									{twitter && (
+									{agentData && (
 										<button
-											onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[7] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="X"
 											type="button"
@@ -468,9 +516,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											<IconBrandX size={socialIconSize} />
 										</button>
 									)}
-									{youtube && (
+									{agentData && (
 										<button
-											onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[9] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="YouTube"
 											type="button"
@@ -502,11 +550,11 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<p className="px-5 mb-2 font-normal flex justify-between">
 								<span>{"Created by:"}</span>
 								<Link
-									href={`https://sepolia.arbiscan.io/address/${createdBy}`}
+									href={`https://sepolia.arbiscan.io/address/${(agentData) ? agentData.data[0] : ''}`}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span className="hover:text-sparkyOrange-600">{truncateHash(createdBy)}</span>
+									<span className="hover:text-sparkyOrange-600">{truncateHash((agentData) ? agentData.data[0] : '')}</span>
 								</Link>
 							</p>
 							<p className="px-5 mb-2 font-normal flex justify-between">
@@ -524,12 +572,12 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<p className="px-5 mb-2 font-normal flex justify-between">
 								<span>{"Price:"}</span>
 								<span className="font-bold">
-									{formatNumber(tokenPrice) + " SRK"}
+									{formatNumber(agentData ? Number(agentData.data[4][5]) : Number(0)) + " SRK"}
 								</span>
 							</p>
-							<p className="px-5 font-normal whitespace-pre-line">{description}</p>
+							<p className="px-5 font-normal whitespace-pre-line">{ (agentData) ? agentData.data[5] : '' }</p>
 							<p className="font-normal text-gray-400 text-xs px-5 text-right">
-								{`${getTimeAgo(datePublished)}`}
+								{`${getTimeAgo(agentData ? new Date(agentData.data[4][11]) : new Date())}`}
 							</p>
 						</div>
 					</div>
@@ -540,7 +588,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						<div className="flex justify-between items-center mb-4">
 							<Link href={""}>
 								<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
-									{`${title} (${ticker})`}
+									{`${tokenName} (${ticker})`}
 								</h2>
 							</Link>
 							<div className="flex space-x-1 items-center">
@@ -548,41 +596,41 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 									<p>Created by:</p>
 									<Link href="">
 										<span
-											className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(createdBy)}`}</span>
+											className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(agentData ? agentData.data[0] : '')}`}</span>
 									</Link>
 								</div>
-								{website && (
+								{agentData && agentData.data[10] && (
 									<button
 										className={socialButtonProperties}
-										onClick={() => window.open(website, "_blank", "noopener, noreferrer")}
+										onClick={() => window.open(agentData ? agentData.data[10] : '', "_blank", "noopener, noreferrer")}
 										title="Website"
 									>
 										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
-								{telegram && (
+								{agentData && agentData.data[8] && (
 									<button
 										className={socialButtonProperties}
-										onClick={() => window.open(telegram, "_blank", "noopener, noreferrer")}
+										onClick={() => window.open(agentData ? agentData.data[8] : '', "_blank", "noopener, noreferrer")}
 										title="Telegram"
 									>
 										<IconBrandTelegram size={socialIconSize}
 														   className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
-								{twitter && (
+								{agentData && agentData.data[7] && (
 									<button
 										className={socialButtonProperties}
-										onClick={() => window.open(twitter, "_blank", "noopener, noreferrer")}
+										onClick={() => window.open(agentData ? agentData.data[7] : '', "_blank", "noopener, noreferrer")}
 										title="X"
 									>
 										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black"/>
 									</button>
 								)}
-								{youtube && (
+								{agentData && agentData.data[9] && (
 									<button
 										className={socialButtonProperties}
-										onClick={() => window.open(youtube, "_blank", "noopener, noreferrer")}
+										onClick={() => window.open(agentData ? agentData.data[9] : '', "_blank", "noopener, noreferrer")}
 										title="YouTube"
 									>
 										<IconBrandYoutube size={socialIconSize}
@@ -625,18 +673,18 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<div className="flex flex-col w-full sm:w-auto">
 								<span>Price</span>
 								<span className="font-bold">
-									{formatNumber(tokenPrice) + " SRK"}
+									{formatNumber(agentData ? Number(agentData.data[4][5]) : 0) + " SRK"}
 								</span>
 							</div>
 						</div>
-						<p className="font-normal text-sm my-2">{description}</p>
+						<p className="font-normal text-sm my-2">{agentData ? agentData.data[5] : ''}</p>
 					</div>
 					<div className="truncate -mx-5 flex justify-end space-x-2 px-5">
 						<p className="font-normal text-gray-400 text-xs text-right mr-2">
 							{`Created at`}
 						</p>
 						<p className="font-bold text-xs text-right">
-							{`${getTimeAgo(datePublished)}`}
+							{`${getTimeAgo(agentData ? new Date(agentData.data[4][11]) : new Date())}`}
 						</p>
 					</div>
 				</div>

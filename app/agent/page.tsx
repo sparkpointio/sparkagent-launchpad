@@ -156,21 +156,10 @@ const AgentPage = () => {
         <div className="lg:col-span-2 w-full space-x-1.5">
           {agent && (
             <AgentStats
-              title={agent._tokenName}
-              ticker={agent.tokenTicker}
-              image={agent.image}
-              imageAlt={agent.tokenName}
               certificate={agent.certificate}
-              description={agent.description}
-              createdBy={agent.creator}
-              marketCap={agent.marketCap}
-              datePublished={new Date(agent.lastUpdated)}
-              tokenPrice={agent.price}
-              website={agent.website}
-              twitter={agent.twitter}
-              telegram={agent.telegram}
-              youtube={agent.youtube}
-              pair={agent.pair}
+              image={agent.image}
+              tokenName={agent._tokenName}
+              ticker={agent.tokenTicker}
             />
           )}
         </div>
