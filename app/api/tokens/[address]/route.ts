@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import axios from 'axios';
 
-export async function GET(req: NextRequest, { params }: { params: { address: string } }) {
+export async function GET(req: NextRequest, context: { params: { address: string } }) {
     try {
+        const { params } = context;
         const { address } = params;
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
