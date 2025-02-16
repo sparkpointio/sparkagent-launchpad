@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(
     request: NextRequest,
-    context: { params: { address: string } }
-) {
+    { params }: { params: { address: string } } // Corrected type
+): Promise<NextResponse> {
     try {
-        const { address } = context.params;
+        const { address } = params;
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
         if (!backendUrl) {
