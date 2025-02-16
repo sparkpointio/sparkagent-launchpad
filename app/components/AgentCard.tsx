@@ -16,6 +16,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
+import { socialButtonProperties } from "../lib/utils/style/customStyles";
 
 interface AgentCardProps {
 	title: string;
@@ -35,8 +36,6 @@ interface AgentCardProps {
 	reserveB: bigint;
 }
 
-const socialButtonProperties =
-	"w-8 h-8 flex items-center justify-center font-medium border border-black rounded-lg hover:bg-sparkyOrange-200 transition-all";
 const socialIconSize = 20;
 
 const AgentCard: React.FC<AgentCardProps> = ({
@@ -105,13 +104,9 @@ const AgentCard: React.FC<AgentCardProps> = ({
 			}}>
 				<div className="relative w-full h-64 rounded-t-2xl overflow-hidden flex items-center justify-center">
 					{isLoading && (
-						<motion.div
-							className="flex items-center justify-center absolute inset-0"
-							animate={{ rotate: 360 }}
-							transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-						>
-							<IconLoader3 size={64} />
-						</motion.div>
+						<div className="flex items-center justify-center absolute inset-0">
+							<IconLoader3 size={64} className="animate-spin"/>
+						</div>
 					)}
 					<motion.div
 						initial={{ opacity: 0 }}
