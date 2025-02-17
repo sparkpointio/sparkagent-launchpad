@@ -1,10 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Form from "@radix-ui/react-form";
 import { buttonVariants } from '../components/variants/button-variants';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formsDialogBackgroundOverlayProperties, formsDialogContentProperties, formsTextBoxProperties } from "../lib/utils/style/customStyles";
-import { getContract, prepareContractCall } from "thirdweb";
-import { useSendTransaction, useActiveAccount} from "thirdweb/react";
+import { getContract, prepareContractCall, readContract } from "thirdweb";
+import { useSendTransaction, useActiveAccount } from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
 import { IconLoader2 } from "@tabler/icons-react";
@@ -33,10 +33,33 @@ const srkContract = getContract({
 export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }: CommentFormProps) {
     const [comment, setComment] = useState("");
     const [validationError, setValidationError] = useState("");
+    const [maxMessageLength, setMaxMessageLength] = useState(10);
+    const [minMessageLength, setMinMessageLength] = useState(0);
     const { mutate: sendTransaction } = useSendTransaction();
     const [isLoading, setIsLoading] = useState(false);
 
     const account = useActiveAccount();
+
+    useEffect(() => {
+        const fetchMaxMessageLength = async () => {
+            const maxLength = await readContract({
+                contract: forumContract,
+                method: "function maxMessageLength() returns (uint256)",
+            });
+            setMaxMessageLength(Number(maxLength));
+        };
+
+        const fetchMinMessageLength = async () => {
+            const minLength = await readContract({
+                contract: forumContract,
+                method: "function minMessageLength() returns (uint256)",
+            });
+            setMinMessageLength(Number(minLength));
+        }
+
+        fetchMaxMessageLength();
+        fetchMinMessageLength();
+    }, []);
 
     if (!account) {
         return null;
@@ -114,6 +137,16 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
             return;
         }
 
+        if (comment.length > maxMessageLength) {
+            setValidationError("Comment is too long.");
+            return;
+        }
+
+        if (comment.length < minMessageLength) {
+            setValidationError("Comment is too short.");
+            return;
+        }
+
         approveSRK();
 
         console.log("Comment submitted:", comment);
@@ -172,7 +205,7 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
                                 </div>
                                 <Form.Control asChild>
                                     <textarea
-                                        className={`w-full h-[5.7rem] mb-0 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        className={`w-full h-[5.7rem] px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                         name="comment"
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
@@ -180,10 +213,13 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
                                         placeholder='Write your comment here...'
                                     />
                                 </Form.Control>
+                                <p className={`text-right text-sm ${comment.length > maxMessageLength ? 'text-red-500' : 'text-gray-500'}`} >
+                                    {comment.length}/{maxMessageLength}
+                                </p>
                             </Form.Field>
 
                             {validationError && (
-                                <p className="mt-2 text-center text-red-500 text-[0.9em]">{validationError}</p>
+                                <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
                             )}
 
                             <button
