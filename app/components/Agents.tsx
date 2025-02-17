@@ -4,7 +4,7 @@ import AgentSearchBar from "./AgentSearchBar";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
 import { client } from "../client";
-import { IconLoader3 } from "@tabler/icons-react";
+import { IconLoader2 } from "@tabler/icons-react";
 
 const unsparkingAIContract = getContract({
     client,
@@ -19,6 +19,7 @@ import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 const Agents = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const agentsPerPage = 6;
 
     interface AgentData {
@@ -163,6 +164,17 @@ const Agents = () => {
         fetchAgents();
     }, [parseAgentData]);
 
+    useEffect(() => {
+        const handleResize = () => {
+            setScreenWidth(window.innerWidth);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
     const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
         let filtered = [...agentsData];
 
@@ -237,7 +249,7 @@ const Agents = () => {
 
     const getPageNumbers = () => {
         const pageNumbers = [];
-        const maxPagesToShow = 3;
+        const maxPagesToShow = screenWidth < 768 ? 3 : 5;
         const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
         const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
@@ -280,7 +292,7 @@ const Agents = () => {
                     {isLoading && (
                         <div className="py-[100px]">
                             <div className="flex items-center justify-center inset-0 mb-2">
-                                <IconLoader3 size={64} className="animate-spin text-gray-600 dark:text-[#ffffff]" />
+                                <IconLoader2 size={64} className="animate-spin text-gray-600 dark:text-[#ffffff]" />
                             </div>
                             <p className="text-center dark:text-[#ffffff]">Loading Agent Tokens</p>
                         </div>
