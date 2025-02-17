@@ -7,6 +7,10 @@ import { CommentForm } from "./CommentForm";
 import { motion } from "framer-motion";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useCallback } from "react";
+import { useActiveAccount } from "thirdweb/react";
+import { getContract, readContract, toEther } from "thirdweb";
+import { client } from '../client';
+import { arbitrumSepolia } from "thirdweb/chains";
 
 interface ForumsProps {
     agentCertificate: string;
@@ -26,6 +30,17 @@ export interface ForumMessage {
     };
 }
 
+const forumContract = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
+});
+
+const burnAmount = readContract({
+    contract: forumContract,
+    method: "function defaultBurnAmount() returns (uint256)",
+});
+
 const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage }) => {
     const [forumMessages, setForumMessages] = useState<ForumMessage[]>([]);
     const [forumMessagesCount, setForumMessagesCount] = useState<number>(0);
@@ -33,12 +48,30 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
     const [isLoading, setIsLoading] = useState(true);
     const [isShowMoreLoading, setIsShowMoreLoading] = useState(false);
     const [startingIndex, setStartingIndex] = useState(0);
+    const [isWalletConnected, setIsWalletConnected] = useState(false);
+    const [fetchedBurnAmount, setFetchedBurnAmount] = useState(BigInt(0));
     
     const hasFetchedMessagesCount = useRef(false);
 
     const forumToken = agentCertificate;
     const numberOfMessages = 5;
     const direction = "down";
+
+    const account = useActiveAccount();
+
+    useEffect(() => {
+        if (account) {
+            setIsWalletConnected(true);
+        }
+    } , [account]);
+
+    useEffect(() => {
+        async function fetchBurnAmount() {
+            const burnAmountValue = await burnAmount;
+            setFetchedBurnAmount(burnAmountValue);
+        }
+        fetchBurnAmount();
+    }, []);
 
     const insertNewComment = (newMessage: ForumMessage) => {
         setForumMessagesCount(prevCount => prevCount + 1);
@@ -108,14 +141,22 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
     return (
         <div className="flex flex-col space-y-4 justify-center items-center">
             <button
+                type="button"
                 onClick={() => setIsCommentFormOpen(true)}
+                disabled={!isWalletConnected}
                 className={buttonVariants({
                     variant: "outline",
                     size: "xl",
-                    className: 'w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2'
+                    className: `w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2 ${!isWalletConnected ? 'opacity-50 cursor-not-allowed' : ''}`,
                 })}
             >
-                <span>Comment <br />(Burn 10,000 SRK)</span>
+                {
+                    isWalletConnected ? (
+                        <span>Comment <br />(Burn {BigInt(toEther(fetchedBurnAmount))} SRK)</span>
+                    ) : (
+                        <span>Connect Wallet to Comment</span>
+                    )
+                }
             </button>
 
             {isLoading ? (
@@ -140,7 +181,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                             id={message.id}
                             sender={message.sender}
                             content={message.content}
-                            messageTimestamp={new Date(Number(message.timestamp))}
+                            messageTimestamp={new Date(Number(message.timestamp) * 1000)}
                             agentCertificate={agentCertificate}
                             agentName={agentName}
                             agentImage={agentImage}

@@ -4,7 +4,7 @@ import AgentSearchBar from "./AgentSearchBar";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
 import { client } from "../client";
-import { IconLoader3 } from "@tabler/icons-react";
+import { IconLoader2 } from "@tabler/icons-react";
 
 const unsparkingAIContract = getContract({
     client,
@@ -235,9 +235,8 @@ const Agents = () => {
     const currentAgents = filteredAgents.slice(indexOfFirstAgent, indexOfLastAgent);
     const totalPages = Math.ceil(filteredAgents.length / agentsPerPage);
 
-    const getPageNumbers = () => {
+    const getPageNumbers = (maxPagesToShow: number ) => {
         const pageNumbers = [];
-        const maxPagesToShow = 3;
         const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
         const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
@@ -280,7 +279,7 @@ const Agents = () => {
                     {isLoading && (
                         <div className="py-[100px]">
                             <div className="flex items-center justify-center inset-0 mb-2">
-                                <IconLoader3 size={64} className="animate-spin text-gray-600 dark:text-[#ffffff]" />
+                                <IconLoader2 size={64} className="animate-spin text-gray-600 dark:text-[#ffffff]" />
                             </div>
                             <p className="text-center dark:text-[#ffffff]">Loading Agent Tokens</p>
                         </div>
@@ -328,15 +327,28 @@ const Agents = () => {
                                 >
                                     {<IconArrowLeft />}
                                 </button>
-                                {getPageNumbers().map((pageNumber) => (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => handlePageChange(pageNumber)}
-                                        className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                ))}
+                                <section className="hidden md:block">
+                                    {getPageNumbers(5).map((pageNumber) => (
+                                        <button
+                                            key={pageNumber}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                            className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    ))}
+                                </section>
+                                <section className="block md:hidden">
+                                    {getPageNumbers(3).map((pageNumber) => (
+                                        <button
+                                            key={pageNumber}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                            className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    ))}
+                                </section>
                                 <button
                                     onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                     className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"

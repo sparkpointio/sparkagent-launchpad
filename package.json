@@ -28,6 +28,7 @@
     "lucide-react": "^0.473.0",
     "marked": "^15.0.6",
     "next": "15.1.4",
+    "obscenity": "^0.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sonner": "^1.7.4",
