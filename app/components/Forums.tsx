@@ -36,7 +36,7 @@ const forumContract = getContract({
     address: process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
 });
 
-const burnAmount = await readContract({
+const burnAmount = readContract({
     contract: forumContract,
     method: "function defaultBurnAmount() returns (uint256)",
 });
@@ -49,6 +49,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
     const [isShowMoreLoading, setIsShowMoreLoading] = useState(false);
     const [startingIndex, setStartingIndex] = useState(0);
     const [isWalletConnected, setIsWalletConnected] = useState(false);
+    const [fetchedBurnAmount, setFetchedBurnAmount] = useState(BigInt(0));
     
     const hasFetchedMessagesCount = useRef(false);
 
@@ -63,6 +64,14 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
             setIsWalletConnected(true);
         }
     } , [account]);
+
+    useEffect(() => {
+        async function fetchBurnAmount() {
+            const burnAmountValue = await burnAmount;
+            setFetchedBurnAmount(burnAmountValue);
+        }
+        fetchBurnAmount();
+    }, []);
 
     const insertNewComment = (newMessage: ForumMessage) => {
         setForumMessagesCount(prevCount => prevCount + 1);
@@ -143,7 +152,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
             >
                 {
                     isWalletConnected ? (
-                        <span>Comment <br />(Burn {BigInt(toEther(burnAmount))} SRK)</span>
+                        <span>Comment <br />(Burn {BigInt(toEther(fetchedBurnAmount))} SRK)</span>
                     ) : (
                         <span>Connect Wallet to Comment</span>
                     )
