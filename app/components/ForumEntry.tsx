@@ -8,6 +8,13 @@ import { useEffect, useRef, useState } from "react";
 import { updateImageSrc } from "../lib/utils/utils";
 import { IconLoader3 } from "@tabler/icons-react";
 import { cardProperties } from "../lib/utils/style/customStyles";
+import {
+    CensorContext,
+	RegExpMatcher,
+	TextCensor,
+	englishDataset,
+	englishRecommendedTransformers,
+} from 'obscenity';
 
 interface ForumEntryProps {
     id: string;
@@ -48,6 +55,15 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
         updateImageSrc(agentImage, blockiesIcon, setImgSrc, setIsLoading);
     }, [agentImage, blockiesIcon, imgSrc]);
 
+    const matcher = new RegExpMatcher({
+        ...englishDataset.build(),
+        ...englishRecommendedTransformers,
+    });
+
+    const asteriskStrategy = (ctx: CensorContext) => '*'.repeat(ctx.matchLength);
+    const censor = new TextCensor().setStrategy(asteriskStrategy);
+    const matches = matcher.getAllMatches(content);
+
     const headerProperties = "font-bold text-sparkyOrange-600 mx-1";
 
     return (
@@ -63,7 +79,7 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
                 </div>
                 <span className="ml-auto">{formatTimestamp(messageTimestamp)}</span>
             </div>
-            <p>{content}</p>
+            <p>{censor.applyTo(content, matches)}</p>
 
             {/* Agent Reply Area */}
             {agentMessage && (
