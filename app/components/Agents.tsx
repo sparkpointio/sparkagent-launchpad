@@ -19,7 +19,6 @@ import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 const Agents = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
     const agentsPerPage = 6;
 
     interface AgentData {
@@ -164,17 +163,6 @@ const Agents = () => {
         fetchAgents();
     }, [parseAgentData]);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setScreenWidth(window.innerWidth);
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
-
     const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
         let filtered = [...agentsData];
 
@@ -247,9 +235,8 @@ const Agents = () => {
     const currentAgents = filteredAgents.slice(indexOfFirstAgent, indexOfLastAgent);
     const totalPages = Math.ceil(filteredAgents.length / agentsPerPage);
 
-    const getPageNumbers = () => {
+    const getPageNumbers = (maxPagesToShow: number ) => {
         const pageNumbers = [];
-        const maxPagesToShow = screenWidth < 768 ? 3 : 5;
         const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
         const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
@@ -340,15 +327,28 @@ const Agents = () => {
                                 >
                                     {<IconArrowLeft />}
                                 </button>
-                                {getPageNumbers().map((pageNumber) => (
-                                    <button
-                                        key={pageNumber}
-                                        onClick={() => handlePageChange(pageNumber)}
-                                        className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
-                                    >
-                                        {pageNumber}
-                                    </button>
-                                ))}
+                                <section className="hidden md:block">
+                                    {getPageNumbers(5).map((pageNumber) => (
+                                        <button
+                                            key={pageNumber}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                            className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    ))}
+                                </section>
+                                <section className="block md:hidden">
+                                    {getPageNumbers(3).map((pageNumber) => (
+                                        <button
+                                            key={pageNumber}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                            className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    ))}
+                                </section>
                                 <button
                                     onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                     className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"
