@@ -8,6 +8,9 @@ import { motion } from "framer-motion";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useCallback } from "react";
 import { useActiveAccount } from "thirdweb/react";
+import { getContract, readContract, toEther } from "thirdweb";
+import { client } from '../client';
+import { arbitrumSepolia } from "thirdweb/chains";
 
 interface ForumsProps {
     agentCertificate: string;
@@ -26,6 +29,17 @@ export interface ForumMessage {
         timestamp: string;
     };
 }
+
+const forumContract = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
+});
+
+const burnAmount = await readContract({
+    contract: forumContract,
+    method: "function defaultBurnAmount() returns (uint256)",
+});
 
 const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage }) => {
     const [forumMessages, setForumMessages] = useState<ForumMessage[]>([]);
@@ -129,7 +143,7 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
             >
                 {
                     isWalletConnected ? (
-                        <span>Comment <br />(Burn 10,000 SRK)</span>
+                        <span>Comment <br />(Burn {BigInt(toEther(burnAmount))} SRK)</span>
                     ) : (
                         <span>Connect Wallet to Comment</span>
                     )
