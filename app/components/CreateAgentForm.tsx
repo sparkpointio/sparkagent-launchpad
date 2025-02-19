@@ -214,6 +214,19 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 if (contractAddress) {
                     console.log("Deployed Contract Address:", contractAddress);
 
+                    await fetch('/api/tokens/' + contractAddress + '/update', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            personality: personality,
+                            first_message: firstMessage,
+                            lore: lore,
+                            style: style,
+                            adjective: adjective,
+                            knowledge: knowledge
+                        })
+                    }).catch(err => console.error(err));
+
                     setLaunchedContractAddress(contractAddress);
                     setCurrentPage(4);
                 } else {
