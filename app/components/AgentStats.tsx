@@ -22,7 +22,7 @@ import { cardProperties } from "../lib/utils/style/customStyles";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
 import { getContract, getContractEvents } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
-import {client} from "@/app/client";
+import { client } from "@/app/client";
 import { Hex } from "viem";
 import { createChart, AreaSeries, IChartApi, Time } from "lightweight-charts";
 import { createPublicClient, http } from "viem";
@@ -83,7 +83,7 @@ const socialIconSize = 20;
 const AgentStats: React.FC<AgentStatsProps> = ({
 	certificate,
 	image,
-   	tokenName,
+	tokenName,
 	ticker,
 }) => {
 	const [copied, setCopied] = useState(false);
@@ -129,7 +129,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				if(agentData) {
+				if (agentData) {
 					console.log("Certificate for Market Cap:", certificate); // Add this line
 					const result = await convertCryptoToFiat(Number(agentData.data[4][6]), "SRK", "USD", certificate);
 					setConvertedMarketCap(result.toFixed(2));
@@ -139,12 +139,12 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				console.log(error);
 			}
 		};
-	
+
 		if (agentData && Number(agentData.data[4][6]) > 0) {
 			convertMarketCap();
 		}
 	}, [certificate, error, agentData]);
-	
+
 	useEffect(() => {
 		const convertTokenPrice = async () => {
 			try {
@@ -184,7 +184,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 	const fetchStoredEvents = useCallback(async () => {
 		try {
-			if(agentData) {
+			if (agentData) {
 				const response = await axios.get(`https://laravel-boilerplate.kinameansbusiness.com/api/storage/get/swap_events_${agentData.data[2]}`);
 
 				console.log("fetchStoredEvents");
@@ -204,7 +204,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 	const saveSwapEvents = useCallback(async (events: { blockNumber: bigint; value: bigint; timestamp: bigint }[]) => {
 		try {
-			if(agentData) {
+			if (agentData) {
 				// Convert BigInt values to string
 				const sanitizedEvents = events.map(event => ({
 					...event,
@@ -224,10 +224,10 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 	const fetchNewSwapEvents = useCallback(async (latestBlockStored: bigint | null) => {
 		try {
-			if(agentData) {
+			if (agentData) {
 				const fromBlock = latestBlockStored ? latestBlockStored + BigInt("1") : BigInt("118602497");
 
-				const contract = getContract({client, address: agentData.data[2], chain: arbitrumSepolia});
+				const contract = getContract({ client, address: agentData.data[2], chain: arbitrumSepolia });
 				const swapEventTopic: Hex =
 					"0x298c349c742327269dc8de6ad66687767310c948ea309df826f5bd103e19d207";
 
@@ -236,14 +236,14 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					name: "Swap",
 					type: "event",
 					inputs: [
-						{indexed: false, internalType: "uint256", name: "amount0In", type: "uint256"},
-						{indexed: false, internalType: "uint256", name: "amount0Out", type: "uint256"},
-						{indexed: false, internalType: "uint256", name: "amount1In", type: "uint256"},
-						{indexed: false, internalType: "uint256", name: "amount1Out", type: "uint256"},
+						{ indexed: false, internalType: "uint256", name: "amount0In", type: "uint256" },
+						{ indexed: false, internalType: "uint256", name: "amount0Out", type: "uint256" },
+						{ indexed: false, internalType: "uint256", name: "amount1In", type: "uint256" },
+						{ indexed: false, internalType: "uint256", name: "amount1Out", type: "uint256" },
 					],
 				} as const;
 
-				const preparedEvent = {abiEvent: swapEventAbi, hash: swapEventTopic, topics: [] as Hex[]};
+				const preparedEvent = { abiEvent: swapEventAbi, hash: swapEventTopic, topics: [] as Hex[] };
 
 				const events = await getContractEvents({
 					contract,
@@ -256,7 +256,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 				console.log(events)
 
 				const formattedData = events.map((event) => {
-					const {amount0In, amount0Out, amount1In, amount1Out} = event.args;
+					const { amount0In, amount0Out, amount1In, amount1Out } = event.args;
 					let price = 0;
 
 					if (Number(amount0Out) > 0 && Number(amount1In) > 0) {
@@ -301,7 +301,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		setChartData(mergedEvents); // Update UI with stored data
 	}, [fetchNewSwapEvents, fetchStoredEvents, saveSwapEvents]);
 
-	const getEventTimestamps = async (events: { blockNumber: bigint; value: number }[]) =>{
+	const getEventTimestamps = async (events: { blockNumber: bigint; value: number }[]) => {
 		return await Promise.all(
 			events.map(async (event: { blockNumber: bigint; value: number }) => {
 				const block = await client2.getBlock({ blockNumber: event.blockNumber });
@@ -427,20 +427,20 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	}, []);
 
 	return (
-		<motion.div initial={{opacity: 0, scale: 0.95}} animate={{opacity: 1, scale: 1}}
-					className={ cardProperties }>
+		<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+			className={cardProperties}>
 			{/* Section 1 */}
 			<div className="flex flex-row mb-2">
 				<div className="relative w-32 h-32 flex-shrink-0 rounded-full overflow-hidden mr-4 hidden md:block">
 					{isLoading && (
 						<div className="absolute inset-0 flex items-center justify-center">
-							<IconLoader3 size={32} className="animate-spin"/>
+							<IconLoader3 size={32} className="animate-spin" />
 						</div>
 					)}
 					<motion.div
-						initial={{opacity: 0}}
-						animate={{opacity: isLoading ? 0 : 1}}
-						transition={{duration: 0.5}}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: isLoading ? 0 : 1 }}
+						transition={{ duration: 0.5 }}
 						className="w-full h-full"
 					>
 						<Image
@@ -584,7 +584,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 									{formatNumber(agentData ? Number(agentData.data[4][5]) : Number(0)) + " SRK"}
 								</span>
 							</p>
-							<p className="px-5 font-normal whitespace-pre-line">{ (agentData) ? agentData.data[5] : '' }</p>
+							<p className="px-5 font-normal whitespace-pre-line">{(agentData) ? agentData.data[5] : ''}</p>
 							<p className="font-normal text-gray-400 text-xs px-5 text-right">
 								{`${getTimeAgo(agentData ? new Date(agentData.data[4][11]) : new Date())}`}
 							</p>
@@ -592,7 +592,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					</div>
 				</div>
 
-				<div className="flex flex-col flex-grow hidden md:flex">
+				<div className="flex-col flex-grow hidden md:flex">
 					<div>
 						<div className="flex justify-between items-center mb-4">
 							<Link href={""}>
@@ -614,7 +614,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(agentData ? agentData.data[10] : '', "_blank", "noopener, noreferrer")}
 										title="Website"
 									>
-										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black"/>
+										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{agentData && agentData.data[8] && (
@@ -624,7 +624,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										title="Telegram"
 									>
 										<IconBrandTelegram size={socialIconSize}
-														   className="dark:group-hover:stroke-black"/>
+											className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{agentData && agentData.data[7] && (
@@ -633,7 +633,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										onClick={() => window.open(agentData ? agentData.data[7] : '', "_blank", "noopener, noreferrer")}
 										title="X"
 									>
-										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black"/>
+										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{agentData && agentData.data[9] && (
@@ -643,7 +643,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 										title="YouTube"
 									>
 										<IconBrandYoutube size={socialIconSize}
-														  className="dark:group-hover:stroke-black"/>
+											className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 							</div>
@@ -661,9 +661,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 									<span
 										className="dark:group-hover:text-black">{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 									{copied ? (
-										<IconCircleCheck size={16} className="dark:group-hover:stroke-black "/>
+										<IconCircleCheck size={16} className="dark:group-hover:stroke-black " />
 									) : (
-										<IconCopy size={16} className="dark:group-hover:stroke-black "/>
+										<IconCopy size={16} className="dark:group-hover:stroke-black " />
 									)}
 								</button>
 							</div>
@@ -740,7 +740,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						transition={{ duration: 0.5 }}
 					>
 						<div className="flex items-center justify-center mb-1">
-							<IconLoader2 size={64} className="animate-spin"/>
+							<IconLoader2 size={64} className="animate-spin" />
 						</div>
 						<span className="text-xl">
 							Loading Chart Data...
