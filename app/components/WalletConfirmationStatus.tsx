@@ -1,8 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {buttonVariants} from "@/app/components/variants/button-variants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { buttonVariants } from "@/app/components/variants/button-variants";
 import Link from "next/link";
 import React from "react";
 
@@ -20,7 +20,7 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
             open={walletConfirmationStatus > 0}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[100]" />
-                <Dialog.Content className={'fixed bg-white dark:bg-[#1a1d21] dark:text-white left-[50%] top-[50%] z-[101] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-black border-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-2xl sm:px-6 sm:py-10 p-4 max-h-[calc(100vh-40px)] overflow-auto'}
+                <Dialog.Content className={'fixed bg-white dark:bg-[#1a1d21] dark:text-white left-[50%] top-[50%] z-[101] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-black border-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-2xl sm:px-6 sm:py-10 p-4 max-h-[calc(100vh-40px)] overflow-auto'}
                     onInteractOutside={(event) => {
                         event.preventDefault();
                     }}>
@@ -40,16 +40,16 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                 ? swapType === "buy"
                                     ? <>
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''}/> Approve
-                                        SRK to be spent by UnSparking AI Contract.<br/>
+                                            className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve
+                                        SRK to be spent by UnSparking AI Contract.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''}/> Approve
-                                        SRK to be spent by Factory Contract.<br/>
+                                            className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve
+                                        SRK to be spent by Factory Contract.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''}/> Approve
-                                        SRK to be spent by Pair AI Contract.<br/>
+                                            className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve
+                                        SRK to be spent by Pair AI Contract.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''}/> Confirm
+                                            className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm
                                         your purchase of {ticker}.
 
                                         <span className="block progress-bar mt-8">
@@ -58,16 +58,16 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                     </>
                                     : <>
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''}/> Approve {ticker} to
-                                        be spent by UnSparking AI Contract.<br/>
+                                            className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
+                                        be spent by UnSparking AI Contract.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''}/> Approve {ticker} to
-                                        be spent by Factory Contract.<br/>
+                                            className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
+                                        be spent by Factory Contract.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''}/> Approve {ticker} to
-                                        be spent by Pair AI Contract.<br/>
+                                            className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
+                                        be spent by Pair AI Contract.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle}
-                                                         className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''}/> Confirm
+                                            className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm
                                         your sale of {ticker}.
 
                                         <span className="block progress-bar mt-8">
