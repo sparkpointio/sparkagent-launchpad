@@ -383,6 +383,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 ticker={ticker}
                 setWalletConfirmationStatus={setWalletConfirmationStatus}
                 swapTransactionHash={swapTransactionHash}
+                contractAddress={contractAddress}
             />
     </motion.div>
   )
