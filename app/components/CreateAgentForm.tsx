@@ -675,22 +675,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       justifyContent: "space-between",
                                       width: "100%",
                                       fontSize: "0.8em",
-                                      paddingLeft: "6px",
                                       marginBottom: "2px",
                                   }}
                               >
                                   Personality:
                               </div>
                               <Form.Control asChild>
-                                  <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      type="text"
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="personality"
                                       value={personality}
                                       onChange={(e) => setPersonality(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Personality (manipulative,sadistic)'
-                                  />
+                                      placeholder='Define the agent’s personality traits, separated by commas (e.g. "analytical, strategic, persuasive, empathetic")'
+                                  ></textarea>
                               </Form.Control>
                           </Form.Field>
 
@@ -702,22 +700,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       justifyContent: "space-between",
                                       width: "100%",
                                       fontSize: "0.8em",
-                                      paddingLeft: "6px",
                                       marginBottom: "2px",
                                   }}
                               >
                                   First Message:
                               </div>
                               <Form.Control asChild>
-                                  <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      type="text"
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="first_message"
                                       value={firstMessage}
                                       onChange={(e) => setFirstMessage(e.target.value)} // Handle email change
                                       required
-                                      placeholder='First Message'
-                                  />
+                                      placeholder='Specify the agent’s initial greeting or response (e.g. "Hello! How can I assist you today?")'
+                                  ></textarea>
                               </Form.Control>
                           </Form.Field>
 
@@ -729,22 +725,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       justifyContent: "space-between",
                                       width: "100%",
                                       fontSize: "0.8em",
-                                      paddingLeft: "6px",
                                       marginBottom: "2px",
                                   }}
                               >
                                   Lore:
                               </div>
                               <Form.Control asChild>
-                                  <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      type="text"
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="lore"
                                       value={lore}
                                       onChange={(e) => setLore(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Lore'
-                                  />
+                                      placeholder='Provide background or context for the agent (e.g. "An AI trained in financial forecasting with access to market trends.")'
+                                  ></textarea>
                               </Form.Control>
                           </Form.Field>
 
@@ -756,22 +750,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       justifyContent: "space-between",
                                       width: "100%",
                                       fontSize: "0.8em",
-                                      paddingLeft: "6px",
                                       marginBottom: "2px",
                                   }}
                               >
                                   Style:
                               </div>
                               <Form.Control asChild>
-                                  <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      type="text"
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="style"
                                       value={style}
                                       onChange={(e) => setStyle(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Style'
-                                  />
+                                      placeholder='Describe the agent’s communication style, separated by commas (e.g. "formal, friendly, concise, technical")'
+                                  ></textarea>
                               </Form.Control>
                           </Form.Field>
 
@@ -783,22 +775,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       justifyContent: "space-between",
                                       width: "100%",
                                       fontSize: "0.8em",
-                                      paddingLeft: "6px",
                                       marginBottom: "2px",
                                   }}
                               >
                                   Adjective:
                               </div>
                               <Form.Control asChild>
-                                  <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      type="text"
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="adjective"
                                       value={adjective}
                                       onChange={(e) => setAdjective(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Adjective'
-                                  />
+                                      placeholder='List adjectives that define the agent, separated by commas (e.g. "precise, engaging, adaptive")'
+                                  ></textarea>
                               </Form.Control>
                           </Form.Field>
 
@@ -810,22 +800,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       justifyContent: "space-between",
                                       width: "100%",
                                       fontSize: "0.8em",
-                                      paddingLeft: "6px",
                                       marginBottom: "2px",
                                   }}
                               >
                                   Knowledge:
                               </div>
                               <Form.Control asChild>
-                                  <input
-                                      className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      type="text"
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                       name="knowledge"
                                       value={knowledge}
                                       onChange={(e) => setKnowledge(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Knowledge'
-                                  />
+                                      placeholder='Define the agent’s expertise, separated by commas (e.g. "cryptocurrency, legal consulting, cybersecurity, medical diagnostics")'
+                                  ></textarea>
                               </Form.Control>
                           </Form.Field>
 
