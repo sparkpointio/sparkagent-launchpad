@@ -237,6 +237,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 onSuccess: (tx) => {
                     setWalletConfirmationStatus(5);
                     setSwapTransactionHash(tx?.transactionHash);
+                    setAmount("")
 
                     console.log("Swap transaction successful!");
                     console.log("Transaction Hash:", tx?.transactionHash);
