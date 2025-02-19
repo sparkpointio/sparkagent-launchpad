@@ -42,20 +42,20 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                     ? <>
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle}
                                             className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve
-                                        SRK to be spent by <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="underline">SparkAgent Contract</a>.<br />
+                                        SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">SparkAgent Contract</Link>.<br />
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle}
                                             className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve
-                                        SRK to be spent by <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="underline">Factory
-                                        Contract</a>.<br/>
+                                        SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Factory
+                                        Contract</Link>.<br/>
                                             <FontAwesomeIcon
                                                 icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle}
                                                 className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve
-                                        SRK to be spent by <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="underline">Pair
-                                        AI Contract</a>.<br/>
+                                        SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Pair
+                                        AI Contract</Link>.<br/>
                                             <FontAwesomeIcon
                                                 icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle}
                                                 className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm
-                                        your purchase of <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="underline">{ticker}</a>.
+                                        your purchase of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
 
                                             <span className="block progress-bar mt-8">
                                             <span className="block progress-bar-value"></span>
@@ -64,21 +64,21 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                     : <>
                                         <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle}
                                             className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
-                                        be spent by <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="underline">SparkAgent
-                                        Contract</a>.<br/>
+                                        be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">SparkAgent
+                                        Contract</Link>.<br/>
                                             <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle}
                                             className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
-                                        be spent by <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="underline">Factory
-                                        Contract</a>.<br/>
+                                        be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Factory
+                                        Contract</Link>.<br/>
                                             <FontAwesomeIcon
                                                 icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle}
                                                 className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
-                                        be spent by <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="underline">Pair
-                                        AI Contract</a>.<br/>
+                                        be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Pair
+                                        AI Contract</Link>.<br/>
                                             <FontAwesomeIcon
                                                 icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle}
                                                 className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm
-                                        your sale of <a href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="underline">{ticker}</a>.
+                                        your sale of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
 
                                             <span className="block progress-bar mt-8">
                                             <span className="block progress-bar-value"></span>

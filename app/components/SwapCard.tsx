@@ -273,7 +273,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
             {swapType === "buy" ?
                 <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">
-                    You&apos;ll need $SRK to buy {ticker}
+                    You&apos;ll need $SRK to buy ${ticker}
                 </p>
                 :
                 <p className="text-sm mb-2">
