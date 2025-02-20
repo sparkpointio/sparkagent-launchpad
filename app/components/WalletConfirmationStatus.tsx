@@ -13,9 +13,10 @@ interface WalletConfirmationStatusProps {
     ticker: string;
     swapTransactionHash: string;
     contractAddress: string;
+    trading: boolean;
 }
 
-const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ walletConfirmationStatus, swapType, ticker, setWalletConfirmationStatus, swapTransactionHash, contractAddress }) => {
+const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ walletConfirmationStatus, swapType, ticker, setWalletConfirmationStatus, swapTransactionHash, contractAddress, trading }) => {
     return (
         <Dialog.Root
             open={walletConfirmationStatus > 0}>
@@ -28,7 +29,7 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
 
                     <div className={'max-w-md text-center flex flex-col items-center relative pt-4 pb-4'}>
                         <Dialog.Title className="text-lg font-bold mb-4 text-custom-1">
-                            {walletConfirmationStatus < 5
+                            {((trading && walletConfirmationStatus < 6) || (!trading && walletConfirmationStatus < 4))
                                 ? swapType === "buy"
                                     ? "Buying Your Tokens"
                                     : "Selling Your Tokens"
@@ -36,60 +37,62 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                             }
 
                         </Dialog.Title>
+
                         <Dialog.Description className={'text-center w-full p-0 text-custom-1 text-[0.9em]' + (walletConfirmationStatus < 5 ? 'mb-5' : '')}>
-                            {walletConfirmationStatus < 5
-                                ? swapType === "buy"
-                                    ? <>
-                                        <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle}
-                                            className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve
-                                        SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">SparkAgent Contract</Link>.<br />
-                                        <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle}
-                                            className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve
-                                        SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Factory
-                                        Contract</Link>.<br/>
-                                            <FontAwesomeIcon
-                                                icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle}
-                                                className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve
-                                        SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Pair
-                                        AI Contract</Link>.<br/>
-                                            <FontAwesomeIcon
-                                                icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle}
-                                                className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm
-                                        your purchase of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
+                            {trading
+                                ? walletConfirmationStatus < 6
+                                    ? swapType === "buy"
+                                        ?
+                                        <>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">SparkAgent Contract</Link>.<br />
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Factory Contract</Link>.<br/>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Pair AI Contract</Link>.<br/>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm your purchase of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
+
+                                            <span className="block progress-bar mt-8">
+                                                <span className="block progress-bar-value"></span>
+                                            </span>
+                                        </>
+                                        :
+                                        <>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">SparkAgent Contract</Link>.<br/>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Factory Contract</Link>.<br/>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Pair AI Contract</Link>.<br/>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm your sale of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
+
+                                            <span className="block progress-bar mt-8">
+                                                <span className="block progress-bar-value"></span>
+                                            </span>
+                                        </>
+                                    : swapType === "buy"
+                                        ? "You have successfully purchased your " + ticker + ". Your new balance should reflect shortly."
+                                        : "You have successfully sold your " + ticker + ". Your proceeds will be available soon."
+                                : walletConfirmationStatus < 4
+                                    ? swapType === "buy"
+                                        ?
+                                        <>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve SRK to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_CAMELOT_ROUTER } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Camelot Router Contract</Link>.<br />
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Confirm your purchase of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
 
                                             <span className="block progress-bar mt-8">
                                             <span className="block progress-bar-value"></span>
                                         </span>
-                                    </>
-                                    : <>
-                                        <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle}
-                                            className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
-                                        be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">SparkAgent
-                                        Contract</Link>.<br/>
-                                            <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle}
-                                            className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
-                                        be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FFACTORY } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Factory
-                                        Contract</Link>.<br/>
-                                            <FontAwesomeIcon
-                                                icon={walletConfirmationStatus > 3 ? faCircleCheck : faCircle}
-                                                className={walletConfirmationStatus > 3 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to
-                                        be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_FPAIR } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Pair
-                                        AI Contract</Link>.<br/>
-                                            <FontAwesomeIcon
-                                                icon={walletConfirmationStatus > 4 ? faCircleCheck : faCircle}
-                                                className={walletConfirmationStatus > 4 ? 'text-[#00d7b2]' : ''} /> Confirm
-                                        your sale of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
+                                        </>
+                                        :
+                                        <>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 1 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 1 ? 'text-[#00d7b2]' : ''} /> Approve {ticker} to be spent by <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + process.env.NEXT_PUBLIC_CAMELOT_ROUTER } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">Camelot Router Contract</Link>.<br/>
+                                            <FontAwesomeIcon icon={walletConfirmationStatus > 2 ? faCircleCheck : faCircle} className={walletConfirmationStatus > 2 ? 'text-[#00d7b2]' : ''} /> Confirm your sale of <Link href={process.env.NEXT_PUBLIC_ARBISCAN + "/address/" + contractAddress } target="_blank" rel="noreferrer" className="font-bold hover:text-gray-400 dark:hover:text-gray-100">${ticker}</Link>.
 
                                             <span className="block progress-bar mt-8">
                                             <span className="block progress-bar-value"></span>
                                         </span>
-                                    </>
-                                : swapType === "buy"
-                                    ? "You have successfully purchased your " + ticker + ". Your new balance should reflect shortly."
-                                    : "You have successfully sold your " + ticker + ". Your proceeds will be available soon."
+                                        </>
+                                    : swapType === "buy"
+                                        ? "You have successfully purchased your " + ticker + ". Your new balance should reflect shortly."
+                                        : "You have successfully sold your " + ticker + ". Your proceeds will be available soon."
                             }
 
-                            {walletConfirmationStatus === 5 && (
+                            {((trading && walletConfirmationStatus === 6) || (!trading && walletConfirmationStatus === 4)) && (
                                 <>
                                     <br />
 
