@@ -4,7 +4,7 @@ import Image from "next/image";
 import { new_sparkpoint_logo } from "../lib/assets";
 import { motion } from "framer-motion";
 import {useEffect, useState} from "react";
-import { prepareContractCall, getContract } from "thirdweb";
+import {prepareContractCall, getContract, waitForReceipt} from "thirdweb";
 import {client} from "@/app/client";
 import {arbitrumSepolia} from "thirdweb/chains";
 import {useActiveAccount, useSendTransaction} from "thirdweb/react";
@@ -13,7 +13,7 @@ import { toEther, toWei } from "thirdweb";
 import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 import { getFormattedEther } from "../lib/utils/formatting";
-import Link from "next/link";
+// import Link from "next/link";
 import { cardProperties } from "../lib/utils/style/customStyles";
 
 const unsparkingAIContract = getContract({
@@ -40,6 +40,12 @@ const pairContract = getContract({
     address: process.env.NEXT_PUBLIC_FPAIR as string,
 });
 
+const camelotRouterContract = getContract({
+    client,
+    chain: arbitrumSepolia,
+    address: process.env.NEXT_PUBLIC_CAMELOT_ROUTER as string,
+});
+
 interface SwapCardProps {
     contractAddress: string;
     ticker: string;
@@ -59,7 +65,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
     const blockiesIcon = blockies.create({ seed: contractAddress, size: 16, scale: 8 });
 
     useEffect(() => {
-        setImgSrc(swapType === "buy" ? new_sparkpoint_logo.src : `https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`);
+        setImgSrc(swapType === "buy" ? new_sparkpoint_logo.src : `https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
     }, [swapType, image]);
 
     const [amount, setAmount] = useState("");
@@ -140,7 +146,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                     if (nextApproval) nextApproval();
                     else {
                         console.log("All approvals completed. Proceeding with swap.");
-                        setWalletConfirmationStatus(4);
+                        setWalletConfirmationStatus(trading ? 4 : 2);
                         proceedWithSwap();
                     }
                 },
@@ -150,7 +156,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
             if (nextApproval) nextApproval();
             else {
                 console.log("All approvals completed. Proceeding with swap.");
-                setWalletConfirmationStatus(4);
+                setWalletConfirmationStatus(trading ? 4 : 2);
                 proceedWithSwap();
             }
         }
@@ -166,46 +172,58 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
         try {
             // Fetch latest allowances before approving transactions
-            const contract = (swapType === "buy") ? srkContract : unsparkedTokenContract;
+            const contract = swapType === "buy" ? srkContract : unsparkedTokenContract;
 
             console.log("Approval 1 Checked");
             setWalletConfirmationStatus(1);
 
-            const unsparkingAIAllowance = await readContract({
-                contract: contract,
-                method: "function allowance(address owner, address spender) returns (uint256)",
-                params: [account.address, unsparkingAIContract.address],
-            });
-
-            const updatedUnsparkingAIAllowance = BigInt(unsparkingAIAllowance ?? "0");
-
-            approveIfNeeded(unsparkingAIContract.address, updatedUnsparkingAIAllowance, async () => {
-                console.log("Approval 2 Checked");
-                setWalletConfirmationStatus(2);
-
-                const factoryAllowance = await readContract({
+            if(trading) {
+                const unsparkingAIAllowance = await readContract({
                     contract: contract,
                     method: "function allowance(address owner, address spender) returns (uint256)",
-                    params: [account.address, factoryContract.address],
+                    params: [account.address, unsparkingAIContract.address],
                 });
 
-                const updatedFactoryAllowance = BigInt(factoryAllowance ?? "0");
+                const updatedUnsparkingAIAllowance = BigInt(unsparkingAIAllowance ?? "0");
 
-                approveIfNeeded(factoryContract.address, updatedFactoryAllowance, async () => {
-                    console.log("Approval 3 Checked");
-                    setWalletConfirmationStatus(3);
+                approveIfNeeded(unsparkingAIContract.address, updatedUnsparkingAIAllowance, async () => {
+                    console.log("Approval 2 Checked");
+                    setWalletConfirmationStatus(2);
 
-                    const pairAllowance = await readContract({
+                    const factoryAllowance = await readContract({
                         contract: contract,
                         method: "function allowance(address owner, address spender) returns (uint256)",
-                        params: [account.address, pairContract.address],
+                        params: [account.address, factoryContract.address],
                     });
 
-                    const updatedPairAllowance = BigInt(pairAllowance ?? "0");
+                    const updatedFactoryAllowance = BigInt(factoryAllowance ?? "0");
 
-                    approveIfNeeded(pairContract.address, updatedPairAllowance);
+                    approveIfNeeded(factoryContract.address, updatedFactoryAllowance, async () => {
+                        console.log("Approval 3 Checked");
+                        setWalletConfirmationStatus(3);
+
+                        const pairAllowance = await readContract({
+                            contract: contract,
+                            method: "function allowance(address owner, address spender) returns (uint256)",
+                            params: [account.address, pairContract.address],
+                        });
+
+                        const updatedPairAllowance = BigInt(pairAllowance ?? "0");
+
+                        approveIfNeeded(pairContract.address, updatedPairAllowance);
+                    });
                 });
-            });
+            } else {
+                const camelotRouterAllowance = await readContract({
+                    contract: contract,
+                    method: "function allowance(address owner, address spender) returns (uint256)",
+                    params: [account.address, camelotRouterContract.address],
+                });
+
+                const updatedCamelotRouterAllowance = BigInt(camelotRouterAllowance ?? "0");
+
+                approveIfNeeded(camelotRouterContract.address, updatedCamelotRouterAllowance);
+            }
         } catch (error) {
             console.error("Error fetching allowances:", error);
         }
@@ -213,36 +231,89 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
     const proceedWithSwap = () => {
         try {
-            const swapMethod =
-                swapType === "buy"
-                    ? "function buy(uint256 amountIn, address tokenAddress)"
-                    : "function sell(uint256 amountIn, address tokenAddress)";
+            if(trading) {
+                const swapMethod =
+                    swapType === "buy"
+                        ? "function buy(uint256 amountIn, address tokenAddress)"
+                        : "function sell(uint256 amountIn, address tokenAddress)";
 
-            console.log([getParsedAmount(), contractAddress]);
+                console.log([getParsedAmount(), contractAddress]);
 
-            const swapTx = prepareContractCall({
-                contract: unsparkingAIContract,
-                method: swapMethod,
-                params: [getParsedAmount(), contractAddress],
-                value: BigInt(0),
-            });
+                const swapTx = prepareContractCall({
+                    contract: unsparkingAIContract,
+                    method: swapMethod,
+                    params: [getParsedAmount(), contractAddress],
+                    value: BigInt(0),
+                });
 
-            console.log("Prepared swap transaction:", swapTx);
+                console.log("Prepared swap transaction:", swapTx);
 
-            sendTransaction(swapTx, {
-                onError: (error) => {
-                    setWalletConfirmationStatus(0)
-                    console.error("Swap transaction failed:", error);
-                },
-                onSuccess: (tx) => {
-                    setWalletConfirmationStatus(5);
-                    setSwapTransactionHash(tx?.transactionHash);
-                    setAmount("")
+                sendTransaction(swapTx, {
+                    onError: (error) => {
+                        setWalletConfirmationStatus(0)
+                        console.error("Swap transaction failed:", error);
+                    },
+                    onSuccess: async (tx) => {
+                        setWalletConfirmationStatus(5);
 
-                    console.log("Swap transaction successful!");
-                    console.log("Transaction Hash:", tx?.transactionHash);
-                },
-            });
+                        await waitForReceipt({
+                            client,
+                            chain: arbitrumSepolia,
+                            transactionHash: tx.transactionHash,
+                        });
+
+                        setWalletConfirmationStatus(6);
+                        setSwapTransactionHash(tx?.transactionHash);
+                        setAmount("")
+
+                        console.log("Swap transaction successful!");
+                        console.log("Transaction Hash:", tx?.transactionHash);
+                    },
+                });
+            } else {
+                console.log([getParsedAmount(), contractAddress]);
+
+                const path = swapType === "buy" ? [srkContract.address, unsparkedTokenContract.address] : [unsparkedTokenContract.address, srkContract.address];
+
+                const swapTx = prepareContractCall({
+                    contract: camelotRouterContract,
+                    method: "function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, address referrer, uint256 deadline)",
+                    params: [
+                        getParsedAmount(),
+                        BigInt(0),
+                        path,
+                        account.address,
+                        "0x0000000000000000000000000000000000000000",
+                        BigInt("99999999999999999999999999999999999999")
+                    ],
+                    value: BigInt(0),
+                });
+
+                console.log("Prepared swap transaction:", swapTx);
+
+                sendTransaction(swapTx, {
+                    onError: (error) => {
+                        setWalletConfirmationStatus(0)
+                        console.error("Swap transaction failed:", error);
+                    },
+                    onSuccess: async (tx) => {
+                        setWalletConfirmationStatus(3);
+
+                        await waitForReceipt({
+                            client,
+                            chain: arbitrumSepolia,
+                            transactionHash: tx.transactionHash,
+                        });
+
+                        setWalletConfirmationStatus(4);
+                        setSwapTransactionHash(tx?.transactionHash);
+                        setAmount("")
+
+                        console.log("Swap transaction successful!");
+                        console.log("Transaction Hash:", tx?.transactionHash);
+                    },
+                });
+            }
         } catch (error) {
             console.error("Error executing swap transaction:", error);
         }
@@ -256,17 +327,15 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
             <div className="flex flex-row gap-4 mb-4">
                 <button
                     type="button"
-                    className={`${buyButtonProperties} ${swapType === "buy" ? activeBuyButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
+                    className={`${buyButtonProperties} ${swapType === "buy" ? activeBuyButton : ""}`}
                     onClick={() => setSwapType("buy")}
-                    disabled={!trading}
                 >
                     Buy
                 </button>
                 <button
                     type="button"
-                    className={`${sellButtonProperties} ${swapType === "sell" ? activeSellButton : ""} ${!trading ? 'cursor-not-allowed' : ''}`}
+                    className={`${sellButtonProperties} ${swapType === "sell" ? activeSellButton : ""}`}
                     onClick={() => setSwapType("sell")}
-                    disabled={!trading}
                 >
                     Sell
                 </button>
@@ -290,8 +359,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder={`Enter amount in ${swapType === "buy" ? "SRK" : ticker}`}
-                        className={`flex-1 px-4 py-3 w-full rounded-lg focus:outline-none focus:ring focus:ring-gray bg-transparent ${!trading ? 'cursor-not-allowed' : ''}`}
-                        disabled={!trading}
+                        className={`flex-1 px-4 py-3 w-full rounded-lg focus:outline-none focus:ring focus:ring-gray bg-transparent`}
                     />
                     <Image
                         src={imgSrc}
@@ -310,8 +378,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                     <div className="flex gap-4">
                         <button
                             onClick={() => setAmount("")}
-                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
-                            disabled={!trading}
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
                             Reset
                         </button>
@@ -323,8 +390,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                                         : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
                                 setAmount((balance * 0.25).toFixed(2).toString())
                             }}
-                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
-                            disabled={!trading}
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
                             25%
                         </button>
@@ -336,8 +402,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                                         : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
                                 setAmount((balance * 0.5).toFixed(2).toString())
                             }}
-                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
-                            disabled={!trading}
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
                             50%
                         </button>
@@ -349,8 +414,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                                         : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
                                 setAmount(balance.toFixed(2).toString())
                             }}
-                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors ${!trading ? 'cursor-not-allowed' : ''}`}
-                            disabled={!trading}
+                            className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
                             Max
                         </button>
@@ -361,22 +425,22 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </div>
             </div>
 
-            <button type="button" className={`${swapButtonProperties} ${!trading ? 'cursor-not-allowed' : ''}`} onClick={handleSwap} disabled={!trading}>Swap</button>
+            <button type="button" className={`${swapButtonProperties}`} onClick={handleSwap}>Swap</button>
 
-            {!trading && (
-                <div className={'bg-[#00d7b2] mt-4 text-white px-3 py-2 text-center text-[0.9em] flex justify-between items-center'}>
-                    <div className={'flex-grow pe-2'}>Liquidity deposited into Camelot. Trading is now disabled.</div>
-                    <div>
-                        <Link
-                            href={'#'}
-                            type="button"
-                            className={`py-2 bg-white text-black px-5 text-[0.9em] dark:text-[#ffffff] ${buyButtonProperties}}`}
-                        >
-                            Camelot
-                        </Link>
-                    </div>
-                </div>
-            )}
+            {/*{!trading && (*/}
+            {/*    <div className={'bg-[#00d7b2] mt-4 text-white px-3 py-2 text-center text-[0.9em] flex justify-between items-center'}>*/}
+            {/*        <div className={'flex-grow pe-2'}>Liquidity deposited into Camelot. Trading is now disabled.</div>*/}
+            {/*        <div>*/}
+            {/*            <Link*/}
+            {/*                href={'#'}*/}
+            {/*                type="button"*/}
+            {/*                className={`py-2 bg-white text-black px-5 text-[0.9em] dark:text-[#ffffff] ${buyButtonProperties}}`}*/}
+            {/*            >*/}
+            {/*                Camelot*/}
+            {/*            </Link>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*)}*/}
 
             <WalletConfirmationStatus
                 walletConfirmationStatus={walletConfirmationStatus}
@@ -385,6 +449,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 setWalletConfirmationStatus={setWalletConfirmationStatus}
                 swapTransactionHash={swapTransactionHash}
                 contractAddress={contractAddress}
+                trading={trading}
             />
     </motion.div>
   )
