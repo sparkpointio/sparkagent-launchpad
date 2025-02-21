@@ -1,8 +1,8 @@
 export enum ConversionType {
-    Price, // cached to redis
-    MarketCap, // cached to redis
-    Any, // default, not cached
-} 
+    Price, // Conversion based on price, cached to redis
+    MarketCap, // Conversion based on market cap, cached to redis
+    Any, // Default conversion type, NOT cached
+}
 
 const updatePriceConversion = async (certificate: string, convertedPrice: number, conversionType: ConversionType) => {
     try {
