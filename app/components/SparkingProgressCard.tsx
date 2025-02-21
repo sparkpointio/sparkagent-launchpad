@@ -63,7 +63,7 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
                             {`The SRK gathered from purchases has reached the target of `}
                             <strong>{ getFormattedEther(toEther(gradThreshold), 0) }</strong>
                             {`, and all liquidity from the bonding curve has been deposited into `}
-                            <Link href={'https://app.camelot.exchange/?token1=' + contractAddress + '&token2=' + process.env.NEXT_PUBLIC_SRK_TOKEN + '&swap=v2'} target="_blank" rel="noreferrer" className="text-sparkyOrange-600 font-bold">Camelot</Link>
+                            <Link href={'https://app.camelot.exchange/?token1=' + process.env.NEXT_PUBLIC_SRK_TOKEN + '&token2=' + contractAddress + '&swap=v2'} target="_blank" rel="noreferrer" className="text-sparkyOrange-600 font-bold">Camelot</Link>
                             {`.`}
                         </>
                 }

@@ -341,7 +341,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </button>
             </div>
 
-            <Link href={'https://app.camelot.exchange/?token1=' + contractAddress + '&token2=' + process.env.NEXT_PUBLIC_SRK_TOKEN + '&swap=v2'} target="_blank" rel="noreferrer" className="flex bg-sparkyOrange-500 text-center px-4 py-2 leading-[1em] justify-center items-center mb-4">
+            <Link href={'https://app.camelot.exchange/?token1=' + process.env.NEXT_PUBLIC_SRK_TOKEN + '&token2=' + contractAddress + '&swap=v2'} target="_blank" rel="noreferrer" className="flex bg-sparkyOrange-500 text-center px-4 py-2 leading-[1em] justify-center items-center mb-4">
                 <div className="pe-2">
                     <Image src="https://app.camelot.exchange/images/logo-sm.svg" width={12} height={0} style={{ height: "auto" }} alt="Camelot DEX" />
                 </div>
