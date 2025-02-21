@@ -210,7 +210,6 @@ const AgentPage = () => {
                     sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold) : 0}
                     gradThreshold={agent.gradThreshold}
                     trading={agent.trading}
-                    contractAddress={agent.certificate}
                 />
 
                 <div className="md:hidden w-full space-y-4">

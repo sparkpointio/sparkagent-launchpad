@@ -9,14 +9,12 @@ interface SparkingProgressCardProps {
     sparkingProgress: number;
     gradThreshold: bigint;
     trading: boolean;
-    contractAddress: string;
 }
 
 const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
     sparkingProgress,
     gradThreshold,
     trading,
-    contractAddress,
 }) => {
     const headerProperties = "flex text-3xl justify-right font-bold";
     return (
