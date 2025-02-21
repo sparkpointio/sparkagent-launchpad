@@ -16,11 +16,11 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
+import { convertCryptoToFiat, updateImageSrc, ConversionType } from "../lib/utils/utils";
 import { toast } from "sonner";
 import { cardProperties } from "../lib/utils/style/customStyles";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
-import { getContract, getContractEvents } from "thirdweb";
+import { getContract, getContractEvents, toEther } from "thirdweb";
 import { arbitrumSepolia } from "thirdweb/chains";
 import { client } from "@/app/client";
 import { Hex } from "viem";
@@ -131,7 +131,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			try {
 				if (agentData) {
 					console.log("Certificate for Market Cap:", certificate); // Add this line
-					const result = await convertCryptoToFiat(Number(agentData.data[4][6]), "SRK", "USD", certificate);
+					console.log("Market Cap:", agentData.data[4][6]); // Add this line
+					const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
 					setConvertedMarketCap(result.toFixed(2));
 				}
 			} catch (err) {
@@ -150,7 +151,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			try {
 				if (agentData) {
 					console.log("Certificate for Token Price:", certificate); // Add this line
-					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate);
+					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
 					setConvertedTokenPrice(result.toFixed(2));
 				}
 			} catch (err) {
