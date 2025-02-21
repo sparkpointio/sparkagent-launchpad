@@ -340,9 +340,13 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </button>
             </div>
 
-            <div className="flex content-center text-sparkyOrange-500 text-center leading-[1em] justify-center items-center font-bold mb-4">
-                <div className="!w-[initial]">
-                    <p className="mb-0 leading-[1em] border-[#ffc94d] border-solid border-[2px] rounded-[8px] px-4 py-2">Trade on Camelot DEX</p>
+            <div className="flex content-center text-sparkyOrange-800 dark:text-sparkyOrange-500 text-center leading-[1em] justify-center items-center mb-4">
+                <div className="flex items-center dark:border-[#ffc94d] border-[#936218] border-solid border-[2px] rounded-[8px] !w-[initial] px-4 py-2">
+                    <div className="pe-2">
+                        <Image src="https://app.camelot.exchange/images/logo-sm.svg" width={12} height={0} style={{height: "auto"}} alt="Camelot DEX"/>
+                    </div>
+
+                    <p className="mb-0 leading-[1em]">Trade on Camelot DEX</p>
                 </div>
             </div>
 
