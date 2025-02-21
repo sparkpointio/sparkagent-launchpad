@@ -4,17 +4,20 @@ import { motion } from "framer-motion";
 import { toEther } from "thirdweb";
 import { getFormattedEther } from "../lib/utils/formatting";
 import { cardProperties } from "../lib/utils/style/customStyles";
+import Link from "next/link";
 
 interface SparkingProgressCardProps {
     sparkingProgress: number;
     gradThreshold: bigint;
     trading: boolean;
+    contractAddress: string;
 }
 
 const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
     sparkingProgress,
     gradThreshold,
     trading,
+    contractAddress,
 }) => {
     const headerProperties = "flex text-3xl justify-right font-bold";
     return (
@@ -59,7 +62,9 @@ const SparkingProgressCard: React.FC<SparkingProgressCardProps> = ({
                     :   <>
                             {`The SRK gathered from purchases has reached the target of `}
                             <strong>{ getFormattedEther(toEther(gradThreshold), 0) }</strong>
-                            {`, and all liquidity from the bonding curve has been deposited into Camelot.`}
+                            {`, and all liquidity from the bonding curve has been deposited into `}
+                            <Link href={'https://app.camelot.exchange/?token1=' + contractAddress + '&token2=' + process.env.NEXT_PUBLIC_SRK_TOKEN + '&swap=v2'} target="_blank" rel="noreferrer" className="text-sparkyOrange-600 font-bold">Camelot</Link>
+                            {`.`}
                         </>
                 }
             </p>
