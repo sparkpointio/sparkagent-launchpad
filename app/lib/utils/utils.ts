@@ -1,39 +1,79 @@
-const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+export enum ConversionType {
+    Price, // cached to redis
+    MarketCap, // cached to redis
+    Any, // not cached
+} 
 
-const getCache = (key: string) => {
-    const cached = localStorage.getItem(key);
-    if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Date.now() - parsed.timestamp < oneDayInMilliseconds) {
-            return parsed.amount;
+const updatePriceConversion = async (certificate: string, convertedPrice: number, conversionType: ConversionType) => {
+    try {
+        const response = await fetch(`/api/convert-crypto/update-price-conversion`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                certificate,
+                convertedPrice,
+                conversionType,
+            }),
+        });
+
+        if (response.ok) {
+            
+        } else {
+            throw new Error('Did not update');
+        }
+
+    } catch (error) {    
+        if (error instanceof Error) {
+            throw new Error(error.message || 'Server error');
+        } else {
+            throw new Error('An unknown error occurred');
         }
     }
-    return null;
-};
+}
 
-const setCache = (key: string, amount: number) => {
-    const cacheEntry = {
-        amount,
-        timestamp: Date.now(),
-    };
-    localStorage.setItem(key, JSON.stringify(cacheEntry));
-};
-
-export const convertCryptoToFiat = async (
+const fetchPriceConversion = async (
     cryptoAmount: number,
     cryptoSymbol: string,
     fiatSymbol: string,
-    certificate: string
-) => {
-    console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
-    const cacheKey = `${certificate}-${cryptoSymbol}-${fiatSymbol}`;
+    certificate: string,
+    conversionType: ConversionType) => {
+    
+    try {
+        const response = await fetch(`/api/convert-crypto/fetch-price-conversion/${certificate}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                conversionType,
+            }),
+        });
 
-    // Caching here
-    const cachedAmount = getCache(cacheKey);
-    if (cachedAmount !== null) {
-        return cachedAmount;
+        const fetchedData = await response.json();
+
+        if (fetchedData.needsUpdating) {
+            console.log('[PRICE CONVERSION] Converted amount needs updating. Fetching from CMC');
+            const conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
+
+            await updatePriceConversion(certificate, conversion, conversionType);
+            return conversion;
+        } else {
+            console.log('[PRICE CONVERSION] Fetched conversion from DB');
+            return fetchedData.data.conversion;
+        }
+
+    } catch (error) {    
+        if (error instanceof Error) {
+            throw new Error(error.message || 'Server error');
+        } else {
+            throw new Error('An unknown error occurred');
+        }
     }
+}
 
+const fetchCryptoConversionFromCoinMarketCap = async (cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) => {
     try {
         const response = await fetch('/api/convert-crypto', {
             method: 'POST',
@@ -51,8 +91,6 @@ export const convertCryptoToFiat = async (
 
         if (response.ok) {
             const convertedAmount = data.convertedAmount;
-            // Store the result in the cache with the current timestamp
-            setCache(cacheKey, convertedAmount);
             return convertedAmount;
         } else {
             throw new Error(data.error || 'Conversion failed');
@@ -63,6 +101,25 @@ export const convertCryptoToFiat = async (
         } else {
             throw new Error('An unknown error occurred');
         }
+    }
+}
+
+export const convertCryptoToFiat = async (
+    cryptoAmount: number,
+    cryptoSymbol: string,
+    fiatSymbol: string,
+    certificate: string,
+    conversionType: ConversionType = ConversionType.Any
+) => {
+    console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
+    console.log('Conversion type:', conversionType);
+    
+    if (conversionType != ConversionType.Any) {
+        return await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
+    } else {
+        console.log('Custom conversion. Directly fetching from CMC');
+        const conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
+        return conversion;
     }
 };
 
