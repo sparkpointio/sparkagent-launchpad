@@ -54,13 +54,11 @@ const fetchPriceConversion = async (
         const fetchedData = await response.json();
 
         if (fetchedData.needsUpdating) {
-            console.log('[PRICE CONVERSION] Converted amount needs updating. Fetching from CMC');
             const conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
 
             await updatePriceConversion(certificate, conversion, conversionType);
             return conversion;
         } else {
-            console.log('[PRICE CONVERSION] Fetched conversion from DB');
             return fetchedData.data.conversion;
         }
 
@@ -112,7 +110,6 @@ export const convertCryptoToFiat = async (
     conversionType: ConversionType = ConversionType.Any
 ) => {
     console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
-    console.log('Conversion type:', conversionType);
     
     if (conversionType != ConversionType.Any) {
         return await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
