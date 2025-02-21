@@ -21,7 +21,7 @@ export async function POST(
             return NextResponse.json({ error: 'API key is not set' }, { status: 500 });
         }
 
-        const response = await axios.get(`http://${backendUrl}/${endpoint}/${address}`, {
+        const response = await axios.get(`${backendUrl}/${endpoint}/${address}`, {
             headers: {
                 'x-api-key': apiKey
             }

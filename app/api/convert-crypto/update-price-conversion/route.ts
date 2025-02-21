@@ -24,7 +24,7 @@ export async function POST(
 
         console.log(`Request Payload:  ${certificate}, ${convertedPrice}, ${conversionType}`);
 
-        const response = await axios.post(`http://${backendUrl}/${endpoint}/`, {
+        const response = await axios.post(`${backendUrl}/${endpoint}/`, {
             address,
             conversion,
         }, {
