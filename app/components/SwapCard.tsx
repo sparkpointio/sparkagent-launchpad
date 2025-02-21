@@ -13,7 +13,6 @@ import { toEther, toWei } from "thirdweb";
 import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 import { getFormattedEther } from "../lib/utils/formatting";
-// import Link from "next/link";
 import { cardProperties } from "../lib/utils/style/customStyles";
 
 const unsparkingAIContract = getContract({
@@ -341,6 +340,16 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </button>
             </div>
 
+            <div className="flex content-center text-sparkyOrange-800 dark:text-sparkyOrange-500 text-center leading-[1em] justify-center items-center mb-4">
+                <div className="flex items-center dark:border-[#ffc94d] border-[#936218] border-solid border-[2px] rounded-[8px] !w-[initial] px-4 py-2">
+                    <div className="pe-2">
+                        <Image src="https://app.camelot.exchange/images/logo-sm.svg" width={12} height={0} style={{height: "auto"}} alt="Camelot DEX"/>
+                    </div>
+
+                    <p className="mb-0 leading-[1em]">Trade on Camelot DEX</p>
+                </div>
+            </div>
+
             {swapType === "buy" ?
                 <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">
                     You&apos;ll need $SRK to buy ${ticker}
@@ -349,10 +358,11 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 <p className="text-sm mb-2">
                     &nbsp;
                 </p>
-                }
+            }
 
             <div className="relative flex flex-col gap-2 mb-5">
-                <div className="flex items-center bg-gray-200 dark:bg-gray-700 dark:placeholder-gray-400 p-2 rounded-lg">
+                <div
+                    className="flex items-center bg-gray-200 dark:bg-gray-700 dark:placeholder-gray-400 p-2 rounded-lg">
                     <input
                         type="number"
                         title="Enter amount"
@@ -451,8 +461,8 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 contractAddress={contractAddress}
                 trading={trading}
             />
-    </motion.div>
-  )
+        </motion.div>
+    )
 }
 
 export default SwapCard;
