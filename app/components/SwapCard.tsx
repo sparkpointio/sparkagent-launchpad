@@ -340,6 +340,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </button>
             </div>
 
+            {!trading && (
             <div className="flex content-center text-sparkyOrange-800 dark:text-sparkyOrange-500 text-center leading-[1em] justify-center items-center mb-4">
                 <div className="flex items-center dark:border-[#ffc94d] border-[#936218] border-solid border-[2px] rounded-[8px] !w-[initial] px-4 py-2">
                     <div className="pe-2">
@@ -349,6 +350,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                     <p className="mb-0 leading-[1em]">Trade on Camelot DEX</p>
                 </div>
             </div>
+            )}
 
             {swapType === "buy" ?
                 <p className="text-sm text-gray-800 dark:text-gray-200 mb-2">
@@ -436,21 +438,6 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
             </div>
 
             <button type="button" className={`${swapButtonProperties}`} onClick={handleSwap}>Swap</button>
-
-            {/*{!trading && (*/}
-            {/*    <div className={'bg-[#00d7b2] mt-4 text-white px-3 py-2 text-center text-[0.9em] flex justify-between items-center'}>*/}
-            {/*        <div className={'flex-grow pe-2'}>Liquidity deposited into Camelot. Trading is now disabled.</div>*/}
-            {/*        <div>*/}
-            {/*            <Link*/}
-            {/*                href={'#'}*/}
-            {/*                type="button"*/}
-            {/*                className={`py-2 bg-white text-black px-5 text-[0.9em] dark:text-[#ffffff] ${buyButtonProperties}}`}*/}
-            {/*            >*/}
-            {/*                Camelot*/}
-            {/*            </Link>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*)}*/}
 
             <WalletConfirmationStatus
                 walletConfirmationStatus={walletConfirmationStatus}
