@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import AgentSearchBar from "./AgentSearchBar";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
+import AgentSort from "./AgentSort";
 import { client } from "../client";
 import { IconLoader2 } from "@tabler/icons-react";
 
@@ -90,6 +91,15 @@ const Agents = () => {
     const [filteredAgents, setFilteredAgents] = useState<AgentData[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    const [activeSorting, setActiveSorting] = useState({
+        volume: null as "high" | "low" | null,
+        marketCap: null as "high" | "low" | null,
+        price: null as "high" | "low" | null
+    });
+    const [activeFilters, setActiveFilters] = useState({
+        newPairs: false,
+        sparked: false,
+    });
 
     const parseAgentData = useCallback((agent: RawAgentData, gradThreshold?: bigint): AgentData => {
         const data = agent.data; // Extract `data` array
@@ -163,8 +173,10 @@ const Agents = () => {
         fetchAgents();
     }, [parseAgentData]);
 
-    const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
+    const applyFiltersAndSorting = useCallback(() => {
         let filtered = [...agentsData];
+
+        console.log("Initial agents data:", agentsData);
 
         // Apply search filter first
         if (searchQuery.trim()) {
@@ -175,56 +187,82 @@ const Agents = () => {
                 agent.certificate.toLowerCase().includes(searchTerm) ||
                 agent.creator.toLowerCase().includes(searchTerm)
             );
-        }
-
-        // Apply market cap filter
-        if (filterType === "marketCap") {
-            if (value === "high") {
-                filtered.sort((a, b) => b.marketCap - a.marketCap);
-            } else if (value === "low") {
-                filtered.sort((a, b) => a.marketCap - b.marketCap);
-            }
-        }
-
-        // Apply token price filter
-        if (filterType === "price") {
-            if (value === "high") {
-                filtered.sort((a, b) => b.price - a.price);
-            } else if (value === "low") {
-                filtered.sort((a, b) => a.price - b.price);
-            }
-        }
-
-        // Apply volume filter
-        if (filterType === "volume") {
-            if (value === "high") {
-                filtered.sort((a, b) => b.volume - a.volume);
-            } else if (value === "low") {
-                filtered.sort((a, b) => a.volume - b.volume);
-            }
+            console.log("After search filter:", filtered.map(agent => ({
+                _tokenName: agent._tokenName,
+                description: agent.description,
+                certificate: agent.certificate,
+                creator: agent.creator
+            })));
         }
 
         // Apply new pairs filter (last 7 days)
-        if (filterType === 'newPairs' && value === true) {
+        if (activeFilters.newPairs) {
             const sevenDaysAgo = new Date();
             sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         
             filtered = filtered
                 .filter(agent => agent.lastUpdated >= sevenDaysAgo)
                 .sort((a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime()); // Sort by most recent
+            console.log("After new pairs filter:", filtered.map(agent => ({
+                _tokenName: agent._tokenName,
+                lastUpdated: agent.lastUpdated
+            })));
         }
 
         // Apply sparked filter
-        if (filterType === 'sparked' && value === true) {
+        if (activeFilters.sparked) {
             filtered = filtered.filter(agent => !agent.trading);
+            console.log("After sparked filter:", filtered.map(agent => ({
+                _tokenName: agent._tokenName,
+                trading: agent.trading
+            })));
+        }
+
+        // Apply sorting
+        if (activeSorting.volume) {
+            filtered.sort((a, b) => activeSorting.volume === "high" ? b.volume - a.volume : a.volume - b.volume);
+            console.log("After volume sorting:", filtered.map(agent => ({
+                _tokenName: agent._tokenName,
+                volume: agent.volume
+            })));
+        } else if (activeSorting.marketCap) {
+            filtered.sort((a, b) => activeSorting.marketCap === "high" ? b.marketCap - a.marketCap : a.marketCap - b.marketCap);
+            console.log("After market cap sorting:", filtered.map(agent => ({
+                _tokenName: agent._tokenName,
+                marketCap: agent.marketCap
+            })));
+        } else if (activeSorting.price) {
+            filtered.sort((a, b) => activeSorting.price === "high" ? b.price - a.price : a.price - b.price);
+            console.log("After price sorting:", filtered.map(agent => ({
+                _tokenName: agent._tokenName,
+                price: agent.price
+            })));
         }
 
         setFilteredAgents(filtered);
-    }, [searchQuery, agentsData]);
+    }, [searchQuery, agentsData, activeFilters, activeSorting]);
+
+    const handleFilterChange = useCallback((filterType: string, value: string | boolean | null) => {
+        setActiveFilters(prevFilters => ({
+            ...prevFilters,
+            [filterType]: value
+        }));
+    }, []);
+
+    const handleSortingChange = useCallback((sortType: string, value: string | boolean | null) => {
+        const newSorting = {
+            volume: null as "high" | "low" | null,
+            marketCap: null as "high" | "low" | null,
+            price: null as "high" | "low" | null
+        };
+
+        newSorting[sortType as keyof typeof newSorting] = value as "high" | "low" | null;
+        setActiveSorting(newSorting);
+    }, []);
 
     useEffect(() => {
-        handleFilterChange('search', searchQuery);
-    }, [searchQuery, handleFilterChange, agentsData]);
+        applyFiltersAndSorting();
+    }, [searchQuery, agentsData, activeFilters, activeSorting, applyFiltersAndSorting]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
@@ -251,13 +289,16 @@ const Agents = () => {
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6 xl:gap-10 2xl:gap-24 w-full">
                 {/* First Column */}
-                <div className="flex flex-col">
+                <div className="flex flex-col mb-2">
                     <div className="flex items-center h-14 mb-8 select-none">
                         <SparkAgentLogo />
                     </div>
-                    <AgentFilter onFilterChange={handleFilterChange} />
+                    <div className="flex flex-col gap-6">
+                        <AgentFilter onFilterChange={handleFilterChange} />
+                        <AgentSort onSortingChange={handleSortingChange} />
+                    </div>
                 </div>
-
+    
                 {/* Second Column */}
                 <div className="lg:col-span-3 w-full">
                     <div className="flex items-center justify-center h-16 mb-6">
