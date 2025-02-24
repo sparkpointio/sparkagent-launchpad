@@ -77,8 +77,11 @@ export function getSparkingProgress(reserveB: bigint, gradThreshold: bigint): nu
 }
 
 export function getFormattedEther(balance: string, maxDecimal: number) {
+  const factor = 10 ** maxDecimal;
+  const flooredBalance = Math.floor(Number(balance) * factor) / factor; // Floor instead of rounding
+
   return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 0,
     maximumFractionDigits: maxDecimal,
-  }).format(Number(balance));
+  }).format(flooredBalance);
 }

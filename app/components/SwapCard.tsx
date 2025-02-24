@@ -398,9 +398,10 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance)), 2).replace(/,/g, ""))
-                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
-                                setAmount((balance * 0.25).toFixed(2).toString())
+                                        ? BigInt(srkBalance)
+                                        : BigInt(agentBalance)
+
+                                setAmount(toEther(balance / BigInt("4")));
                             }}
                             className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
@@ -410,9 +411,10 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance)), 2).replace(/,/g, ""))
-                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
-                                setAmount((balance * 0.5).toFixed(2).toString())
+                                        ? BigInt(srkBalance)
+                                        : BigInt(agentBalance)
+
+                                setAmount(toEther(balance / BigInt("2")));
                             }}
                             className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
@@ -422,9 +424,10 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                             onClick={() => {
                                 const balance =
                                     swapType === "buy"
-                                        ? Number.parseFloat(getFormattedEther(toEther(BigInt(srkBalance)), 2).replace(/,/g, ""))
-                                        : Number.parseFloat(getFormattedEther(toEther(BigInt(agentBalance)), 2).replace(/,/g, ""))
-                                setAmount(balance.toFixed(2).toString())
+                                        ? BigInt(srkBalance)
+                                        : BigInt(agentBalance)
+
+                                setAmount(toEther(balance));
                             }}
                             className={`text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-300 transition-colors`}
                         >
