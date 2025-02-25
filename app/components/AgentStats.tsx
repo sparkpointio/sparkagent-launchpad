@@ -460,7 +460,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					<div className="relative w-32 h-32 rounded-full overflow-hidden flex justify-center items-center mx-auto">
 						{isLoading && (
 							<div className="flex items-center justify-center absolute inset-0">
-								<IconLoader3 size={64} />
+								<IconLoader3 size={64} className="animate-spin"/>
 							</div>
 						)}
 						<motion.div
@@ -598,7 +598,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						<div className="flex justify-between items-center mb-4">
 							<Link href={""}>
 								<h2 className="text-2xl font-bold tracking-tight hover:text-sparkyOrange-600">
-									{`${tokenName} (${ticker})`}
+									{agentData ? `${tokenName} (${ticker})` : "Fetching.."}
 								</h2>
 							</Link>
 							<div className="flex space-x-1 items-center">
