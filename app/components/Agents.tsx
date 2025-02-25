@@ -178,6 +178,11 @@ const Agents = () => {
 
         console.log("Initial agents data:", agentsData);
 
+        if (currentPage !== 1)
+        {
+            setCurrentPage(1);
+        }
+        
         // Apply search filter first
         if (searchQuery.trim()) {
             const searchTerm = searchQuery.toLowerCase();
