@@ -24,12 +24,16 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                 <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50 z-[100]" />
                 <Dialog.Content className={'fixed bg-white dark:bg-[#1a1d21] dark:text-white left-[50%] top-[50%] z-[101] grid w-[90%] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border-black border-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-2xl sm:rounded-2xl sm:px-6 sm:py-10 p-4 max-h-[calc(100vh-40px)] overflow-auto'}
                     onInteractOutside={(event) => {
-                        event.preventDefault();
+                        if((trading && walletConfirmationStatus < 6) || (!trading && walletConfirmationStatus < 4) || (!trading && walletConfirmationStatus < 6)) {
+                            event.preventDefault();
+                        } else {
+                            setWalletConfirmationStatus(0)
+                        }
                     }}>
 
                     <div className={'max-w-md text-center flex flex-col items-center relative pt-4 pb-4'}>
                         <Dialog.Title className="text-lg font-bold mb-4 text-custom-1">
-                            {((trading && walletConfirmationStatus < 6) || (!trading && walletConfirmationStatus < 4))
+                            {((trading && walletConfirmationStatus < 6) || (!trading && walletConfirmationStatus < 4) || (!trading && walletConfirmationStatus < 6))
                                 ? swapType === "buy"
                                     ? "Buying Your Tokens"
                                     : "Selling Your Tokens"
@@ -92,7 +96,7 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                         : "You have successfully sold your " + ticker + ". Your proceeds will be available soon."
                             }
 
-                            {((trading && walletConfirmationStatus === 6) || (!trading && walletConfirmationStatus === 4)) && (
+                            {(trading && walletConfirmationStatus === 6) || (!trading && walletConfirmationStatus === 4) || (!trading && walletConfirmationStatus === 6) ?
                                 <>
                                     <br />
 
@@ -110,7 +114,8 @@ const WalletConfirmationStatus: React.FC<WalletConfirmationStatusProps> = ({ wal
                                         View Transaction
                                     </Link>
                                 </>
-                            )}
+                                : ''
+                            }
                         </Dialog.Description>
                     </div>
                 </Dialog.Content>

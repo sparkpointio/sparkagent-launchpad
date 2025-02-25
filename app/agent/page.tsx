@@ -46,6 +46,7 @@ interface AgentData {
   reserves: [bigint, bigint];
   totalSupply: bigint;
   gradThreshold: bigint;
+  initialLiquidity: bigint;
 }
 
 const AgentPage = () => {
@@ -73,6 +74,12 @@ const AgentPage = () => {
     params: [],
   });
 
+  const { data: initialLiquidity } = useReadContract({
+    contract: unsparkingAIContract,
+    method: "function L() returns (uint256)",
+    params: [],
+  });
+
   useEffect(() => {
     const fetchAgentData = async () => {
       try {
@@ -95,6 +102,12 @@ const AgentPage = () => {
             contract: agentPairContract,
             method: "function getReserves() returns (uint256, uint256)",
             params: [],
+          });
+
+          const initialLiquidity = await readContract({
+              contract: unsparkingAIContract,
+              method: "function L() returns (uint256)",
+              params: [],
           });
 
           const totalSupply = await readContract({
@@ -130,7 +143,8 @@ const AgentPage = () => {
             tradingOnUniSwap: agentData[12]?.valueOf(),
             reserves: [reserves[0], reserves[1]],
             totalSupply,
-            gradThreshold: gradThreshold ?? BigInt(0)
+            gradThreshold: gradThreshold ?? BigInt(0),
+            initialLiquidity: initialLiquidity ?? BigInt(0)
           };
 
           console.log("AGENT CERTIFICATE: " + agentData[1].toString());
@@ -152,7 +166,7 @@ const AgentPage = () => {
     };
 
     fetchAgentData();
-  }, [agentData, gradThreshold]);
+  }, [agentData, gradThreshold, initialLiquidity]);
 
   return (
     <div className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24 mt-16 md:mt-28">
@@ -207,7 +221,7 @@ const AgentPage = () => {
                 />
 
                 <SparkingProgressCard
-                    sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold) : 0}
+                    sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold, agent.initialLiquidity) : 0}
                     gradThreshold={agent.gradThreshold}
                     trading={agent.trading}
                     contractAddress={agent.certificate}

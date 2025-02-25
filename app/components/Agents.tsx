@@ -47,6 +47,7 @@ const Agents = () => {
         trading: boolean;
         tradingOnUniSwap: boolean;
         gradThreshold: bigint;
+        initialLiquidity: bigint;
         reserveB: bigint;
     }
 
@@ -91,7 +92,7 @@ const Agents = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
 
-    const parseAgentData = useCallback((agent: RawAgentData, gradThreshold?: bigint): AgentData => {
+    const parseAgentData = useCallback((agent: RawAgentData, gradThreshold?: bigint, initialLiquidity?: bigint): AgentData => {
         const data = agent.data; // Extract `data` array
         const tokenData = data[4]; // Extract the nested token data
 
@@ -121,6 +122,7 @@ const Agents = () => {
             trading: data[11],
             tradingOnUniSwap: data[12],
             gradThreshold: gradThreshold ?? BigInt(0),
+            initialLiquidity: initialLiquidity ?? BigInt(0),
             reserveB: BigInt(agent.reserves[1]),
         };
     }, []);
@@ -308,6 +310,7 @@ const Agents = () => {
                                                 youtube={agent.youtube}
                                                 trading={agent.trading}
                                                 gradThreshold={agent.gradThreshold}
+                                                initialLiquidity={agent.initialLiquidity}
                                                 reserveB={agent.reserveB}
                                             />
                                         ))

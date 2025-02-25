@@ -34,6 +34,7 @@ interface AgentCardProps {
 	trading: boolean;
 	gradThreshold: bigint;
 	reserveB: bigint;
+	initialLiquidity: bigint;
 }
 
 const socialIconSize = 20;
@@ -54,6 +55,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	trading,
 	gradThreshold,
 	reserveB,
+	initialLiquidity,
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
@@ -220,7 +222,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</p>
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
 					<div className="px-5">
-						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserveB ? getSparkingProgress(reserveB, gradThreshold) : 0}%`}</p>
+						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserveB ? getSparkingProgress(reserveB, gradThreshold, initialLiquidity) : 0}%`}</p>
 						<div className="w-full h-3 rounded-full border border-black overflow-hidden">
 							{/* To fix: avoid using CSS inline styles. */}
 							<div
@@ -229,7 +231,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 										(!trading)
 											? "bg-sparkyOrange"
 											: reserveB
-												? (getSparkingProgress(reserveB, gradThreshold) >= 100 || !trading
+												? (getSparkingProgress(reserveB, gradThreshold, initialLiquidity) >= 100 || !trading
 													? "bg-sparkyOrange"
 													: "bg-sparkyGreen-200")
 												: 0 
@@ -239,7 +241,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 										(!trading)
 											? 100
 											: reserveB
-												? getSparkingProgress(reserveB, gradThreshold)
+												? getSparkingProgress(reserveB, gradThreshold, initialLiquidity)
 												: 0,
 										100
 									)}%`,

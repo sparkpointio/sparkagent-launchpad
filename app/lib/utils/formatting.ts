@@ -1,3 +1,5 @@
+import { toEther } from "thirdweb";
+
 export function getTimeAgo(date: Date): string {
   const now = new Date();
   const diffInMilliseconds = now.getTime() - date.getTime();
@@ -70,8 +72,8 @@ export function truncateHash(hash: string, maxLength: number = 10, left?: number
 
 import { Decimal } from "decimal.js";
 
-export function getSparkingProgress(reserveB: bigint, gradThreshold: bigint): number {
-  const sparkingProgress = ((Number(reserveB) - 6000) / Number(gradThreshold)) * 100;
+export function getSparkingProgress(reserveB: bigint, gradThreshold: bigint, initialLiquidity: bigint): number {
+  const sparkingProgress = ((Number(toEther(reserveB)) - Number(toEther(initialLiquidity))) / (Number(toEther(gradThreshold)))) * 100;
 
   return Decimal.min(sparkingProgress, 100).toDecimalPlaces(2, Decimal.ROUND_DOWN).toNumber();
 }
