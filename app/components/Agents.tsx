@@ -185,7 +185,8 @@ const Agents = () => {
                 agent._tokenName.toLowerCase().includes(searchTerm) ||
                 agent.description.toLowerCase().includes(searchTerm) ||
                 agent.certificate.toLowerCase().includes(searchTerm) ||
-                agent.creator.toLowerCase().includes(searchTerm)
+                agent.creator.toLowerCase().includes(searchTerm) ||
+                agent.tokenTicker.toLowerCase().includes(searchTerm)
             );
             console.log("After search filter:", filtered.map(agent => ({
                 _tokenName: agent._tokenName,
