@@ -215,7 +215,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 						</span>
 					</p>
-					<p className="font-normal text-gray-400 text-xs px-5 text-right mb-1">
+					<p className="font-normal text-gray-600 dark:text-gray-300 text-xs px-5 text-right mb-1">
 						{`${getTimeAgo(datePublished)}`}
 					</p>
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
