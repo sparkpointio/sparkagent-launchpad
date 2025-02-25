@@ -58,35 +58,43 @@ export function Footer() {
   const socials = [
     {
       icon: faGithub,
-      href: "https://github.com/sparkpointio"
+      href: "https://github.com/sparkpointio",
+      label: "GitHub"
     },
     {
       icon: faXTwitter,
-      href: "https://x.com/sparkpointio"
+      href: "https://x.com/sparkpointio",
+      label: "X"
     },
     {
       icon: faFacebook,
-      href: "https://facebook.com/sparkpointio"
+      href: "https://facebook.com/sparkpointio",
+      label: "Facebook"
     },
     {
       icon: faInstagram,
-      href: "https://www.instagram.com/sparkpointio"
+      href: "https://www.instagram.com/sparkpointio",
+      label: "Instagram"
     },
     {
       icon: faYoutube,
-      href: "https://www.youtube.com/@sparkpointio"
+      href: "https://www.youtube.com/@sparkpointio",
+      label: "YouTube"
     },
     {
       icon: faMedium,
-      href: "https://medium.com/theecosystem"
+      href: "https://medium.com/theecosystem",
+      label: "Medium"
     },
     {
       icon: faTelegram,
-      href: "https://t.me/SparkpointOfficial"
+      href: "https://t.me/SparkpointOfficial",
+      label: "Telegram"
     },
     {
       icon: faLinkedin,
-      href: "https://www.linkedin.com/company/sparkpointio"
+      href: "https://www.linkedin.com/company/sparkpointio",
+      label: "LinkedIn"
     }
   ]
   return (

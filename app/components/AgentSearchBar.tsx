@@ -34,12 +34,19 @@ const AgentSearchBar: React.FC<AgentSearchBarProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 sm:gap-4 w-full dark:bg-[#1a1d21]">
       <input
         type="text"
         value={query}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="w-full sm:flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-black dark:border-gray-600 rounded-xl focus:outline-none focus:ring focus:ring-sparkyOrange-300 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 text-sm sm:text-base"
       />
