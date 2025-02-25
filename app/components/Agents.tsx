@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import AgentSearchBar from "./AgentSearchBar";
 import AgentCard from "./AgentCard";
 import AgentFilter from "./AgentFilter";
@@ -271,9 +271,9 @@ const Agents = () => {
     const indexOfLastAgent = currentPage * agentsPerPage;
     const indexOfFirstAgent = indexOfLastAgent - agentsPerPage;
     const currentAgents = filteredAgents.slice(indexOfFirstAgent, indexOfLastAgent);
-    const totalPages = Math.ceil(filteredAgents.length / agentsPerPage);
+    const totalPages = useMemo(() => Math.ceil(filteredAgents.length / agentsPerPage), [filteredAgents.length, agentsPerPage]);
 
-    const getPageNumbers = (maxPagesToShow: number ) => {
+    const getPageNumbers = useCallback((maxPagesToShow: number) => {
         const pageNumbers = [];
         const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
         const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
@@ -283,7 +283,7 @@ const Agents = () => {
         }
 
         return pageNumbers;
-    };
+    }, [currentPage, totalPages]);
 
     return (
         <section className="items-center justify-center min-h-screen m-6 lg:mx-2 xl:mx-10 2xl:mx-24">
