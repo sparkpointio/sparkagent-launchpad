@@ -100,7 +100,7 @@ export function Footer() {
   return (
     <footer className="bg-[#20282A] text-white md:px-44 p-10 py-16 flex justify-between items-start gap-8 mx-auto lg:flex-row flex-col">
       <div className="grid gap-4">
-        <Link className="flex items-center gap-2" href="/#">
+        <Link className="flex items-center gap-2" href="/#" aria-label="Home">
           <Image
             src={new_sparkpoint_logo_full_light}
             alt="SparkPoint Logo"
@@ -110,7 +110,7 @@ export function Footer() {
         <div className="flex gap-4 items-center justify-start flex-wrap">
           {socials.map((social, index) => {
             return (
-              <Link key={index} href={social.href} target='_blank'>
+              <Link key={index} href={social.href} target='_blank' aria-label={social.label}>
                 <FontAwesomeIcon icon={social.icon} size='xl' color='#FF6F00' />
               </Link>
             )
@@ -125,7 +125,7 @@ export function Footer() {
         {[1, 2].map(col => (
           <div key={col} className="flex flex-col gap-2">
             {footer_links.filter(link => link.col === col).map(link => (
-              <Link href={link.url} key={link.label} className="text-sm hover:text-gray-400" target={link.target}>
+              <Link href={link.url} key={link.label} className="text-sm hover:text-gray-400" target={link.target} aria-label={link.label}>
                 {link.label}
               </Link>
             ))}

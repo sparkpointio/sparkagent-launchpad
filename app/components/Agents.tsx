@@ -174,17 +174,12 @@ const Agents = () => {
 
         fetchAgents();
     }, [parseAgentData]);
-
+    
     const applyFiltersAndSorting = useCallback(() => {
         let filtered = [...agentsData];
-
+    
         console.log("Initial agents data:", agentsData);
-
-        if (currentPage !== 1)
-        {
-            setCurrentPage(1);
-        }
-        
+    
         // Apply search filter first
         if (searchQuery.trim()) {
             const searchTerm = searchQuery.toLowerCase();
@@ -202,7 +197,7 @@ const Agents = () => {
                 creator: agent.creator
             })));
         }
-
+    
         // Apply new pairs filter (last 7 days)
         if (activeFilters.newPairs) {
             const sevenDaysAgo = new Date();
@@ -216,7 +211,7 @@ const Agents = () => {
                 lastUpdated: agent.lastUpdated
             })));
         }
-
+    
         // Apply sparked filter
         if (activeFilters.sparked) {
             filtered = filtered.filter(agent => !agent.trading);
@@ -225,7 +220,7 @@ const Agents = () => {
                 trading: agent.trading
             })));
         }
-
+    
         // Apply sorting
         if (activeSorting.volume) {
             filtered.sort((a, b) => activeSorting.volume === "high" ? b.volume - a.volume : a.volume - b.volume);
@@ -246,7 +241,7 @@ const Agents = () => {
                 price: agent.price
             })));
         }
-
+    
         setFilteredAgents(filtered);
     }, [searchQuery, agentsData, activeFilters, activeSorting]);
 
@@ -270,7 +265,8 @@ const Agents = () => {
 
     useEffect(() => {
         applyFiltersAndSorting();
-    }, [searchQuery, agentsData, activeFilters, activeSorting, applyFiltersAndSorting]);
+        setCurrentPage(1);
+    }, [searchQuery, activeFilters, activeSorting, applyFiltersAndSorting]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
@@ -317,9 +313,6 @@ const Agents = () => {
                             onClear={() => {
                                 setSearchQuery("");
                                 setFilteredAgents(agentsData); // Reset to original agents list
-                            }}
-                            onSearchButtonClick={() => {
-                                setCurrentPage(1);
                             }}
                             placeholder="Search Agent/Token"
                         />
@@ -371,17 +364,21 @@ const Agents = () => {
                             {/* Pagination */}
                             <div className="flex justify-center mt-6">
                                 <button
+                                    type="button"
                                     onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                                     className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === 1 ? "bg-gray-100 text-gray-300 dark:bg-gray-800 dark:text-gray-600" : "bg-gray-200 text-gray-700 hover:bg-sparkyOrange-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"} `}
                                     disabled={currentPage === 1}
+                                    aria-label="Previous page"
                                 >
                                     {<IconArrowLeft />}
                                 </button>
                                 <section className="hidden md:block">
                                     {getPageNumbers(5).map((pageNumber) => (
                                         <button
+                                            type="button"
                                             key={pageNumber}
                                             onClick={() => handlePageChange(pageNumber)}
+                                            aria-label={`Page ${pageNumber}`}
                                             className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
                                         >
                                             {pageNumber}
@@ -400,9 +397,11 @@ const Agents = () => {
                                     ))}
                                 </section>
                                 <button
+                                    type="button"
                                     onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                     className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"
                                     disabled={currentPage === totalPages}
+                                    aria-label="Next page"
                                 >
                                     {<IconArrowRight />}
                                 </button>
