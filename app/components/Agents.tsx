@@ -364,17 +364,21 @@ const Agents = () => {
                             {/* Pagination */}
                             <div className="flex justify-center mt-6">
                                 <button
+                                    type="button"
                                     onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                                     className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === 1 ? "bg-gray-100 text-gray-300 dark:bg-gray-800 dark:text-gray-600" : "bg-gray-200 text-gray-700 hover:bg-sparkyOrange-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"} `}
                                     disabled={currentPage === 1}
+                                    aria-label="Previous page"
                                 >
                                     {<IconArrowLeft />}
                                 </button>
                                 <section className="hidden md:block">
                                     {getPageNumbers(5).map((pageNumber) => (
                                         <button
+                                            type="button"
                                             key={pageNumber}
                                             onClick={() => handlePageChange(pageNumber)}
+                                            aria-label={`Page ${pageNumber}`}
                                             className={`px-4 py-2 mx-1 rounded-lg transition-all ${currentPage === pageNumber ? 'bg-sparkyOrange-500 text-white dark:bg-sparkyOrange-700' : 'hover:bg-sparkyOrange-200 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700'}`}
                                         >
                                             {pageNumber}
@@ -393,9 +397,11 @@ const Agents = () => {
                                     ))}
                                 </section>
                                 <button
+                                    type="button"
                                     onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                     className="px-4 py-2 mx-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-sparkyOrange-700"
                                     disabled={currentPage === totalPages}
+                                    aria-label="Next page"
                                 >
                                     {<IconArrowRight />}
                                 </button>
