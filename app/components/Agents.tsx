@@ -174,17 +174,12 @@ const Agents = () => {
 
         fetchAgents();
     }, [parseAgentData]);
-
+    
     const applyFiltersAndSorting = useCallback(() => {
         let filtered = [...agentsData];
-
+    
         console.log("Initial agents data:", agentsData);
-
-        if (currentPage !== 1)
-        {
-            setCurrentPage(1);
-        }
-        
+    
         // Apply search filter first
         if (searchQuery.trim()) {
             const searchTerm = searchQuery.toLowerCase();
@@ -202,7 +197,7 @@ const Agents = () => {
                 creator: agent.creator
             })));
         }
-
+    
         // Apply new pairs filter (last 7 days)
         if (activeFilters.newPairs) {
             const sevenDaysAgo = new Date();
@@ -216,7 +211,7 @@ const Agents = () => {
                 lastUpdated: agent.lastUpdated
             })));
         }
-
+    
         // Apply sparked filter
         if (activeFilters.sparked) {
             filtered = filtered.filter(agent => !agent.trading);
@@ -225,7 +220,7 @@ const Agents = () => {
                 trading: agent.trading
             })));
         }
-
+    
         // Apply sorting
         if (activeSorting.volume) {
             filtered.sort((a, b) => activeSorting.volume === "high" ? b.volume - a.volume : a.volume - b.volume);
@@ -246,7 +241,7 @@ const Agents = () => {
                 price: agent.price
             })));
         }
-
+    
         setFilteredAgents(filtered);
     }, [searchQuery, agentsData, activeFilters, activeSorting]);
 
@@ -270,7 +265,8 @@ const Agents = () => {
 
     useEffect(() => {
         applyFiltersAndSorting();
-    }, [searchQuery, agentsData, activeFilters, activeSorting, applyFiltersAndSorting]);
+        setCurrentPage(1);
+    }, [searchQuery, activeFilters, activeSorting, applyFiltersAndSorting]);
 
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
