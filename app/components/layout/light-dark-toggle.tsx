@@ -35,10 +35,11 @@ const LightDarkToggle = () => {
         type="checkbox"
         className="checkbox"
         id="checkbox"
+        title="Toggle dark mode"
         onChange={toggleDarkMode}
         checked={isDarkMode}
       />
-      <label htmlFor="checkbox" className="checkbox-label">
+      <label htmlFor="checkbox" className="checkbox-label" title="Toggle light/dark mode">
         <FontAwesomeIcon icon={faMoon} />
         <FontAwesomeIcon icon={faSun} />
         <span className="ball"></span>
