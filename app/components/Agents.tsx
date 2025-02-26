@@ -314,9 +314,6 @@ const Agents = () => {
                                 setSearchQuery("");
                                 setFilteredAgents(agentsData); // Reset to original agents list
                             }}
-                            onSearchButtonClick={() => {
-                                setCurrentPage(1);
-                            }}
                             placeholder="Search Agent/Token"
                         />
                     </div>
