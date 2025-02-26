@@ -76,9 +76,9 @@ const Header = ({ className }: { className?: string }) => {
             />
             */}
           </Link>
-          <button onClick={toggleMenu} className="nav-toggle">
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            <button onClick={toggleMenu} className="nav-toggle" aria-label={isOpen ? "Close menu" : "Open menu"}>
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
         </div>
 
         {!isOpen &&
