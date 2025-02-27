@@ -33,10 +33,10 @@ const factoryContract = getContract({
     address: process.env.NEXT_PUBLIC_FFACTORY as string,
 });
 
-const pairContract = getContract({
+const routerContract = getContract({
     client,
     chain: arbitrumSepolia,
-    address: process.env.NEXT_PUBLIC_FPAIR as string,
+    address: process.env.NEXT_PUBLIC_FROUTER as string,
 });
 
 const camelotRouterContract = getContract({
@@ -201,15 +201,15 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                         console.log("Approval 3 Checked");
                         setWalletConfirmationStatus(3);
 
-                        const pairAllowance = await readContract({
+                        const routerAllowance = await readContract({
                             contract: contract,
                             method: "function allowance(address owner, address spender) returns (uint256)",
-                            params: [account.address, pairContract.address],
+                            params: [account.address, routerContract.address],
                         });
 
-                        const updatedPairAllowance = BigInt(pairAllowance ?? "0");
+                        const updatedRouterAllowance = BigInt(routerAllowance ?? "0");
 
-                        approveIfNeeded(pairContract.address, updatedPairAllowance);
+                        approveIfNeeded(routerContract.address, updatedRouterAllowance);
                     });
                 });
             } else {
