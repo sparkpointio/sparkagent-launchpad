@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
+import { formatNumber, getSparkingProgress, /*getTimeAgo,*/ truncateHash } from "../lib/utils/formatting";
 import {
 	IconBrandTelegram,
 	IconBrandX,
@@ -47,7 +47,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	description,
 	createdBy,
 	marketCap,
-	datePublished,
+	// datePublished,
 	website,
 	twitter,
 	telegram,
@@ -183,7 +183,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					</div>
 				</div>
 
-					<h3 className="mb-2 text-xl tracking-tight truncate w-full flex items-center">
+					<h3 className="mt-2 mb-2 text-xl tracking-tight truncate w-full flex items-center">
 						<span className="pr-2">CA:</span>
 						<button
 							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
@@ -211,15 +211,15 @@ const AgentCard: React.FC<AgentCardProps> = ({
 							<span className="hover:text-sparkyOrange-600">{truncateHash(createdBy)}</span>
 						</Link>
 					</p>
-					<p className="px-5 font-normal flex justify-between">
+					<p className="px-5 font-normal flex justify-between mb-4">
 						<span>{"Market Cap:"}</span>
 						<span className="font-bold">
 							{convertedMarketCap ? `$${formatNumber(convertedMarketCap)}` : "Fetching..."}
 						</span>
 					</p>
-					<p className="font-normal text-gray-600 dark:text-gray-300 text-xs px-5 text-right mb-1">
-						{`${getTimeAgo(datePublished)}`}
-					</p>
+					{/*<p className="font-normal text-gray-600 dark:text-gray-300 text-xs px-5 text-right mb-1">*/}
+					{/*	{`${getTimeAgo(datePublished)}`}*/}
+					{/*</p>*/}
 					<hr className="border-black border-2 group-hover:border-sparkyOrange transition-all duration-200" />
 					<div className="px-5">
 						<p className="font-normal text-[0.8em] mt-3 mb-1">{`Sparking Progress: ${!trading ? 100 : reserveB ? getSparkingProgress(reserveB, gradThreshold, initialLiquidity) : 0}%`}</p>

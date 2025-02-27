@@ -5,6 +5,12 @@ export function getTimeAgo(date: Date): string {
   const diffInMilliseconds = now.getTime() - date.getTime();
   
   const diffInDays = Math.floor(diffInMilliseconds / (1000 * 3600 * 24));
+
+  console.log("diffInDays");
+  console.log(now.getTime());
+  console.log(date.getTime());
+  console.log(date);
+
   const years = Math.floor(diffInDays / 365);
   const months = Math.floor((diffInDays % 365) / 30);
   
@@ -74,6 +80,10 @@ import { Decimal } from "decimal.js";
 
 export function getSparkingProgress(reserveB: bigint, gradThreshold: bigint, initialLiquidity: bigint): number {
   const sparkingProgress = ((Number(toEther(reserveB)) - Number(toEther(initialLiquidity))) / (Number(toEther(gradThreshold)))) * 100;
+
+  // console.log(reserveB);
+  // console.log(gradThreshold);
+  // console.log(initialLiquidity);
 
   return Decimal.min(sparkingProgress, 100).toDecimalPlaces(2, Decimal.ROUND_DOWN).toNumber();
 }

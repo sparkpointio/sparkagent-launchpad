@@ -140,11 +140,16 @@ const Agents = () => {
     useEffect(() => {
         const fetchAgents = async () => {
             try {
-                const [response, gradThresholdValue] = await Promise.all([
+                const [response, gradThresholdValue, initialLiquidity] = await Promise.all([
                     fetch(`api/tokens`),
                     readContract({
                         contract: unsparkingAIContract,
                         method: "function gradThreshold() returns (uint256)",
+                        params: [],
+                    }),
+                    readContract({
+                        contract: unsparkingAIContract,
+                        method: "function L() returns (uint256)",
                         params: [],
                     }),
                 ]);
@@ -161,7 +166,7 @@ const Agents = () => {
 
                 // Convert raw data to `AgentData` type
                 const parsedAgents: AgentData[] = rawAgents.map((agent) =>
-                    parseAgentData(agent, gradThresholdValue ?? BigInt(0))
+                    parseAgentData(agent, gradThresholdValue ?? BigInt(0), initialLiquidity ?? BigInt(0))
                 );
 
                 setAgentsData(parsedAgents);

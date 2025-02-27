@@ -97,6 +97,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const prevImageRef = useRef<string | null>(null);
 
 	const [agentData, setAgentData] = useState<RawAgentData | null>(null);
+	const [createdAt, setCreatedAt] = useState(new Date());
 
 	useEffect(() => {
 		const fetchTokenData = async () => {
@@ -130,8 +131,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		const convertMarketCap = async () => {
 			try {
 				if (agentData) {
-					console.log("Certificate for Market Cap:", certificate); // Add this line
-					console.log("Market Cap:", agentData.data[4][6]); // Add this line
+					// console.log("Certificate for Market Cap:", certificate);
+					// console.log("Market Cap:", agentData.data[4][6]);
+
 					const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
 					setConvertedMarketCap(result.toFixed(2));
 				}
@@ -150,7 +152,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		const convertTokenPrice = async () => {
 			try {
 				if (agentData) {
-					console.log("Certificate for Token Price:", certificate); // Add this line
+					// console.log("Certificate for Token Price:", certificate);
 					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
 					setConvertedTokenPrice(result.toFixed(2));
 				}
@@ -188,8 +190,15 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			if (agentData) {
 				const response = await axios.get(`https://laravel-boilerplate.kinameansbusiness.com/api/storage/get/swap_events_${agentData.data[2]}`);
 
-				console.log("fetchStoredEvents");
-				console.log(response.data);
+				// console.log("fetchStoredEvents");
+				// console.log(response.data);
+
+                if(response.data.data) {
+                    // console.log("First Swap Event Timestamp");
+                    // console.log(new Date(response.data.data[0].timestamp * 1000));
+
+                    setCreatedAt(new Date(response.data.data[0].timestamp * 1000))
+                }
 
 				return (response.data.data ?? []).map((event: { blockNumber: bigint; timestamp: number; }) => ({
 					...event,
@@ -253,8 +262,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					events: [preparedEvent],
 				});
 
-				console.log("Raw Fetched Events")
-				console.log(events)
+				// console.log("Raw Fetched Events")
+				// console.log(events)
 
 				const formattedData = events.map((event) => {
 					const { amount0In, amount0Out, amount1In, amount1Out } = event.args;
@@ -286,12 +295,12 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		const storedEvents = (await fetchStoredEvents()) || [];
 		const latestBlockStored = storedEvents.length ? storedEvents[storedEvents.length - 1].blockNumber : null;
 
-		console.log("latestBlockStored: " + latestBlockStored);
+		// console.log("latestBlockStored: " + latestBlockStored);
 
 		const newEvents = (await fetchNewSwapEvents(latestBlockStored)) || [];
 
-		console.log("newEvents");
-		console.log(newEvents);
+		// console.log("newEvents");
+		// console.log(newEvents);
 
 		// Merge and remove duplicates
 		const mergedEvents = [...storedEvents, ...newEvents]
@@ -374,7 +383,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 
 			const formattedChartData = groupDataByTime(chartData);
 
-			console.log("formattedChartData", formattedChartData);
+			// console.log("formattedChartData", formattedChartData);
+
 			areaSeries.setData(formattedChartData);
 
 			chart.timeScale().fitContent();
@@ -587,7 +597,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							</p>
 							<p className="px-5 font-normal whitespace-pre-line">{(agentData) ? agentData.data[5] : ''}</p>
 							<p className="font-normal text-gray-400 text-xs px-5 text-right">
-								{`${getTimeAgo(agentData ? new Date(agentData.data[4][11]) : new Date())}`}
+								{`${getTimeAgo(createdAt)}`}
 							</p>
 						</div>
 					</div>
@@ -694,7 +704,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							{`Created at`}
 						</p>
 						<p className="font-bold text-xs text-right">
-							{`${getTimeAgo(agentData ? new Date(agentData.data[4][11]) : new Date())}`}
+							{`${getTimeAgo(createdAt)}`}
 						</p>
 					</div>
 				</div>
