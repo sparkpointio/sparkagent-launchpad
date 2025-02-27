@@ -81,9 +81,9 @@ import { Decimal } from "decimal.js";
 export function getSparkingProgress(reserveB: bigint, gradThreshold: bigint, initialLiquidity: bigint): number {
   const sparkingProgress = ((Number(toEther(reserveB)) - Number(toEther(initialLiquidity))) / (Number(toEther(gradThreshold)))) * 100;
 
-  console.log(reserveB);
-  console.log(gradThreshold);
-  console.log(initialLiquidity);
+  // console.log(reserveB);
+  // console.log(gradThreshold);
+  // console.log(initialLiquidity);
 
   return Decimal.min(sparkingProgress, 100).toDecimalPlaces(2, Decimal.ROUND_DOWN).toNumber();
 }
