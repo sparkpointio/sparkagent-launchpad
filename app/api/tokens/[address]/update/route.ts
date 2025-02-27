@@ -22,7 +22,10 @@ export async function POST(
         console.log(payload);
 
         const response = await axios.post(`${backendUrl}/updateAgentData`, payload, {
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'x-api-key': process.env.NEXT_PUBLIC_POST_FORUM_API,
+                'Accept': 'application/json',
+            },
         });
 
         return NextResponse.json(response.data, { status: 200 });
