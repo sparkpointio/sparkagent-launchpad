@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { formatNumber, getSparkingProgress, getTimeAgo, truncateHash } from "../lib/utils/formatting";
+import { formatNumber, getSparkingProgress, /*getTimeAgo,*/ truncateHash } from "../lib/utils/formatting";
 import {
 	IconBrandTelegram,
 	IconBrandX,
@@ -47,7 +47,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	description,
 	createdBy,
 	marketCap,
-	datePublished,
+	// datePublished,
 	website,
 	twitter,
 	telegram,

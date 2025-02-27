@@ -104,12 +104,6 @@ const AgentPage = () => {
             params: [],
           });
 
-          const initialLiquidity = await readContract({
-              contract: unsparkingAIContract,
-              method: "function L() returns (uint256)",
-              params: [],
-          });
-
           const totalSupply = await readContract({
             contract: tokenContract,
             method: "function totalSupply() returns (uint256)",
