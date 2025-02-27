@@ -692,7 +692,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Define the agent’s personality traits'
                                   ></textarea>
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2">e.g. "analytical, strategic, persuasive, empathetic"</p>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;analytical, strategic, persuasive, empathetic&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="first_message">
@@ -718,7 +718,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Specify the agent’s initial greeting or response'
                                   ></textarea>
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2">e.g. "Hello! How can I assist you today?"</p>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;Hello! How can I assist you today?&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="lore">
@@ -744,7 +744,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Provide background or context for the agent'
                                   ></textarea>
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2">e.g. "An AI trained in financial forecasting with access to market trends."</p>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;An AI trained in financial forecasting with access to market trends.&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="style">
@@ -770,7 +770,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Describe the agent’s communication style'
                                   ></textarea>
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2">e.g. "formal, friendly, concise, technical"</p>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;formal, friendly, concise, technical&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="adjective">
@@ -796,7 +796,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='List adjectives that define the agent'
                                   ></textarea>
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2">e.g. "precise, engaging, adaptive"</p>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;precise, engaging, adaptive&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="knowledge">
@@ -822,7 +822,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Define the agent’s expertise, separated by commas'
                                   ></textarea>
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2">e.g. "cryptocurrency, legal consulting, cybersecurity, medical diagnostics"</p>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;cryptocurrency, legal consulting, cybersecurity, medical diagnostics&quot;</p>
                           </Form.Field>
 
                           {validationError && (
