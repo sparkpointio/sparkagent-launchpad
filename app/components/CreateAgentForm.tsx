@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { prepareContractCall, getContract, waitForReceipt } from "thirdweb";
-import {useActiveAccount, useSendTransaction} from "thirdweb/react";
+import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
@@ -536,6 +536,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Purchase Amount'
                                   />
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2"><b className="text-sparkyRed-500">NOTE:</b> The amount will be deducted by <b>{(currentFee / BigInt("1000000000000000000")).toString()} SRK</b> (creation fee).</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="website_link">
@@ -668,6 +669,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                   {currentPage === 2 && (
                       <>
                           <Form.Field className="w-full mb-2" name="personality">
+                            <p className="text-xs text-gray-500 mb-2"><b className="text-sparkyRed-500">NOTE:</b> Separate each words by a comma.</p>
                               <div
                                   style={{
                                       display: "flex",
@@ -687,9 +689,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       value={personality}
                                       onChange={(e) => setPersonality(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Define the agent’s personality traits, separated by commas (e.g. "analytical, strategic, persuasive, empathetic")'
+                                      placeholder='Define the agent’s personality traits'
                                   ></textarea>
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;analytical, strategic, persuasive, empathetic&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="first_message">
@@ -712,9 +715,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       value={firstMessage}
                                       onChange={(e) => setFirstMessage(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Specify the agent’s initial greeting or response (e.g. "Hello! How can I assist you today?")'
+                                      placeholder='Specify the agent’s initial greeting or response'
                                   ></textarea>
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;Hello! How can I assist you today?&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="lore">
@@ -737,9 +741,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       value={lore}
                                       onChange={(e) => setLore(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Provide background or context for the agent (e.g. "An AI trained in financial forecasting with access to market trends.")'
+                                      placeholder='Provide background or context for the agent'
                                   ></textarea>
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;An AI trained in financial forecasting with access to market trends.&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="style">
@@ -762,9 +767,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       value={style}
                                       onChange={(e) => setStyle(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Describe the agent’s communication style, separated by commas (e.g. "formal, friendly, concise, technical")'
+                                      placeholder='Describe the agent’s communication style'
                                   ></textarea>
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;formal, friendly, concise, technical&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="adjective">
@@ -787,9 +793,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       value={adjective}
                                       onChange={(e) => setAdjective(e.target.value)} // Handle email change
                                       required
-                                      placeholder='List adjectives that define the agent, separated by commas (e.g. "precise, engaging, adaptive")'
+                                      placeholder='List adjectives that define the agent'
                                   ></textarea>
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;precise, engaging, adaptive&quot;</p>
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="knowledge">
@@ -812,9 +819,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       value={knowledge}
                                       onChange={(e) => setKnowledge(e.target.value)} // Handle email change
                                       required
-                                      placeholder='Define the agent’s expertise, separated by commas (e.g. "cryptocurrency, legal consulting, cybersecurity, medical diagnostics")'
+                                      placeholder='Define the agent’s expertise, separated by commas'
                                   ></textarea>
                               </Form.Control>
+                              <p className="text-xs text-gray-500 mb-2">e.g. &quot;cryptocurrency, legal consulting, cybersecurity, medical diagnostics&quot;</p>
                           </Form.Field>
 
                           {validationError && (
