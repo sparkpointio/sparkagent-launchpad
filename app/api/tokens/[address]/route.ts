@@ -13,7 +13,12 @@ export async function GET(
             return NextResponse.json({ error: 'Backend API URL is not set' }, { status: 500 });
         }
 
-        const response = await axios.get(`${backendUrl}/fetchAgentToken/${address}`);
+        const response = await axios.get(`${backendUrl}/fetchAgentToken/${address}`, {
+            headers: {
+                'x-api-key': process.env.NEXT_PUBLIC_FORUM_API,
+                'Accept': 'application/json',
+            },
+        });
         return NextResponse.json(response.data, { status: 200 });
     } catch (error) {
         console.error('Error fetching token:', error);

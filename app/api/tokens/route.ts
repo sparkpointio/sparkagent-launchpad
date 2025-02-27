@@ -7,7 +7,12 @@ export async function GET() {
             return new Response(JSON.stringify({ error: 'Backend API URL is not set' }), { status: 500 });
         }
 
-        const response = await axios.get(`${backendUrl}/fetchAgentTokens`);
+        const response = await axios.get(`${backendUrl}/fetchAgentTokens`, {
+            headers: {
+                'x-api-key': process.env.NEXT_PUBLIC_FORUM_API,
+                'Accept': 'application/json',
+            },
+        });
         return new Response(JSON.stringify(response.data), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
