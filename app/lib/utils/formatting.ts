@@ -5,6 +5,12 @@ export function getTimeAgo(date: Date): string {
   const diffInMilliseconds = now.getTime() - date.getTime();
   
   const diffInDays = Math.floor(diffInMilliseconds / (1000 * 3600 * 24));
+
+  console.log("diffInDays");
+  console.log(now.getTime());
+  console.log(date.getTime());
+  console.log(date);
+
   const years = Math.floor(diffInDays / 365);
   const months = Math.floor((diffInDays % 365) / 30);
   
