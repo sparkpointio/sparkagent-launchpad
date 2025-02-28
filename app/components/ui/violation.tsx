@@ -4,7 +4,7 @@ import { Button } from "@/app/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { new_sparkpoint_logo } from "@/app/lib/assets"
 
-export default function NotFound() {
+export default function Violation() {
   return (
     <div className="bg-white w-full dark:bg-[#1a1d21] dark:text-white border-2 border-black rounded-2xl shadow-md flex flex-col items-center justify-center p-16">
       <div className="w-full space-y-8 text-center">
@@ -19,9 +19,9 @@ export default function NotFound() {
         </div>
 
         <div className="space-y-3">
-          <h1 className="text-4xl font-bold text-black dark:text-white">No Agent Found</h1>
+          <h1 className="text-4xl font-bold text-black dark:text-white">Agent Violation Notice</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            We couldn&apos;t find the agent you&apos;re looking for. It might have been removed or doesn&apos;t exist.
+            This agent has been restricted due to a violation of our <Link href={'http://localhost:3000/aup'} className="underline" target="_blank" rel="noreferrer">Acceptable Use Policy</Link>.
           </p>
         </div>
 
