@@ -192,6 +192,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
                 BigInt(purchaseAmount) * BigInt("1000000000000000000"),
+                //heree parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)
+
             ],
             value: BigInt(0),
         });
@@ -560,7 +562,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                           <div className="flex flex-col mb-2 w-full">
                             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
-                                <p className="text-xs text-gray-700 dark:text-gray-200">{`Payment Summary`}</p>
+                                <p className="text-bold text-xs text-gray-700 dark:text-gray-200">{`Payment Summary`}</p>
                                 <div className="flex items-center justify-between w-full mb-1">
                                     <div>{`Creation Fee`}</div>
                                     <div>{purchaseAmountInitial}</div>
@@ -570,8 +572,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                     <div>{purchaseAmount}</div>
                                 </div>
                                 <div className="flex items-center justify-between w-full mb-1">
-                                    <div>{`Total`}</div>
-                                    <div>{isNaN(parseInt(purchaseAmountInitial)) || isNaN(parseInt(purchaseAmount)) ? "" : parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)}</div>
+                                    <div className="text-bold text-sm"><b>{`Total`}</b></div>
+                                    <div className="text-bold text-sm"><b>{isNaN(parseInt(purchaseAmountInitial)) || isNaN(parseInt(purchaseAmount)) ? "" : parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)} SRK</b></div>
                                 </div>
                             </div>
                           </div>
