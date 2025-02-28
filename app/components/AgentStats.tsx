@@ -30,13 +30,6 @@ import { arbitrumSepolia as arbitrumSepoliaFromViem } from "viem/chains";
 import axios from "axios";
 import { toTokens, toWei } from "thirdweb";
 
-interface AgentStatsProps {
-	certificate: string;
-	image: string;
-	tokenName: string;
-	ticker: string;
-}
-
 interface RawAgentData {
 	address: string;
 	data: [
@@ -70,7 +63,16 @@ interface RawAgentData {
 	reserves: [
 		string, // Reserve A
 		string, // Reserve B
-	]
+	],
+	status: number
+}
+
+interface AgentStatsProps {
+	certificate: string;
+	image: string;
+	tokenName: string;
+	ticker: string;
+	agentData: RawAgentData | null;
 }
 
 const client2 = createPublicClient({
@@ -85,6 +87,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	image,
 	tokenName,
 	ticker,
+	agentData,
 }) => {
 	const [copied, setCopied] = useState(false);
 	//const [isDarkMode, setIsDarkMode] = useState(false);
@@ -95,29 +98,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
-
-	const [agentData, setAgentData] = useState<RawAgentData | null>(null);
 	const [createdAt, setCreatedAt] = useState(new Date());
-
-	useEffect(() => {
-		const fetchTokenData = async () => {
-			try {
-				setIsLoading(true);
-				const response = await fetch(`/api/tokens/${certificate}`);
-				const result = await response.json();
-
-				if (result.data) {
-					setAgentData(result.data);
-				}
-			} catch (error) {
-				console.error("Error fetching updated token data:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchTokenData();
-	}, [certificate]);
 
 	useEffect(() => {
 		if (agentData) {
