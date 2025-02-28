@@ -7,13 +7,14 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { prepareContractCall, getContract, waitForReceipt, readContract } from "thirdweb";
+import { prepareContractCall, getContract, waitForReceipt, readContract, toEther } from "thirdweb";
 import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
 import { formsTextBoxProperties, formsDialogContentProperties, formsDialogBackgroundOverlayProperties } from "../lib/utils/style/customStyles";
 import axios from "axios";
+import { getFormattedEther } from "../lib/utils/formatting";
 
 const unsparkingAIContract = getContract({
     client,
@@ -297,7 +298,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
             params: [account.address],
         });
 
-        setSRKBalance((BigInt(accountSRKBalance ?? "0") / BigInt("1000000000000000000")).toString());
+        setSRKBalance(BigInt(accountSRKBalance ?? "0").toString());
     };
 
   const handleDialogClose = () => {
@@ -541,7 +542,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               >
                                   <div className="flex items-center justify-between w-full">
                                       <div>{`Buy ${ticker === "" ? "" : `$${ticker}`} Token in $SRK`}</div>
-                                      <div>{`SRK Balance: ${SRKBalance}`}</div>
+                                      <div>{`SRK Balance: ${getFormattedEther(toEther(BigInt(SRKBalance)), 2)}`}</div>
                                   </div>
                               </div>
                               <Form.Control asChild>
