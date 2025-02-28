@@ -133,11 +133,11 @@ const Header = ({ className }: { className?: string }) => {
               exit={{ opacity: 0, height: 0 }}
               className="w-full md:hidden grid items-center gap-4 mt-2 px-4"
             >
-              <nav className="flex items-center justify-center gap-6 flex-col mx-auto">
+              {/*<nav className="flex items-center justify-center gap-6 flex-col mx-auto">
                 <Link href="" className="nav-item text-gray-600 hover:text-gray-900">
                   How it works
                 </Link>
-              </nav>
+              </nav>*/}
               <ConnectButton
                 connectButton={customButtonStyles}
                 detailsButton={{
