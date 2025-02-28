@@ -536,7 +536,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Purchase Amount'
                                   />
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2"><b className="text-sparkyRed-500">NOTE:</b> The amount will be deducted by <b>{(currentFee / BigInt("1000000000000000000")).toString()} SRK</b> (creation fee).</p>
+                              {/*<p className="text-xs text-gray-500"><b className="text-sparkyRed-500">NOTE:</b> The amount will be deducted by <b>{(currentFee / BigInt("1000000000000000000")).toString()} SRK</b> (creation fee).</p>*/}
                           </Form.Field>
 
                           <Form.Field className="w-full mb-2" name="website_link">
