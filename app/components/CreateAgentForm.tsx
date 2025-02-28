@@ -268,6 +268,11 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
             return false;
         }
 
+        if (parseInt(purchaseAmount) <= 0) {
+            setValidationError("Initial Buy should be greater than 0.");
+            return false;
+        }
+
         if (typeof icon !== "string" || !icon.startsWith("data:image")) {
             setValidationError("Please select a valid image file for the icon.");
             return false;
