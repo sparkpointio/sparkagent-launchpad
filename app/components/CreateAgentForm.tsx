@@ -7,13 +7,14 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { prepareContractCall, getContract, waitForReceipt, readContract } from "thirdweb";
+import { prepareContractCall, getContract, waitForReceipt, readContract, toEther } from "thirdweb";
 import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
 import { arbitrumSepolia } from "thirdweb/chains";
 import { formsTextBoxProperties, formsDialogContentProperties, formsDialogBackgroundOverlayProperties } from "../lib/utils/style/customStyles";
 import axios from "axios";
+import { getFormattedEther } from "../lib/utils/formatting";
 
 const unsparkingAIContract = getContract({
     client,
@@ -83,6 +84,12 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         setPurchaseAmount(newPurchaseAmount);
     }, [fee]);
 
+    const [paymentTotal, setPaymentTotal] = useState(0);
+    useEffect(() => {
+        setPaymentTotal(parseInt(purchaseAmountInitial) + parseInt(purchaseAmount));
+    } , [purchaseAmount, purchaseAmountInitial]);
+
+
     console.log(purchaseAmount);
 
     const { data: currentAllowanceTemp } = useReadContract({
@@ -135,7 +142,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
             method: "function approve(address spender, uint256 value)",
             params: [
                 unsparkingAIContract.address,
-                BigInt(purchaseAmount) * BigInt("1000000000000000000")
+                BigInt(paymentTotal) * BigInt("1000000000000000000")
             ],
             value: BigInt(0),
         });
@@ -176,7 +183,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 description,
                 ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
-                (BigInt(purchaseAmount) * BigInt("1000000000000000000")).toString(),
+                (BigInt(paymentTotal) * BigInt("1000000000000000000")).toString(),
             ],
             value: BigInt(0),
         })
@@ -190,7 +197,9 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 description,
                 ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
-                BigInt(purchaseAmount) * BigInt("1000000000000000000"),
+                BigInt(paymentTotal) * BigInt("1000000000000000000"),
+                //heree parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)
+
             ],
             value: BigInt(0),
         });
@@ -247,8 +256,20 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
             return false;
         }
 
+        /*
         if ((BigInt(purchaseAmount) * BigInt("1000000000000000000")) <= currentFee) {
             setValidationError("Purchase Amount must be greater than the fee.");
+            return false;
+        }
+        */
+
+        if (parseInt(toEther(BigInt(SRKBalance) ?? BigInt(0))) < paymentTotal) {
+            setValidationError("Not enough SRK Balance. Please check payment summary.");
+            return false;
+        }
+
+        if (parseInt(purchaseAmount) <= 0) {
+            setValidationError("Initial Buy should be greater than 0.");
             return false;
         }
 
@@ -279,7 +300,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
         setCurrentPage(3);
 
-        if (currentAllowance > BigInt(0) && currentAllowance >= BigInt(purchaseAmount) * BigInt("1000000000000000000")) {
+        if (currentAllowance > BigInt(0) && currentAllowance >= BigInt(paymentTotal) * BigInt("1000000000000000000")) {
             console.log("Sufficient allowance already granted.");
             await proceedWithLaunch();
         } else {
@@ -297,7 +318,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
             params: [account.address],
         });
 
-        setSRKBalance((BigInt(accountSRKBalance ?? "0") / BigInt("1000000000000000000")).toString());
+        setSRKBalance(BigInt(accountSRKBalance ?? "0").toString());
     };
 
   const handleDialogClose = () => {
@@ -370,7 +391,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               : "Please confirm the token launch transaction in your wallet..."
                             )
                             : <>
-                                  Your token has been successfully deployed.
+                                  Your agent token has been successfully deployed.
                                   <br/>
                                   Time to make it shine!
                               </>
@@ -541,7 +562,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               >
                                   <div className="flex items-center justify-between w-full">
                                       <div>{`Buy ${ticker === "" ? "" : `$${ticker}`} Token in $SRK`}</div>
-                                      <div>{`SRK Balance: ${SRKBalance}`}</div>
+                                      <div>{`SRK Balance: ${getFormattedEther(toEther(BigInt(SRKBalance)), 2)}`}</div>
                                   </div>
                               </div>
                               <Form.Control asChild>
@@ -559,7 +580,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                           <div className="flex flex-col mb-2 w-full">
                             <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
-                                <p className="text-xs text-gray-700 dark:text-gray-200">{`Payment Summary`}</p>
+                                <p className="text-bold text-xs text-gray-700 dark:text-gray-200">{`Payment Summary`}</p>
                                 <div className="flex items-center justify-between w-full mb-1">
                                     <div>{`Creation Fee`}</div>
                                     <div>{purchaseAmountInitial}</div>
@@ -569,8 +590,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                     <div>{purchaseAmount}</div>
                                 </div>
                                 <div className="flex items-center justify-between w-full mb-1">
-                                    <div>{`Total`}</div>
-                                    <div>{isNaN(parseInt(purchaseAmountInitial)) || isNaN(parseInt(purchaseAmount)) ? "" : parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)}</div>
+                                    <div className="text-bold text-sm"><b>{`Total`}</b></div>
+                                    <div className="text-bold text-sm"><b>{isNaN(parseInt(purchaseAmountInitial)) || isNaN(parseInt(purchaseAmount)) ? "" : paymentTotal} SRK</b></div>
                                 </div>
                             </div>
                           </div>
