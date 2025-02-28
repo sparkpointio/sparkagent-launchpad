@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { prepareContractCall, getContract, waitForReceipt } from "thirdweb";
+import { prepareContractCall, getContract, waitForReceipt, readContract } from "thirdweb";
 import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
@@ -52,6 +52,9 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     const [style, setStyle] = useState("");
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
+
+    //Others
+    const [SRKBalance, setSRKBalance] = useState("");
 
     const [launchedContractAddress, setLaunchedContractAddress] = useState("");
 
@@ -287,10 +290,22 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         return true;
     }
 
+    const getSRKBalance = async () => {
+        const accountSRKBalance = await readContract({
+            contract: srkContract,
+            method: "function balanceOf(address account) returns (uint256)",
+            params: [account.address],
+        });
+
+        setSRKBalance(BigInt(accountSRKBalance ?? "0").toString());
+    };
+
   const handleDialogClose = () => {
       setIsOpen(false)
       setCurrentPage(1)
   };
+
+  getSRKBalance();
 
   return (
     <Dialog.Root
@@ -524,7 +539,10 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       marginBottom: "2px",
                                   }}
                               >
-                                  Purchase Amount:
+                                  <div className="flex items-center justify-between w-full">
+                                      <div>{`Buy ${ticker === "" ? "" : `$${ticker}`} Token in $SRK`}</div>
+                                      <div>{`SRK Balance: ${SRKBalance}`}</div>
+                                  </div>
                               </div>
                               <Form.Control asChild>
                                   <input
@@ -536,8 +554,26 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       placeholder='Purchase Amount'
                                   />
                               </Form.Control>
-                              <p className="text-xs text-gray-500 mb-2"><b className="text-sparkyRed-500">NOTE:</b> The amount will be deducted by <b>{(currentFee / BigInt("1000000000000000000")).toString()} SRK</b> (creation fee).</p>
+                              {/*<p className="text-xs text-gray-500"><b className="text-sparkyRed-500">NOTE:</b> The amount will be deducted by <b>{(currentFee / BigInt("1000000000000000000")).toString()} SRK</b> (creation fee).</p>*/}
                           </Form.Field>
+
+                          <div className="flex flex-col mb-2 w-full">
+                            <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
+                                <p className="text-xs text-gray-700 dark:text-gray-200">{`Payment Summary`}</p>
+                                <div className="flex items-center justify-between w-full mb-1">
+                                    <div>{`Creation Fee`}</div>
+                                    <div>{purchaseAmountInitial}</div>
+                                </div>
+                                <div className="flex items-center justify-between w-full mb-1">
+                                    <div>{`Initial Buy`}</div>
+                                    <div>{purchaseAmount}</div>
+                                </div>
+                                <div className="flex items-center justify-between w-full mb-1">
+                                    <div>{`Total`}</div>
+                                    <div>{isNaN(parseInt(purchaseAmountInitial)) || isNaN(parseInt(purchaseAmount)) ? "" : parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)}</div>
+                                </div>
+                            </div>
+                          </div>
 
                           <Form.Field className="w-full mb-2" name="website_link">
                               <div
