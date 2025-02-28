@@ -354,7 +354,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                     : (currentPage === 2
                         ? "Step 2: AI Agent Details"
                         : (currentPage === 3
-                            ? "Deploying your token..."
+                            ? "Deploying your agent token..."
                             : "Congratulations!"
                         )
                     )}
