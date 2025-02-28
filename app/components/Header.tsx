@@ -98,7 +98,7 @@ const Header = ({ className }: { className?: string }) => {
               </Link>
               <div className='hidden md:flex items-center gap-6'>
                 <nav className="flex gap-6 w-full">
-                  <Link href="https://medium.com/theecosystem/introducing-the-sparkagent-launchpad-testnet-ff52c1adda42" target="_blank" className="nav-item hover:text-gray-900 dark:text-white dark:hover:underline">
+                  <Link href="https://medium.com/theecosystem/sparkpoint-introduces-sparkagent-a-no-code-ai-agent-platform-for-web3-automation-8d8a345352d7" target="_blank" className="nav-item hover:text-gray-900 dark:text-white dark:hover:underline">
                     How it works
                   </Link>
                 </nav>
@@ -133,11 +133,11 @@ const Header = ({ className }: { className?: string }) => {
               exit={{ opacity: 0, height: 0 }}
               className="w-full md:hidden grid items-center gap-4 mt-2 px-4"
             >
-              {/*<nav className="flex items-center justify-center gap-6 flex-col mx-auto">
-                <Link href="" className="nav-item text-gray-600 hover:text-gray-900">
+              <nav className="flex items-center justify-center gap-6 flex-col mx-auto">
+                <Link href="https://medium.com/theecosystem/sparkpoint-introduces-sparkagent-a-no-code-ai-agent-platform-for-web3-automation-8d8a345352d7" className="nav-item text-gray-600 hover:text-gray-900">
                   How it works
                 </Link>
-              </nav>*/}
+              </nav>
               <ConnectButton
                 connectButton={customButtonStyles}
                 detailsButton={{
