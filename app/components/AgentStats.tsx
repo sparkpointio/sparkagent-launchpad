@@ -26,7 +26,7 @@ import { client } from "@/app/client";
 import { Hex } from "viem";
 import { createChart, AreaSeries, IChartApi, Time } from "lightweight-charts";
 import { createPublicClient, http } from "viem";
-import { arbitrum } from "viem/chains";
+import { arbitrum as arbitrumFromViem } from "viem/chains";
 import axios from "axios";
 import { toTokens, toWei } from "thirdweb";
 
