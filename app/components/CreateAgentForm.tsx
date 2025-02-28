@@ -76,7 +76,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
     const currentFee = fee ?? BigInt(0);
     const purchaseAmountInitial = (currentFee / BigInt("1000000000000000000")).toString();
-    const [purchaseAmount, setPurchaseAmount] = useState(purchaseAmountInitial);
+    const [purchaseAmount, setPurchaseAmount] = useState(0);
 
     useEffect(() => {
         const currentFee = fee ?? BigInt(0);
