@@ -11,7 +11,7 @@ import {
 import { cn } from '../lib/utils/style';
 import { ConnectButton } from 'thirdweb/react';
 import { client } from '../client';
-import { arbitrumSepolia } from 'thirdweb/chains';
+import { arbitrum } from 'thirdweb/chains';
 import SparkAgentLogo from './SparkAgentLogo';
 
 const Header = ({ className }: { className?: string }) => {
@@ -108,7 +108,7 @@ const Header = ({ className }: { className?: string }) => {
                     className: "!w-full justify-center"
                   }}
                   client={client}
-                  chain={arbitrumSepolia}
+                  chain={arbitrum}
                   theme="light"
                 />
               </div>
@@ -144,7 +144,7 @@ const Header = ({ className }: { className?: string }) => {
                   className: "!w-full justify-center"
                 }}
                 client={client}
-                chain={arbitrumSepolia}
+                chain={arbitrum}
                 theme="light"
               />
             </motion.div>

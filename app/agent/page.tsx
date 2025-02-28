@@ -10,7 +10,7 @@ import {
   useReadContract,
 } from "thirdweb/react";
 import { readContract, getContract, toEther } from "thirdweb";
-import { arbitrumSepolia } from "thirdweb/chains";
+import { arbitrum } from "thirdweb/chains";
 import { getSparkingProgress } from "@/app/lib/utils/formatting";
 import NotFound from "@/app/components/ui/not-found";
 import Violation from "@/app/components/ui/violation";
@@ -97,7 +97,7 @@ const AgentPage = () => {
 
   const unsparkingAIContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
   });
 
@@ -127,13 +127,13 @@ const AgentPage = () => {
 
           const agentPairContract = getContract({
             client,
-            chain: arbitrumSepolia,
+            chain: arbitrum,
             address: agentData[2].toString(),
           });
 
           const tokenContract = getContract({
             client,
-            chain: arbitrumSepolia,
+            chain: arbitrum,
             address: agentData[1].toString(),
           });
 

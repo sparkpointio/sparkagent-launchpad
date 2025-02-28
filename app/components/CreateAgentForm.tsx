@@ -11,20 +11,20 @@ import { prepareContractCall, getContract, waitForReceipt, readContract, toEther
 import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { useReadContract } from "thirdweb/react";
 import { client } from '../client';
-import { arbitrumSepolia } from "thirdweb/chains";
+import { arbitrum } from "thirdweb/chains";
 import { formsTextBoxProperties, formsDialogContentProperties, formsDialogBackgroundOverlayProperties } from "../lib/utils/style/customStyles";
 import axios from "axios";
 import { getFormattedEther } from "../lib/utils/formatting";
 
 const unsparkingAIContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
 });
 
 const srkContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
 });
 
@@ -210,7 +210,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                 const receipt = await waitForReceipt({
                     client,
-                    chain: arbitrumSepolia,
+                    chain: arbitrum,
                     transactionHash: tx.transactionHash,
                 });
 

@@ -21,12 +21,12 @@ import { toast } from "sonner";
 import { cardProperties } from "../lib/utils/style/customStyles";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
 import { getContract, getContractEvents, toEther } from "thirdweb";
-import { arbitrumSepolia } from "thirdweb/chains";
+import { arbitrum } from "thirdweb/chains";
 import { client } from "@/app/client";
 import { Hex } from "viem";
 import { createChart, AreaSeries, IChartApi, Time } from "lightweight-charts";
 import { createPublicClient, http } from "viem";
-import { arbitrumSepolia as arbitrumSepoliaFromViem } from "viem/chains";
+import { arbitrum } from "viem/chains";
 import axios from "axios";
 import { toTokens, toWei } from "thirdweb";
 
@@ -76,7 +76,7 @@ interface AgentStatsProps {
 }
 
 const client2 = createPublicClient({
-	chain: arbitrumSepoliaFromViem,
+	chain: arbitrumFromViem,
 	transport: http(),
 });
 
@@ -218,7 +218,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			if (agentData) {
 				const fromBlock = latestBlockStored ? latestBlockStored + BigInt("1") : BigInt("118602497");
 
-				const contract = getContract({ client, address: agentData.data[2], chain: arbitrumSepolia });
+				const contract = getContract({ client, address: agentData.data[2], chain: arbitrum });
 				const swapEventTopic: Hex =
 					"0x298c349c742327269dc8de6ad66687767310c948ea309df826f5bd103e19d207";
 

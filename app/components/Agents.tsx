@@ -9,12 +9,12 @@ import { IconLoader2 } from "@tabler/icons-react";
 
 const unsparkingAIContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
 });
 
 import { getContract, readContract, toEther } from "thirdweb";
-import { arbitrumSepolia } from "thirdweb/chains";
+import { arbitrum } from "thirdweb/chains";
 import SparkAgentLogo from "./SparkAgentLogo";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
