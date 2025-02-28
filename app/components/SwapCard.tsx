@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import {useEffect, useState} from "react";
 import {prepareContractCall, getContract, waitForReceipt} from "thirdweb";
 import {client} from "@/app/client";
-import {arbitrumSepolia} from "thirdweb/chains";
+import {arbitrum} from "thirdweb/chains";
 import {useActiveAccount, useSendTransaction} from "thirdweb/react";
 import {readContract} from "thirdweb";
 import { toEther, toWei } from "thirdweb";
@@ -17,31 +17,31 @@ import { cardProperties } from "../lib/utils/style/customStyles";
 
 const unsparkingAIContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
 });
 
 const srkContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
 });
 
 const factoryContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_FFACTORY as string,
 });
 
 const routerContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_FROUTER as string,
 });
 
 const camelotRouterContract = getContract({
     client,
-    chain: arbitrumSepolia,
+    chain: arbitrum,
     address: process.env.NEXT_PUBLIC_CAMELOT_ROUTER as string,
 });
 
@@ -81,7 +81,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
     const unsparkedTokenContract = getContract({
         client,
-        chain: arbitrumSepolia,
+        chain: arbitrum,
         address: contractAddress,
     });
 
@@ -257,7 +257,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
                         await waitForReceipt({
                             client,
-                            chain: arbitrumSepolia,
+                            chain: arbitrum,
                             transactionHash: tx.transactionHash,
                         });
 
@@ -300,7 +300,7 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
 
                         await waitForReceipt({
                             client,
-                            chain: arbitrumSepolia,
+                            chain: arbitrum,
                             transactionHash: tx.transactionHash,
                         });
 
