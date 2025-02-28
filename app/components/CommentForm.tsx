@@ -30,6 +30,11 @@ const srkContract = getContract({
     address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
 });
 
+const burnAmount = readContract({
+    contract: forumContract,
+    method: "function defaultBurnAmount() returns (uint256)",
+});
+
 export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }: CommentFormProps) {
     const [comment, setComment] = useState("");
     const [validationError, setValidationError] = useState("");
@@ -37,6 +42,15 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
     const [minMessageLength, setMinMessageLength] = useState(0);
     const { mutate: sendTransaction } = useSendTransaction();
     const [isLoading, setIsLoading] = useState(false);
+    const [fetchedBurnAmount, setFetchedBurnAmount] = useState(BigInt(0));
+
+    useEffect(() => {
+        async function fetchBurnAmount() {
+            const burnAmountValue = await burnAmount;
+            setFetchedBurnAmount(burnAmountValue);
+        }
+        fetchBurnAmount();
+    }, []);
 
     const account = useActiveAccount();
 
@@ -72,7 +86,7 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
             method: "function approve(address spender, uint256 value)",
             params: [
                 process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
-                BigInt("1000000000000000000")
+                fetchedBurnAmount
             ],
         });
 
