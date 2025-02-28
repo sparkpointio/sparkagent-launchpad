@@ -142,7 +142,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
             method: "function approve(address spender, uint256 value)",
             params: [
                 unsparkingAIContract.address,
-                BigInt(purchaseAmount) * BigInt("1000000000000000000")
+                BigInt(paymentTotal) * BigInt("1000000000000000000")
             ],
             value: BigInt(0),
         });
@@ -183,7 +183,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 description,
                 ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
-                (BigInt(purchaseAmount) * BigInt("1000000000000000000")).toString(),
+                (BigInt(paymentTotal) * BigInt("1000000000000000000")).toString(),
             ],
             value: BigInt(0),
         })
@@ -197,7 +197,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 description,
                 ipfsUrl,
                 [websiteLink ?? "", xLink ?? "", telegramLink ?? "", youtubeLink ?? ""],
-                BigInt(purchaseAmount) * BigInt("1000000000000000000"),
+                BigInt(paymentTotal) * BigInt("1000000000000000000"),
                 //heree parseInt(purchaseAmountInitial) + parseInt(purchaseAmount)
 
             ],
@@ -300,7 +300,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
         setCurrentPage(3);
 
-        if (currentAllowance > BigInt(0) && currentAllowance >= BigInt(purchaseAmount) * BigInt("1000000000000000000")) {
+        if (currentAllowance > BigInt(0) && currentAllowance >= BigInt(paymentTotal) * BigInt("1000000000000000000")) {
             console.log("Sufficient allowance already granted.");
             await proceedWithLaunch();
         } else {
@@ -391,7 +391,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               : "Please confirm the token launch transaction in your wallet..."
                             )
                             : <>
-                                  Your token has been successfully deployed.
+                                  Your agent token has been successfully deployed.
                                   <br/>
                                   Time to make it shine!
                               </>
