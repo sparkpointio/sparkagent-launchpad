@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { updateImageSrc } from "../lib/utils/utils";
+import { ConversionType, convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
 
 interface AgentCardProps {
@@ -73,9 +73,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				//const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate, ConversionType.MarketCap);
-				//setConvertedMarketCap(result.toFixed(2));
-				setConvertedMarketCap(null);
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate, ConversionType.MarketCap);
+				setConvertedMarketCap(result.toFixed(2));
 			} catch (err) {
 				console.error("Error converting market cap to USD: " + err);
 			}
