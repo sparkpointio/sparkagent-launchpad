@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { updateImageSrc } from "../lib/utils/utils";
+import { ConversionType, convertCryptoToFiat, updateImageSrc } from "../lib/utils/utils";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
 
 interface AgentCardProps {
@@ -59,7 +59,6 @@ const AgentCard: React.FC<AgentCardProps> = ({
 }) => {
 	const [copied, setCopied] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
-	const [error, setError] = useState<string | null>(null);
 	const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
@@ -74,19 +73,17 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	useEffect(() => {
 		const convertMarketCap = async () => {
 			try {
-				//const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate, ConversionType.MarketCap);
-				//setConvertedMarketCap(result.toFixed(2));
-				setConvertedMarketCap(null);
+				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate, ConversionType.MarketCap);
+				setConvertedMarketCap(result.toFixed(2));
 			} catch (err) {
-				setError("Error converting market cap to USD: " + err);
-				console.log(error);
+				console.error("Error converting market cap to USD: " + err);
 			}
 		};
 	
 		if (marketCap > 0) {
 			convertMarketCap();
 		}
-	}, [certificate, error, marketCap]);
+	}, [certificate, marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
