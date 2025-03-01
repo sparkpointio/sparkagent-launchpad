@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export enum ConversionType {
     Price, // Conversion based on price, cached to redis
     MarketCap, // Conversion based on market cap, cached to redis
     Any, // Default conversion type, NOT cached
 }
 
+/*
 const updatePriceConversion = async (certificate: string, convertedPrice: number, conversionType: ConversionType) => {
     try {
         const response = await fetch(`/api/convert-crypto/update-price-conversion`, {
@@ -33,7 +33,9 @@ const updatePriceConversion = async (certificate: string, convertedPrice: number
         }
     }
 }
+*/
 
+/*
 const fetchPriceConversion = async (
     cryptoAmount: number,
     cryptoSymbol: string,
@@ -71,7 +73,9 @@ const fetchPriceConversion = async (
         }
     }
 }
+*/
 
+/*
 const fetchCryptoConversionFromCoinMarketCap = async (cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) => {
     try {
         const response = await fetch('/api/convert-crypto', {
@@ -102,6 +106,7 @@ const fetchCryptoConversionFromCoinMarketCap = async (cryptoAmount: number, cryp
         }
     }
 }
+*/
 
 export const convertCryptoToFiat = async (
     cryptoAmount: number,
