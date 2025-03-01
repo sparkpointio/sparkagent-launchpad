@@ -16,11 +16,11 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { convertCryptoToFiat, updateImageSrc, ConversionType } from "../lib/utils/utils";
+import { updateImageSrc} from "../lib/utils/utils";
 import { toast } from "sonner";
 import { cardProperties } from "../lib/utils/style/customStyles";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
-import { getContract, getContractEvents, toEther } from "thirdweb";
+import { getContract, getContractEvents } from "thirdweb";
 import { arbitrum } from "thirdweb/chains";
 import { client } from "@/app/client";
 import { Hex } from "viem";
@@ -115,8 +115,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 					// console.log("Certificate for Market Cap:", certificate);
 					// console.log("Market Cap:", agentData.data[4][6]);
 
-					const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
-					setConvertedMarketCap(result.toFixed(2));
+					//const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
+					//setConvertedMarketCap(result.toFixed(2));
+					setConvertedMarketCap(null);
 				}
 			} catch (err) {
 				setError("Error converting market cap to USD: " + err);
@@ -134,8 +135,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 			try {
 				if (agentData) {
 					// console.log("Certificate for Token Price:", certificate);
-					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
-					setConvertedTokenPrice(result.toFixed(2));
+					//const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
+					//setConvertedTokenPrice(result.toFixed(2));
+					setConvertedTokenPrice(null);
 				}
 			} catch (err) {
 				setError("Error converting token price to USD: " + err);

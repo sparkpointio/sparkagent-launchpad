@@ -4,6 +4,7 @@ export enum ConversionType {
     Any, // Default conversion type, NOT cached
 }
 
+/*
 const updatePriceConversion = async (certificate: string, convertedPrice: number, conversionType: ConversionType) => {
     try {
         const response = await fetch(`/api/convert-crypto/update-price-conversion`, {
@@ -32,7 +33,9 @@ const updatePriceConversion = async (certificate: string, convertedPrice: number
         }
     }
 }
+*/
 
+/*
 const fetchPriceConversion = async (
     cryptoAmount: number,
     cryptoSymbol: string,
@@ -70,7 +73,9 @@ const fetchPriceConversion = async (
         }
     }
 }
+*/
 
+/*
 const fetchCryptoConversionFromCoinMarketCap = async (cryptoAmount: number, cryptoSymbol: string, fiatSymbol: string) => {
     try {
         const response = await fetch('/api/convert-crypto', {
@@ -101,15 +106,18 @@ const fetchCryptoConversionFromCoinMarketCap = async (cryptoAmount: number, cryp
         }
     }
 }
+*/
 
 export const convertCryptoToFiat = async (
     cryptoAmount: number,
     cryptoSymbol: string,
     fiatSymbol: string,
-    //certificate: string,
-    //conversionType: ConversionType = ConversionType.Any
+    certificate: string,
+    conversionType: ConversionType = ConversionType.Any
 ) => {
     console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
+    console.log('Conversion type:', conversionType);
+    console.log('Certificate:', certificate);
     
     /*
     if (conversionType != ConversionType.Any) {
