@@ -112,10 +112,12 @@ export const convertCryptoToFiat = async (
     cryptoAmount: number,
     cryptoSymbol: string,
     fiatSymbol: string,
-    //certificate: string,
-    //conversionType: ConversionType = ConversionType.Any
+    certificate: string,
+    conversionType: ConversionType = ConversionType.Any
 ) => {
     console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
+    console.log('Conversion type:', conversionType);
+    console.log('Certificate:', certificate);
     
     /*
     if (conversionType != ConversionType.Any) {
