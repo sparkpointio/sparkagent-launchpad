@@ -106,11 +106,12 @@ export const convertCryptoToFiat = async (
     cryptoAmount: number,
     cryptoSymbol: string,
     fiatSymbol: string,
-    certificate: string,
-    conversionType: ConversionType = ConversionType.Any
+    //certificate: string,
+    //conversionType: ConversionType = ConversionType.Any
 ) => {
     console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
     
+    /*
     if (conversionType != ConversionType.Any) {
         return await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
     } else {
@@ -118,6 +119,9 @@ export const convertCryptoToFiat = async (
         const conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
         return conversion;
     }
+    */
+
+    return null;
 };
 
 export const checkImage = async (url: string) => {
