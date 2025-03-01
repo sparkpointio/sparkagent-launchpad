@@ -16,11 +16,11 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import blockies from "ethereum-blockies";
-import { updateImageSrc} from "../lib/utils/utils";
+import { ConversionType, convertCryptoToFiat, updateImageSrc} from "../lib/utils/utils";
 import { toast } from "sonner";
 import { cardProperties } from "../lib/utils/style/customStyles";
 import { socialButtonProperties } from "../lib/utils/style/customStyles";
-import { getContract, getContractEvents } from "thirdweb";
+import { getContract, getContractEvents, toEther } from "thirdweb";
 import { arbitrum } from "thirdweb/chains";
 import { client } from "@/app/client";
 import { Hex } from "viem";
@@ -93,7 +93,6 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	//const [isDarkMode, setIsDarkMode] = useState(false);
 	const [convertedMarketCap, setConvertedMarketCap] = useState<number | null>(null);
 	const [convertedTokenPrice, setConvertedTokenPrice] = useState<number | null>(null);
-	const [error, setError] = useState<string | null>(null);
 	const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
@@ -112,43 +111,35 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 		const convertMarketCap = async () => {
 			try {
 				if (agentData) {
-					// console.log("Certificate for Market Cap:", certificate);
-					// console.log("Market Cap:", agentData.data[4][6]);
-
-					//const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
-					//setConvertedMarketCap(result.toFixed(2));
-					setConvertedMarketCap(null);
+					const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
+					setConvertedMarketCap(result.toFixed(2));
 				}
 			} catch (err) {
-				setError("Error converting market cap to USD: " + err);
-				console.log(error);
+				console.error("Error converting market cap to USD: " + err);
 			}
 		};
 
 		if (agentData && Number(agentData.data[4][6]) > 0) {
 			convertMarketCap();
 		}
-	}, [certificate, error, agentData]);
+	}, [certificate, agentData]);
 
 	useEffect(() => {
 		const convertTokenPrice = async () => {
 			try {
 				if (agentData) {
-					// console.log("Certificate for Token Price:", certificate);
-					//const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
-					//setConvertedTokenPrice(result.toFixed(2));
-					setConvertedTokenPrice(null);
+					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
+					setConvertedTokenPrice(result.toFixed(2));
 				}
 			} catch (err) {
-				setError("Error converting token price to USD: " + err);
-				console.log(error);
+				console.error("Error converting token price to USD: " + err);
 			}
 		};
 
 		if (agentData && Number(agentData.data[4][5]) > 0) {
 			convertTokenPrice();
 		}
-	}, [certificate, error, agentData]);
+	}, [certificate, agentData]);
 
 	/*useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');
