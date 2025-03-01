@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export enum ConversionType {
     Price, // Conversion based on price, cached to redis
     MarketCap, // Conversion based on market cap, cached to redis
