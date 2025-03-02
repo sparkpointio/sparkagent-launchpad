@@ -5,12 +5,13 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const forumToken = searchParams.get("forumToken");
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
         if (!forumToken) {
             return new Response(JSON.stringify({ error: 'Missing required parameters.' }), { status: 400 });
         }
 
-        const apiUrl = `https://sparkagent-api.aldrickb.xyz/fetchForumMessagesCount/${forumToken}`;
+        const apiUrl = `${backendUrl}/fetchForumMessagesCount/${forumToken}`;
 
         const response = await axios.get(apiUrl, {
             headers: {
