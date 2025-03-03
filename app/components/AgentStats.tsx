@@ -544,7 +544,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							<p className="px-5 mb-2 font-normal flex justify-between">
 								<span>{"Created by:"}</span>
 								<Link
-									href={`https://sepolia.arbiscan.io/address/${(agentData) ? agentData.data[0] : ''}`}
+									href={`${process.env.NEXT_PUBLIC_ARBISCAN}address/${(agentData) ? agentData.data[0] : ''}`}
 									target="_blank"
 									rel="noopener noreferrer"
 								>
