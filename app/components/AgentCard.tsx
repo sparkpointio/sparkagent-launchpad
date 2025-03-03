@@ -114,13 +114,12 @@ const AgentCard: React.FC<AgentCardProps> = ({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: isLoading ? 0 : 1 }}
 						transition={{ duration: 0.5 }}
-						className="w-full h-full"
+						className="w-full h-full relative"
 					>
 						<Image
 							src={imgSrc}
 							alt={imageAlt || "Card image"}
-							layout="fill"
-							objectFit="cover"
+							fill
 							className="object-cover"
 							sizes="(max-width: 768px) 100vw, 33vw"
 							onLoad={() => setIsLoading(false)}
