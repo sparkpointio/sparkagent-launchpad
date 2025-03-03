@@ -202,7 +202,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					<p className="px-5 mb-2 font-normal flex justify-between">
 						<span>{"Created by:"}</span>
 						<Link
-							href={`https://sepolia.arbiscan.io/address/${createdBy}`}
+							href={`${process.env.NEXT_PUBLIC_ARBISCAN}address/${createdBy}`}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
