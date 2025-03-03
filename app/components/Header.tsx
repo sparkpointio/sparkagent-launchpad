@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link'
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Menu, X } from "lucide-react";
 import {
   motion,
@@ -9,7 +9,7 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import { cn } from '../lib/utils/style';
-import { ConnectButton } from 'thirdweb/react';
+import {ConnectButton, darkTheme} from 'thirdweb/react';
 import { client } from '../client';
 import { arbitrum } from 'thirdweb/chains';
 import SparkAgentLogo from './SparkAgentLogo';
@@ -43,6 +43,36 @@ const Header = ({ className }: { className?: string }) => {
   const customButtonStyles = {
     className: "border active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] hover:shadow-[0.25rem_0.25rem_#000] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1",
   };
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const htmlElement = document.documentElement;
+
+    // Function to check if the .dark class is present
+    const checkDarkMode = () => {
+      setIsDarkMode(htmlElement.classList.contains("dark"));
+    };
+
+    // Initial check
+    checkDarkMode();
+
+    // Create a MutationObserver to watch for class changes
+    const observer = new MutationObserver(() => {
+      checkDarkMode(); // Update state when class changes
+    });
+
+    // Observe attribute changes in the `class` attribute
+    observer.observe(htmlElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      observer.disconnect(); // Cleanup observer on unmount
+    };
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -109,7 +139,14 @@ const Header = ({ className }: { className?: string }) => {
                   }}
                   client={client}
                   chain={arbitrum}
-                  theme="light"
+                  theme={isDarkMode
+                    ? darkTheme({
+                        colors: {
+                          connectedButtonBg: "#1a1d21",
+                        },
+                      })
+                    : 'light'
+                  }
                 />
               </div>
 
@@ -145,7 +182,14 @@ const Header = ({ className }: { className?: string }) => {
                 }}
                 client={client}
                 chain={arbitrum}
-                theme="light"
+                theme={isDarkMode
+                    ? darkTheme({
+                      colors: {
+                        connectedButtonBg: "#1a1d21",
+                      },
+                    })
+                    : 'light'
+                }
               />
             </motion.div>
           )}
