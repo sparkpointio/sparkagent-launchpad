@@ -430,13 +430,13 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						initial={{ opacity: 0 }}
 						animate={{ opacity: isLoading ? 0 : 1 }}
 						transition={{ duration: 0.5 }}
-						className="w-full h-full"
+						className="w-full h-full relative"
 					>
 						<Image
 							src={imgSrc}
 							alt={agentData ? agentData.data[4][2] : 'Card image'}
-							layout="fill"
-							objectFit="cover"
+							width={128}
+							height={128}
 							className="object-cover"
 							sizes="(max-width: 768px) 100vw, 33vw"
 							onLoad={() => setIsLoading(false)}
@@ -455,13 +455,13 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							initial={{ opacity: 0 }}
 							animate={{ opacity: isLoading ? 0 : 1 }}
 							transition={{ duration: 0.5 }}
-							className="w-full h-full flex justify-center items-center"
+							className="w-full h-full flex justify-center items-center relative"
 						>
 							<Image
 								src={imgSrc}
-								alt={tokenName}
-								layout="fill"
-								objectFit="cover"
+								alt={agentData ? agentData.data[4][2] : 'Card image'}
+								width={128}
+								height={128}
 								className="object-cover"
 								sizes="(max-width: 768px) 100vw, 33vw"
 								onLoad={() => setIsLoading(false)}
