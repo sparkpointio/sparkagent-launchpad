@@ -98,6 +98,8 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
 	const [createdAt, setCreatedAt] = useState(new Date());
+	const hasFetchedMarketCap = useRef(false); 
+	const hasFetchedTokenPrice = useRef(false);
 
 	useEffect(() => {
 		if (agentData) {
@@ -108,38 +110,40 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 	}, [agentData, blockiesIcon, imgSrc]);
 
 	useEffect(() => {
-		const convertMarketCap = async () => {
-			try {
-				if (agentData) {
-					const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
-					setConvertedMarketCap(result.toFixed(2));
-				}
-			} catch (err) {
-				console.error("Error converting market cap to USD: " + err);
-			}
-		};
+        const convertMarketCap = async () => {
+            try {
+                if (agentData) {
+                    const result = await convertCryptoToFiat(parseInt(toEther(BigInt(agentData.data[4][6]))), "SRK", "USD", certificate, ConversionType.MarketCap);
+                    setConvertedMarketCap(result.toFixed(2));
+                }
+            } catch (err) {
+                console.error("Error converting market cap to USD: " + err);
+            }
+        };
 
-		if (agentData && Number(agentData.data[4][6]) > 0) {
-			convertMarketCap();
-		}
-	}, [certificate, agentData]);
+        if (agentData && Number(agentData.data[4][6]) > 0 && !hasFetchedMarketCap.current) {
+            convertMarketCap();
+            hasFetchedMarketCap.current = true;
+        }
+    }, [certificate, agentData]);
 
 	useEffect(() => {
-		const convertTokenPrice = async () => {
-			try {
-				if (agentData) {
-					const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
-					setConvertedTokenPrice(result.toFixed(2));
-				}
-			} catch (err) {
-				console.error("Error converting token price to USD: " + err);
-			}
-		};
+        const convertTokenPrice = async () => {
+            try {
+                if (agentData) {
+                    const result = await convertCryptoToFiat(Number(agentData.data[4][5]), "SRK", "USD", certificate, ConversionType.Price);
+                    setConvertedTokenPrice(result.toFixed(2));
+                }
+            } catch (err) {
+                console.error("Error converting token price to USD: " + err);
+            }
+        };
 
-		if (agentData && Number(agentData.data[4][5]) > 0) {
-			convertTokenPrice();
-		}
-	}, [certificate, agentData]);
+        if (agentData && Number(agentData.data[4][5]) > 0 && !hasFetchedTokenPrice.current) {
+            convertTokenPrice();
+            hasFetchedTokenPrice.current = true;
+        }
+    }, [certificate, agentData]);
 
 	/*useEffect(() => {
 		const darkMode = document.documentElement.classList.contains('dark');
