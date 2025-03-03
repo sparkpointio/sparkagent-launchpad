@@ -63,6 +63,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const blockiesIcon = blockies.create({ seed: certificate, size: 16, scale: 8 });
 	const prevImageRef = useRef<string | null>(null);
+	const hasFetchedMarketCap = useRef(false);
 
     useEffect(() => {
 		if (prevImageRef.current === image) return;
@@ -71,19 +72,20 @@ const AgentCard: React.FC<AgentCardProps> = ({
 	}, [image, blockiesIcon, imgSrc]);
 
 	useEffect(() => {
-		const convertMarketCap = async () => {
-			try {
-				const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate, ConversionType.MarketCap);
-				setConvertedMarketCap(result.toFixed(2));
-			} catch (err) {
-				console.error("Error converting market cap to USD: " + err);
-			}
-		};
-	
-		if (marketCap > 0) {
-			convertMarketCap();
-		}
-	}, [certificate, marketCap]);
+        const convertMarketCap = async () => {
+            try {
+                const result = await convertCryptoToFiat(marketCap, "SRK", "USD", certificate, ConversionType.MarketCap);
+                setConvertedMarketCap(result.toFixed(2));
+            } catch (err) {
+                console.error("Error converting market cap to USD: " + err);
+            }
+        };
+    
+        if (marketCap > 0 && !hasFetchedMarketCap.current) {
+            convertMarketCap();
+            hasFetchedMarketCap.current = true;
+        }
+    }, [certificate, marketCap]);
 
 	const copyToClipboard = (text: string) => {
 		if (text) {
