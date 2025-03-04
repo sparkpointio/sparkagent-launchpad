@@ -2,7 +2,7 @@
 import React from 'react';
 import { useActiveAccount } from 'thirdweb/react';
 import { bg_hero_dark } from '../lib/assets';
-import { arbitrum } from "thirdweb/chains";
+import { selectedChain } from "../lib/chain-thirdweb";
 import { client } from '../client';
 import { ConnectButton } from 'thirdweb/react';
 import { CreateAgentForm } from "../components/CreateAgentForm";
@@ -50,7 +50,7 @@ const Hero = () => {
                   <ConnectButton
                       connectButton={customButtonStyles}
                       client={client}
-                      chain={arbitrum}
+                      chain={selectedChain}
                       theme="light"
                   />
                   )}

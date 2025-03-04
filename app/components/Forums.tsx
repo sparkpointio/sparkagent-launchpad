@@ -10,7 +10,7 @@ import { useCallback } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import { getContract, readContract, toEther } from "thirdweb";
 import { client } from '../client';
-import { arbitrum } from "thirdweb/chains";
+import { selectedChain } from "../lib/chain-thirdweb";
 
 interface ForumsProps {
     agentCertificate: string;
@@ -32,7 +32,7 @@ export interface ForumMessage {
 
 const forumContract = getContract({
     client,
-    chain: arbitrum,
+    chain: selectedChain,
     address: process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
 });
 

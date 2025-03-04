@@ -6,7 +6,7 @@ import { formsDialogBackgroundOverlayProperties, formsDialogContentProperties, f
 import { getContract, prepareContractCall, readContract } from "thirdweb";
 import { useSendTransaction, useActiveAccount } from "thirdweb/react";
 import { client } from '../client';
-import { arbitrum } from "thirdweb/chains";
+import { selectedChain } from "../lib/chain-thirdweb";
 import { IconLoader2 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { ForumMessage } from "./Forums";
@@ -20,13 +20,13 @@ interface CommentFormProps {
 
 const forumContract = getContract({
     client,
-    chain: arbitrum,
+    chain: selectedChain,
     address: process.env.NEXT_PUBLIC_FORUM_CONTRACT as string,
 });
 
 const srkContract = getContract({
     client,
-    chain: arbitrum,
+    chain: selectedChain,
     address: process.env.NEXT_PUBLIC_SRK_TOKEN as string,
 });
 
