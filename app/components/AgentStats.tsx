@@ -435,8 +435,7 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 						<Image
 							src={imgSrc}
 							alt={agentData ? agentData.data[4][2] : 'Card image'}
-							width={128}
-							height={128}
+							fill
 							className="object-cover"
 							sizes="(max-width: 768px) 100vw, 33vw"
 							onLoad={() => setIsLoading(false)}
