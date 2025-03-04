@@ -24,10 +24,11 @@ const Hero = () => {
         <Image
           src={bg_hero_dark.src}
           alt="Hero Background"
-          layout="fill"
-          objectFit="cover"
+          fill
+          className="object-cover"
           quality={100}
           priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
       <div className="absolute top-0 left-0 w-full h-full z-1 bg-mask" />

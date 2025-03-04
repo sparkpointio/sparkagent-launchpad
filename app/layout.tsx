@@ -64,6 +64,7 @@ export default function RootLayout({
         <Script
           id="google-analytics"
           strategy="afterInteractive"
+          defer
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
