@@ -11,7 +11,7 @@ import {
 import { cn } from '../lib/utils/style';
 import {ConnectButton, darkTheme} from 'thirdweb/react';
 import { client } from '../client';
-import { arbitrum } from 'thirdweb/chains';
+import { selectedChain } from "../lib/chain-thirdweb";
 import SparkAgentLogo from './SparkAgentLogo';
 
 const Header = ({ className }: { className?: string }) => {
@@ -138,7 +138,7 @@ const Header = ({ className }: { className?: string }) => {
                     className: "!w-full justify-center"
                   }}
                   client={client}
-                  chain={arbitrum}
+                  chain={selectedChain}
                   theme={isDarkMode
                     ? darkTheme({
                         colors: {
@@ -181,7 +181,7 @@ const Header = ({ className }: { className?: string }) => {
                   className: "!w-full justify-center"
                 }}
                 client={client}
-                chain={arbitrum}
+                chain={selectedChain}
                 theme={isDarkMode
                     ? darkTheme({
                       colors: {

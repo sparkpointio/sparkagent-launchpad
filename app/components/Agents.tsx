@@ -6,17 +6,16 @@ import AgentFilter from "./AgentFilter";
 import AgentSort from "./AgentSort";
 import { client } from "../client";
 import { IconLoader2 } from "@tabler/icons-react";
+import { getContract, readContract, toEther } from "thirdweb";
+import { selectedChain } from "../lib/chain-thirdweb";
+import SparkAgentLogo from "./SparkAgentLogo";
+import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 const unsparkingAIContract = getContract({
     client,
-    chain: arbitrum,
+    chain: selectedChain,
     address: process.env.NEXT_PUBLIC_UNSPARKINGAI_PROXY as string,
 });
-
-import { getContract, readContract, toEther } from "thirdweb";
-import { arbitrum } from "thirdweb/chains";
-import SparkAgentLogo from "./SparkAgentLogo";
-import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 const Agents = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -183,7 +182,7 @@ const Agents = () => {
     const applyFiltersAndSorting = useCallback(() => {
         let filtered = [...agentsData];
     
-        console.log("Initial agents data:", agentsData);
+        // console.log("Initial agents data:", agentsData);
     
         // Apply search filter first
         if (searchQuery.trim()) {
@@ -195,12 +194,12 @@ const Agents = () => {
                 agent.creator.toLowerCase().includes(searchTerm) ||
                 agent.tokenTicker.toLowerCase().includes(searchTerm)
             );
-            console.log("After search filter:", filtered.map(agent => ({
-                _tokenName: agent._tokenName,
-                description: agent.description,
-                certificate: agent.certificate,
-                creator: agent.creator
-            })));
+            // console.log("After search filter:", filtered.map(agent => ({
+            //     _tokenName: agent._tokenName,
+            //     description: agent.description,
+            //     certificate: agent.certificate,
+            //     creator: agent.creator
+            // })));
         }
     
         // Apply new pairs filter (last 7 days)
@@ -211,40 +210,40 @@ const Agents = () => {
             filtered = filtered
                 .filter(agent => agent.lastUpdated >= sevenDaysAgo)
                 .sort((a, b) => b.lastUpdated.getTime() - a.lastUpdated.getTime()); // Sort by most recent
-            console.log("After new pairs filter:", filtered.map(agent => ({
-                _tokenName: agent._tokenName,
-                lastUpdated: agent.lastUpdated
-            })));
+            // console.log("After new pairs filter:", filtered.map(agent => ({
+            //     _tokenName: agent._tokenName,
+            //     lastUpdated: agent.lastUpdated
+            // })));
         }
     
         // Apply sparked filter
         if (activeFilters.sparked) {
             filtered = filtered.filter(agent => !agent.trading);
-            console.log("After sparked filter:", filtered.map(agent => ({
-                _tokenName: agent._tokenName,
-                trading: agent.trading
-            })));
+            // console.log("After sparked filter:", filtered.map(agent => ({
+            //     _tokenName: agent._tokenName,
+            //     trading: agent.trading
+            // })));
         }
     
         // Apply sorting
         if (activeSorting.volume) {
             filtered.sort((a, b) => activeSorting.volume === "high" ? b.volume - a.volume : a.volume - b.volume);
-            console.log("After volume sorting:", filtered.map(agent => ({
-                _tokenName: agent._tokenName,
-                volume: agent.volume
-            })));
+            // console.log("After volume sorting:", filtered.map(agent => ({
+            //     _tokenName: agent._tokenName,
+            //     volume: agent.volume
+            // })));
         } else if (activeSorting.marketCap) {
             filtered.sort((a, b) => activeSorting.marketCap === "high" ? b.marketCap - a.marketCap : a.marketCap - b.marketCap);
-            console.log("After market cap sorting:", filtered.map(agent => ({
-                _tokenName: agent._tokenName,
-                marketCap: agent.marketCap
-            })));
+            // console.log("After market cap sorting:", filtered.map(agent => ({
+            //     _tokenName: agent._tokenName,
+            //     marketCap: agent.marketCap
+            // })));
         } else if (activeSorting.price) {
             filtered.sort((a, b) => activeSorting.price === "high" ? b.price - a.price : a.price - b.price);
-            console.log("After price sorting:", filtered.map(agent => ({
-                _tokenName: agent._tokenName,
-                price: agent.price
-            })));
+            // console.log("After price sorting:", filtered.map(agent => ({
+            //     _tokenName: agent._tokenName,
+            //     price: agent.price
+            // })));
         }
     
         setFilteredAgents(filtered);
