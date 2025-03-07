@@ -87,6 +87,11 @@ const AgentCard: React.FC<AgentCardProps> = ({
         }
     }, [certificate, marketCap]);
 
+	useEffect(() => {
+        hasFetchedMarketCap.current = false;
+		setConvertedMarketCap(null);
+    }, [certificate, marketCap]);
+
 	const copyToClipboard = (text: string) => {
 		if (text) {
 			navigator.clipboard.writeText(text);
