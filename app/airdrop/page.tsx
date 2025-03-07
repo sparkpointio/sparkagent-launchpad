@@ -1,22 +1,45 @@
 "use client"
 
-import { useState } from "react"
-import { useActiveAccount, useActiveWalletConnectionStatus } from "thirdweb/react"
+import { useState, useEffect, useCallback } from "react"
+import {useActiveAccount, useActiveWalletConnectionStatus, useReadContract} from "thirdweb/react"
+import {getContract, toEther, toWei} from "thirdweb";
 import { toast } from "sonner"
 import {
   IconCopy,
   IconCircleCheck,
 } from "@tabler/icons-react";
-import Link from 'next/link';
+// import Link from 'next/link';
 import { sfuel_logo, ownly_logo } from "@/app/lib/assets";
 import Image from 'next/image';
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
+import {getFormattedEther} from "@/app/lib/utils/formatting";
+import {client} from "@/app/client";
+import {selectedChain} from "@/app/lib/chain-thirdweb";
 
 interface TokenHolding {
   token: string
   balance: string
   isEligible: boolean;
   image: StaticImport | string;
+}
+
+interface Claim {
+  index: number;
+  address: string;
+  amount: string;
+  proof: string[];
+}
+
+interface MerkleData {
+  merkleRoot: string;
+  claims: Claim[];
+  totalAmount: string;
+}
+
+interface Holder {
+  index: number;
+  address: string;
+  amount: number;
 }
 
 export default function Page() {
@@ -29,6 +52,7 @@ export default function Page() {
   //     return null;
   //   }
   // }
+
   const account = useActiveAccount()
   const connectionStatus = useActiveWalletConnectionStatus()
   const isConnected = connectionStatus === "connected"
@@ -39,6 +63,16 @@ export default function Page() {
     { token: "$OWN", balance: "0", isEligible: false, image: ownly_logo },
   ])
   const [isClaiming, setIsClaiming] = useState(false)
+  const [merkleData, setMerkleData] = useState<MerkleData | null>(null);
+  const [ownHolders, setOwnHolders] = useState<Holder[]>([]);
+  const [sfuelHolders, setSfuelHolders] = useState<Holder[]>([]);
+  const [claims, setClaims] = useState<Claim[]>([]);
+
+  const sparkSelfClaimContract = getContract({
+    client,
+    chain: selectedChain,
+    address: process.env.NEXT_PUBLIC_SPARK_SELF_CLAIM as string,
+  });
 
   async function checkEligibility() {
     if (!account) return
@@ -46,19 +80,29 @@ export default function Page() {
     toast.info("Checking eligibility...")
 
     try {
+      const sfuelBalance = getFormattedEther(toEther(findHoldingsByAddress(sfuelHolders, account.address)),2);
+      const ownBalance = getFormattedEther(toEther(findHoldingsByAddress(ownHolders, account.address)),2);
+
       setHoldings([
         {
           token: "$SFUEL",
-          balance: "99",
-          isEligible: true, image: sfuel_logo
+          balance: sfuelBalance,
+          isEligible: sfuelBalance !== "0",
+          image: sfuel_logo
         },
         {
           token: "$OWN",
-          balance: "99",
-          isEligible: true, image: ownly_logo
+          balance: ownBalance,
+          isEligible: ownBalance !== "0",
+          image: ownly_logo
         }
       ]);
-      toast.success("You're eligible for the SRK airdrop!")
+
+      if(sfuelBalance !== "0" || ownBalance !== "0") {
+        toast.success("You're eligible for the SRK airdrop!")
+      } else {
+        toast.warning("You're not eligible for the SRK airdrop!")
+      }
     } catch (error) {
       console.error("Error checking eligibility:", error)
       toast.error("Error checking eligibility")
@@ -68,27 +112,80 @@ export default function Page() {
   }
 
   async function handleClaim() {
+    // const { data: currentAllowanceTemp } = useReadContract({
+    //   contract: srkContract,
+    //   method: "function allowance(address owner, address spender) returns (uint256)",
+    //   params: [account.address, unsparkingAIContract.address],
+    // });
+
+    console.log(claims);
+
     setIsClaiming(true);
   }
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[75vh] px-4 !dark:bg-[image:var(--bg-hero-dark)] !bg-[image:var(--bg-hero-light)] bg-cover bg-center bg-no-repeat text-center">
-      <div className="flex items-center space-x-4 mb-6">
-        <Image src={sfuel_logo} className="w-16 h-16 rounded-full" alt="$SFUEL logo" />
-        <Image src={ownly_logo} className="w-16 h-16 rounded-full" alt="$OWN logo" />
-      </div>
-      <h1 className="font-[family-name:var(--font-rubik)] text-4xl font-bold mb-4 text-gray-800 dark:text-white">COMING SOON</h1>
-      <p className="text-lg text-gray-700 dark:text-gray-300">
-        Holders of&nbsp;
-        <Link className="font-bold hover:text-gray-400 dark:hover:text-gray-100" href="https://bscscan.com/token/0x37ac4d6140e54304d77437a5c11924f61a2d976f" target="_blank" rel="noopener noreferrer">$SFUEL</Link>
-        &nbsp;and&nbsp;
-        <Link className="font-bold hover:text-gray-400 dark:hover:text-gray-100" href="https://bscscan.com/token/0x7665cb7b0d01df1c9f9b9cc66019f00abd6959ba" target="_blank" rel="noopener noreferrer">$OWN</Link>
-        &nbsp;will be allocated with&nbsp;
-        <b>$SRK</b>.
-        Stay tuned for announcements.
-      </p>
-    </div>
-  )
+  const findClaimsByAddress = useCallback((data: MerkleData, inputAddress: string): Claim[] => {
+    const lowerCaseInput = inputAddress.toLowerCase();
+    return data.claims.filter(claim => claim.address.toLowerCase() === lowerCaseInput);
+  }, []);
+
+  const findHoldingsByAddress = useCallback((data: Holder[], inputAddress: string): bigint => {
+    const lowerCaseInput = inputAddress.toLowerCase();
+    const holdings = data.filter(ownHolder => ownHolder.address.toLowerCase() === lowerCaseInput);
+
+    let total = BigInt(0);
+
+    for(let i = 0; i < holdings.length; i++) {
+      total += BigInt(toWei(holdings[i].amount.toString()));
+    }
+
+    return total;
+  }, []);
+
+  useEffect(() => {
+    fetch("/merkle.json")
+        .then((res) => res.json())
+        .then((data) => setMerkleData(data))
+        .catch((error) => console.error("Error loading Merkle JSON:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch("/own-holders.json")
+        .then((res) => res.json())
+        .then((data) => setOwnHolders(data))
+        .catch((error) => console.error("Error loading OWN Holders JSON:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch("/sfuel-holders.json")
+        .then((res) => res.json())
+        .then((data) => setSfuelHolders(data))
+        .catch((error) => console.error("Error loading SFUEL Holders JSON:", error));
+  }, []);
+
+  useEffect(() => {
+    if (account?.address && merkleData) {
+      setClaims(findClaimsByAddress(merkleData, account.address));
+    }
+  }, [account?.address, merkleData, findClaimsByAddress]);
+
+  // return (
+  //   <div className="flex flex-col items-center justify-center min-h-[75vh] px-4 !dark:bg-[image:var(--bg-hero-dark)] !bg-[image:var(--bg-hero-light)] bg-cover bg-center bg-no-repeat text-center">
+  //     <div className="flex items-center space-x-4 mb-6">
+  //       <Image src={sfuel_logo} className="w-16 h-16 rounded-full" alt="$SFUEL logo" />
+  //       <Image src={ownly_logo} className="w-16 h-16 rounded-full" alt="$OWN logo" />
+  //     </div>
+  //     <h1 className="font-[family-name:var(--font-rubik)] text-4xl font-bold mb-4 text-gray-800 dark:text-white">COMING SOON</h1>
+  //     <p className="text-lg text-gray-700 dark:text-gray-300">
+  //       Holders of&nbsp;
+  //       <Link className="font-bold hover:text-gray-400 dark:hover:text-gray-100" href="https://bscscan.com/token/0x37ac4d6140e54304d77437a5c11924f61a2d976f" target="_blank" rel="noopener noreferrer">$SFUEL</Link>
+  //       &nbsp;and&nbsp;
+  //       <Link className="font-bold hover:text-gray-400 dark:hover:text-gray-100" href="https://bscscan.com/token/0x7665cb7b0d01df1c9f9b9cc66019f00abd6959ba" target="_blank" rel="noopener noreferrer">$OWN</Link>
+  //       &nbsp;will be allocated with&nbsp;
+  //       <b>$SRK</b>.
+  //       Stay tuned for announcements.
+  //     </p>
+  //   </div>
+  // )
 
   if (!isConnected) {
     return (
@@ -96,7 +193,7 @@ export default function Page() {
         <h2 className="mb-4 text-2xl font-bold text-center text-gray-800 dark:text-white">
           Connect your wallet to check eligibility
         </h2>
-        <p className="text-center text-gray-800">
+        <p className="text-center text-gray-800 dark:text-white">
           You need to connect your wallet to check if you&apos;re eligible for the $SRK airdrop
         </p>
       </div>
@@ -106,7 +203,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#1A1D21] text-gray-900 dark:text-white transition-all duration-300 dark:bg-[image:var(--bg-hero-dark)] bg-[image:var(--bg-hero-light)] bg-cover bg-center bg-no-repeat">
       <div className="container max-w-2xl mx-auto px-4 pt-16 md:pt-32 pb-12">
-        <div className="text-center mb-12">
+        <div className="text-center mt-2 mb-6">
           <h1 className="text-5xl font-bold mb-4 font-[family-name:var(--font-rubik)]">
             $SRK Airdrop
           </h1>
@@ -190,7 +287,7 @@ export default function Page() {
           </div>
 
           {/* Action Button */}
-          {!isChecking && !holdings[0].isEligible && (
+          {!isChecking && !holdings[0].isEligible && !holdings[1].isEligible && (
             <button
               onClick={checkEligibility}
               className="w-full py-4 px-6 bg-sparkyOrange-500 hover:bg-sparkyOrange-400 active:bg-sparkyOrange-600 text-black font-medium rounded-xl transition-colors duration-10"
@@ -244,7 +341,7 @@ export default function Page() {
           )}
         </div>
 
-        <p className="mt-6 text-center text-sm">
+        <p className="mt-6 text-center text-sm mb-5">
           Make sure you have enough ETH in your wallet to cover the transaction fees
         </p>
       </div>
