@@ -339,7 +339,7 @@ const Agents = () => {
                                     currentAgents
                                         .map((agent, index) => (
                                             <AgentCard
-                                                key={`${currentPage}-${index}`}
+                                                key={`${currentPage}-${index}-${agent.certificate}`}
                                                 title={agent._tokenName}
                                                 image={agent.image}
                                                 imageAlt={agent._tokenName}
