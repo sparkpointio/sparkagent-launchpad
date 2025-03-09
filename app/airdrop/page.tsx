@@ -145,12 +145,12 @@ export default function Page() {
           token: "OWNLY NFT",
           balance: ownNftBalance,
           isEligible: ownNftBalance !== "0",
-          isClaimed: data[1].isClaimed,
+          isClaimed: data[2].isClaimed,
           image: ownly_logo
         }
       ]);
 
-      if(sfuelBalance !== "0" || ownBalance !== "0") {
+      if(sfuelBalance !== "0" || ownBalance !== "0" || ownNftBalance !== "0") {
         toast.success("You're eligible for the SRK airdrop!")
       } else {
         toast.warning("You're not eligible for the SRK airdrop!")
@@ -225,9 +225,9 @@ export default function Page() {
             console.log("Claim transaction successful!");
             console.log("Transaction Hash:", tx.transactionHash);
 
-            toast.success("You have successfully claimed your airdrop.")
+            await checkEligibility();
 
-            checkEligibility();
+            toast.success("You have successfully claimed your airdrop.")
 
             resolve();
           },
@@ -282,10 +282,10 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    fetch("/sfuel-merkle.json")
+    fetch("/own-nft-merkle.json")
         .then((res) => res.json())
-        .then((data) => setSfuelMerkleData(data))
-        .catch((error) => console.error("Error loading SFUEL Merkle JSON:", error));
+        .then((data) => setOwnNftMerkleData(data))
+        .catch((error) => console.error("Error loading OWNLY NFT Merkle JSON:", error));
   }, []);
 
   useEffect(() => {
