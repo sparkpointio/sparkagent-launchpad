@@ -96,7 +96,7 @@ export default function Page() {
       const ownBalance = getFormattedEther(toEther(findHoldingsByAddress(ownHolders, account.address)),2);
       const ownNftBalance = getFormattedEther(toEther(findHoldingsByAddress(ownNftHolders, account.address)),2);
 
-      let data = [
+      const data = [
         {
           id: idPrefix + "0",
           claims: sfuelClaims,
