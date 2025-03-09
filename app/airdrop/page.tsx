@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {useActiveAccount, useActiveWalletConnectionStatus, useReadContract} from "thirdweb/react"
-import {getContract, toEther, toWei} from "thirdweb";
+import {useActiveAccount, useSendTransaction, useActiveWalletConnectionStatus} from "thirdweb/react"
+import {getContract, prepareContractCall, readContract, toEther, toWei, waitForReceipt} from "thirdweb";
 import { toast } from "sonner"
 import {
   IconCopy,
@@ -20,6 +20,7 @@ interface TokenHolding {
   token: string
   balance: string
   isEligible: boolean;
+  isClaimed: boolean,
   image: StaticImport | string;
 }
 
@@ -53,20 +54,31 @@ export default function Page() {
   //   }
   // }
 
+  const { mutate: sendTransaction } = useSendTransaction();
+
   const account = useActiveAccount()
   const connectionStatus = useActiveWalletConnectionStatus()
   const isConnected = connectionStatus === "connected"
   const [isChecking, setIsChecking] = useState(false)
   const [isCopied, setCopied] = useState(false)
   const [holdings, setHoldings] = useState<TokenHolding[]>([
-    { token: "$SFUEL", balance: "0", isEligible: false, image: sfuel_logo },
-    { token: "$OWN", balance: "0", isEligible: false, image: ownly_logo },
+    { token: "$SFUEL", balance: "0", isEligible: false, image: sfuel_logo, isClaimed: false, },
+    { token: "$OWN", balance: "0", isEligible: false, image: ownly_logo, isClaimed: false, },
+    { token: "OWNLY NFT", balance: "0", isEligible: false, image: ownly_logo, isClaimed: false, },
   ])
   const [isClaiming, setIsClaiming] = useState(false)
-  const [merkleData, setMerkleData] = useState<MerkleData | null>(null);
+  const [ownMerkleData, setOwnMerkleData] = useState<MerkleData | null>(null);
+  const [sfuelMerkleData, setSfuelMerkleData] = useState<MerkleData | null>(null);
+  const [ownNftMerkleData, setOwnNftMerkleData] = useState<MerkleData | null>(null);
   const [ownHolders, setOwnHolders] = useState<Holder[]>([]);
   const [sfuelHolders, setSfuelHolders] = useState<Holder[]>([]);
-  const [claims, setClaims] = useState<Claim[]>([]);
+  const [ownNftHolders, setOwnNftHolders] = useState<Holder[]>([]);
+  const [ownClaims, setOwnClaims] = useState<Claim[]>([]);
+  const [sfuelClaims, setSfuelClaims] = useState<Claim[]>([]);
+  const [ownNftClaims, setOwnNftClaims] = useState<Claim[]>([]);
+  const [isEligibilityChecked, setIsEligibilityChecked] = useState(false);
+
+  const idPrefix = "0";
 
   const sparkSelfClaimContract = getContract({
     client,
@@ -82,18 +94,58 @@ export default function Page() {
     try {
       const sfuelBalance = getFormattedEther(toEther(findHoldingsByAddress(sfuelHolders, account.address)),2);
       const ownBalance = getFormattedEther(toEther(findHoldingsByAddress(ownHolders, account.address)),2);
+      const ownNftBalance = getFormattedEther(toEther(findHoldingsByAddress(ownNftHolders, account.address)),2);
+
+      let data = [
+        {
+          id: idPrefix + "0",
+          claims: sfuelClaims,
+          isClaimed: false,
+        }, {
+          id: idPrefix + "1",
+          claims: ownClaims,
+          isClaimed: false,
+        }, {
+          id: idPrefix + "2",
+          claims: ownNftClaims,
+          isClaimed: false,
+        }
+      ]
+
+      for(let j = 0; j < data.length; j++) {
+        for(let i = 0; i < data[j].claims.length; i++) {
+          const claimData = data[j].claims[i];
+
+          if(!data[j].isClaimed) {
+            const claimed = await checkIfClaimed(data[j].id, BigInt(claimData.index));
+
+            if (claimed) {
+              data[j].isClaimed = true;
+            }
+          }
+        }
+      }
 
       setHoldings([
         {
           token: "$SFUEL",
           balance: sfuelBalance,
           isEligible: sfuelBalance !== "0",
+          isClaimed: data[0].isClaimed,
           image: sfuel_logo
         },
         {
           token: "$OWN",
           balance: ownBalance,
           isEligible: ownBalance !== "0",
+          isClaimed: data[1].isClaimed,
+          image: ownly_logo
+        },
+        {
+          token: "OWNLY NFT",
+          balance: ownNftBalance,
+          isEligible: ownNftBalance !== "0",
+          isClaimed: data[1].isClaimed,
           image: ownly_logo
         }
       ]);
@@ -103,6 +155,8 @@ export default function Page() {
       } else {
         toast.warning("You're not eligible for the SRK airdrop!")
       }
+
+      setIsEligibilityChecked(true);
     } catch (error) {
       console.error("Error checking eligibility:", error)
       toast.error("Error checking eligibility")
@@ -111,16 +165,88 @@ export default function Page() {
     }
   }
 
+  const checkIfClaimed = async (_id: string, _index: bigint) => {
+    console.log("checkIfClaimed");
+    console.log([_id, _index]);
+
+    return await readContract({
+      contract: sparkSelfClaimContract,
+      method: "function isClaimed(string _id, uint256 _index) returns (bool)",
+      params: [_id, _index],
+    });
+  };
+
   async function handleClaim() {
-    // const { data: currentAllowanceTemp } = useReadContract({
-    //   contract: srkContract,
-    //   method: "function allowance(address owner, address spender) returns (uint256)",
-    //   params: [account.address, unsparkingAIContract.address],
-    // });
-
-    console.log(claims);
-
     setIsClaiming(true);
+
+    const data = [
+      {
+        id: idPrefix + "0",
+        claims: sfuelClaims,
+      }, {
+        id: idPrefix + "1",
+        claims: ownClaims,
+      }, {
+        id: idPrefix + "2",
+        claims: ownNftClaims,
+      }
+    ]
+
+    console.log("data");
+    console.log(data);
+
+    const claim = async (_id: string, _index: bigint, _address: string, amount: bigint, proof: string[]) => {
+      console.log("claim", [_id, _index, _address, amount, proof]);
+
+      const _proof: readonly `0x${string}`[] = proof as readonly `0x${string}`[];
+
+      return new Promise<void>((resolve, reject) => {
+        const claimTx = prepareContractCall({
+          contract: sparkSelfClaimContract,
+          method: "function claim(string _id, uint256 _index, address _account, uint256 _amount, bytes32[] _merkleProof)",
+          params: [_id, _index, _address, amount, _proof],
+          value: BigInt(0),
+        });
+
+        sendTransaction(claimTx, {
+          onError: (error) => {
+            console.error("Claim transaction failed:", error);
+            reject(error);
+          },
+          onSuccess: async (tx) => {
+            console.log("Transaction Sent, waiting for confirmation:", tx.transactionHash);
+
+            await waitForReceipt({
+              client,
+              chain: selectedChain,
+              transactionHash: tx.transactionHash,
+            });
+
+            console.log("Claim transaction successful!");
+            console.log("Transaction Hash:", tx.transactionHash);
+
+            toast.success("You have successfully claimed your airdrop.")
+
+            checkEligibility();
+
+            resolve();
+          },
+        });
+      });
+    };
+
+    for(let j = 0; j < data.length; j++) {
+      for(let i = 0; i < data[j].claims.length; i++) {
+        const claimData = data[j].claims[i];
+        const claimed = await checkIfClaimed(data[j].id, BigInt(claimData.index));
+
+        if (!claimed) {
+          await claim(data[j].id, BigInt(claimData.index), claimData.address, BigInt(claimData.amount), claimData.proof);
+        }
+      }
+    }
+
+    setIsClaiming(false);
   }
 
   const findClaimsByAddress = useCallback((data: MerkleData, inputAddress: string): Claim[] => {
@@ -130,7 +256,7 @@ export default function Page() {
 
   const findHoldingsByAddress = useCallback((data: Holder[], inputAddress: string): bigint => {
     const lowerCaseInput = inputAddress.toLowerCase();
-    const holdings = data.filter(ownHolder => ownHolder.address.toLowerCase() === lowerCaseInput);
+    const holdings = data.filter(holder => holder.address.toLowerCase() === lowerCaseInput);
 
     let total = BigInt(0);
 
@@ -142,10 +268,24 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    fetch("/merkle.json")
+    fetch("/own-merkle.json")
+      .then((res) => res.json())
+      .then((data) => setOwnMerkleData(data))
+      .catch((error) => console.error("Error loading OWN Merkle JSON:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch("/sfuel-merkle.json")
+      .then((res) => res.json())
+      .then((data) => setSfuelMerkleData(data))
+      .catch((error) => console.error("Error loading SFUEL Merkle JSON:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch("/sfuel-merkle.json")
         .then((res) => res.json())
-        .then((data) => setMerkleData(data))
-        .catch((error) => console.error("Error loading Merkle JSON:", error));
+        .then((data) => setSfuelMerkleData(data))
+        .catch((error) => console.error("Error loading SFUEL Merkle JSON:", error));
   }, []);
 
   useEffect(() => {
@@ -163,10 +303,29 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    if (account?.address && merkleData) {
-      setClaims(findClaimsByAddress(merkleData, account.address));
+    fetch("/own-nft-holders.json")
+        .then((res) => res.json())
+        .then((data) => setOwnNftHolders(data))
+        .catch((error) => console.error("Error loading OWN NFT Holders JSON:", error));
+  }, []);
+
+  useEffect(() => {
+    if (account?.address && ownMerkleData) {
+      setOwnClaims(findClaimsByAddress(ownMerkleData, account.address));
     }
-  }, [account?.address, merkleData, findClaimsByAddress]);
+  }, [account?.address, ownMerkleData, findClaimsByAddress]);
+
+  useEffect(() => {
+    if (account?.address && sfuelMerkleData) {
+        setSfuelClaims(findClaimsByAddress(sfuelMerkleData, account.address));
+    }
+  }, [account?.address, sfuelMerkleData, findClaimsByAddress]);
+
+  useEffect(() => {
+    if (account?.address && ownNftMerkleData) {
+      setOwnNftClaims(findClaimsByAddress(ownNftMerkleData, account.address));
+    }
+  }, [account?.address, ownNftMerkleData, findClaimsByAddress]);
 
   // return (
   //   <div className="flex flex-col items-center justify-center min-h-[75vh] px-4 !dark:bg-[image:var(--bg-hero-dark)] !bg-[image:var(--bg-hero-light)] bg-cover bg-center bg-no-repeat text-center">
@@ -255,39 +414,27 @@ export default function Page() {
                     </p>
                   </div>
                 </div>
-                <div className="w-6 h-6 rounded-full flex items-center justify-center">
-                  {holding.isEligible ? (
-                    <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M7.49991 0.877045C3.84222 0.877045 0.877075 3.84219 0.877075 7.49988C0.877075 11.1575 3.84222 14.1227 7.49991 14.1227C11.1576 14.1227 14.1227 11.1575 14.1227 7.49988C14.1227 3.84219 11.1576 0.877045 7.49991 0.877045ZM1.82708 7.49988C1.82708 4.36686 4.36689 1.82704 7.49991 1.82704C10.6329 1.82704 13.1727 4.36686 13.1727 7.49988C13.1727 10.6329 10.6329 13.1727 7.49991 13.1727C4.36689 13.1727 1.82708 10.6329 1.82708 7.49988ZM10.1589 5.53774C10.3178 5.31191 10.2636 5.00001 10.0378 4.84109C9.81194 4.68217 9.50004 4.73642 9.34112 4.96225L6.51977 8.97154L5.35681 7.78706C5.16334 7.59002 4.84677 7.58711 4.64973 7.78058C4.45268 7.97404 4.44978 8.29061 4.64325 8.48765L6.22658 10.1003C6.33054 10.2062 6.47617 10.2604 6.62407 10.2483C6.77197 10.2363 6.90686 10.1591 6.99226 10.0377L10.1589 5.53774Z"
-                        className="fill-sparkyGreen-500"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M12.8536 2.14645C13.0488 2.34171 13.0488 2.65829 12.8536 2.85355L2.85355 12.8536C2.65829 13.0488 2.34171 13.0488 2.14645 12.8536C1.95118 12.6583 1.95118 12.3417 2.14645 12.1464L12.1464 2.14645C12.3417 1.95118 12.6583 1.95118 12.8536 2.14645Z"
-                        className="fill-red-500"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      />
-                      <path
-                        d="M2.14645 2.14645C2.34171 1.95118 2.65829 1.95118 2.85355 2.14645L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L2.14645 2.85355C1.95118 2.65829 1.95118 2.34171 2.14645 2.14645Z"
-                        className="fill-red-500"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
+                <div className="">
+                  {
+                    isEligibilityChecked ?
+                      holding.isEligible ? (
+                        !holding.isClaimed ? (
+                          <div className="text-[0.7em] rounded-[6px] bg-sparkyGreen-500 px-2 py-1">Available</div>
+                        ) : (
+                          <div className="text-[0.7em] rounded-[6px] bg-sparkyOrange-500 px-2 py-1">Claimed</div>
+                        )
+                      ) : (
+                          <div className="text-[0.7em] rounded-[6px] bg-sparkyRed-500 text-white px-2 py-1">Ineligible</div>
+                      )
+                    : ''
+                  }
                 </div>
               </div>
             ))}
           </div>
 
           {/* Action Button */}
-          {!isChecking && !holdings[0].isEligible && !holdings[1].isEligible && (
+          {!isChecking && !holdings[0].isEligible && !holdings[1].isEligible && !holdings[2].isEligible && (
             <button
               onClick={checkEligibility}
               className="w-full py-4 px-6 bg-sparkyOrange-500 hover:bg-sparkyOrange-400 active:bg-sparkyOrange-600 text-black font-medium rounded-xl transition-colors duration-10"
