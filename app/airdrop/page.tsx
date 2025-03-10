@@ -524,7 +524,7 @@ export default function Page() {
         </div>
 
         <p className="mt-6 text-center text-sm mb-5">
-          Make sure you have enough ETH in your wallet to cover the transaction fees
+          Make sure you have enough ETH on Arbitrum in your wallet to cover the transaction fees
         </p>
       </div>
     </div>
