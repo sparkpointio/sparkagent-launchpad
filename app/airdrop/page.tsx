@@ -92,7 +92,8 @@ export default function Page() {
     setIsChecking(true)
     toast.info("Checking eligibility...")
 
-    // account.address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76";
+    // Test Address:
+    // account.address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76"; // Address to be tested
 
     try {
       const data = [
@@ -212,7 +213,8 @@ export default function Page() {
           value: BigInt(0),
         });
 
-        // account.address = "0xB65d3Ae82A75012D2d6F487834534Ee34584B7CD";
+        // Test Address:
+        // account.address = "0xB65d3Ae82A75012D2d6F487834534Ee34584B7CD"; // Your actual address
 
         sendTransaction(claimTx, {
           onError: (error) => {
@@ -318,7 +320,9 @@ export default function Page() {
   useEffect(() => {
     if (account?.address && ownMerkleData) {
       const address = account.address;
-      // const address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76";
+      // Test Address:
+      // const address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76"; // address to be tested
+
       setOwnClaims(findClaimsByAddress(ownMerkleData, address));
     }
   }, [account?.address, ownMerkleData, findClaimsByAddress]);
@@ -326,7 +330,9 @@ export default function Page() {
   useEffect(() => {
     if (account?.address && sfuelMerkleData) {
         const address = account.address;
-        // const address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76";
+        // Test Address:
+        // const address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76"; // address to be tested
+
         setSfuelClaims(findClaimsByAddress(sfuelMerkleData, address));
     }
   }, [account?.address, sfuelMerkleData, findClaimsByAddress]);
@@ -334,7 +340,9 @@ export default function Page() {
   useEffect(() => {
     if (account?.address && ownNftMerkleData) {
       const address = account.address;
-      // const address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76";
+      // Test Address:
+      // const address = "0x755d3dec8ab27bd8dc8237741689b5f0b1a26f76"; // address to be tested
+
       setOwnNftClaims(findClaimsByAddress(ownNftMerkleData, address));
     }
   }, [account?.address, ownNftMerkleData, findClaimsByAddress]);
