@@ -16,30 +16,21 @@ import SparkAgentLogo from './SparkAgentLogo';
 
 const Header = ({ className }: { className?: string }) => {
 
-  const { scrollYProgress } = useScroll();
+  const { scrollY } = useScroll();
   const [isOpen, setIsOpen] = useState(false);
   const [visible, setVisible] = useState(true);
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    // Check if current is not undefined and is a number
-    if (typeof current === "number") {
-      const direction = current! - scrollYProgress.getPrevious()!;
-
-      if (scrollYProgress.get() < 0.05) {
-        setVisible(true);
-      } else {
-        if (direction < 0) {
-          setVisible(true);
-        } else {
-          setVisible(false);
-        }
-      }
-    }
-    if (isOpen) {
-      setIsOpen(false);
+  useMotionValueEvent(scrollY, "change", (current) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    const direction = current - prev;
+    if (current < 50 || direction < 0) {
+      setVisible(true);
+    } else {
+      setVisible(false);
     }
   });
+
   const customButtonStyles = {
     className: "border active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] hover:shadow-[0.25rem_0.25rem_#000] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1",
   };
