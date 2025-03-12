@@ -18,6 +18,7 @@ import Forums from "../components/Forums";
 
 import { IconLoader2 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import AgentFunctionalityCard from "../components/AgentFunctionalityCard";
 
 interface AgentData {
   creator: string;
@@ -271,6 +272,13 @@ const AgentPage = () => {
                       gradThreshold={agent.gradThreshold}
                       trading={agent.trading}
                       contractAddress={agent.certificate}
+                  />
+
+                  <AgentFunctionalityCard 
+                    sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold, agent.initialLiquidity) : 0}
+                    gradThreshold={agent.gradThreshold}
+                    trading={agent.trading}
+                    contractAddress={agent.certificate}
                   />
 
                   <div className="md:hidden w-full space-y-4">
