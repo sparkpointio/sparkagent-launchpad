@@ -112,14 +112,25 @@ export const convertCryptoToFiat = async (
     console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
     console.log('Conversion type:', conversionType);
     console.log('Certificate:', certificate);
-    
+
+    const cacheKey = `conversion_${certificate}_${conversionType}`;
+    const cachedResult = sessionStorage.getItem(cacheKey);
+
+    if (cachedResult) {
+        return JSON.parse(cachedResult);
+    }
+
+    let conversion;
     if (conversionType != ConversionType.Any) {
-        return await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
+        conversion = await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
     } else {
         console.log('Custom conversion. Directly fetching from CMC');
-        const conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
-        return conversion;
+        conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
     }
+
+    sessionStorage.setItem(cacheKey, JSON.stringify(conversion));
+
+    return conversion;
 };
 
 export const checkImage = async (url: string) => {
