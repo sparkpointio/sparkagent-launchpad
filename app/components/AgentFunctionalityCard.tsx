@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cardProperties } from "../lib/utils/style/customStyles";
-import { IconBrandTelegram, IconBrandX, IconMessageChatbot } from "@tabler/icons-react";
+import { IconBrandTelegram, IconBrandX, IconChartLine, IconMessageChatbot } from "@tabler/icons-react";
 
 interface AgentFunctionalityCardProps {
     sparkingProgress: number;
@@ -39,9 +39,9 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
     
     const sparked = sparkingProgress >= 100;
 
-    const AgenticXAgentReady = false;
-    const AutoReplyXAgentReady = false;
-    const AgenticTelegramAgentReady = false;
+    const isXAgentReady = false;
+    const isTelegramAgentReady = false;
+    const isTradingAgentReady = false;
 
     return (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={cardProperties + " space-y-4 lg:space-y-6"}>
@@ -50,9 +50,9 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
             </div>
             <div className="flex flex-col space-y-4">
                 {renderFunctionality(IconMessageChatbot, "Forum Agent", "Interact with the Agent", "Running")}
-                {renderFunctionality(IconBrandX, "Agentic X Agent", "Agent comes alive on X", sparked ? "Coming Soon" : AgenticXAgentReady ? "Pending Activation" : "Coming Soon")}
-                {renderFunctionality(IconBrandX, "Auto Reply X Agent", "Agent auto replies on X", sparked ? "Coming Soon" : AutoReplyXAgentReady ? "Pending Activation" : "Coming Soon")}
-                {renderFunctionality(IconBrandTelegram, "Agentic Telegram Agent", "Agent comes alive on Telegram", sparked ? "Coming Soon" : AgenticTelegramAgentReady ? "Pending Activation" : "Coming Soon")}
+                {renderFunctionality(IconBrandX, "Agentic X Agent", "Agent comes alive on X", sparked ? "Coming Soon" : isXAgentReady ? "Pending Activation" : "Coming Soon")}
+                {renderFunctionality(IconBrandTelegram, "Agentic Telegram Agent", "Agent comes alive on Telegram", sparked ? "Coming Soon" : isTelegramAgentReady ? "Pending Activation" : "Coming Soon")}
+                {renderFunctionality(IconChartLine, "Trading Agent", "Agent autonomously trading", sparked ? "Coming Soon" : isTradingAgentReady ? "Pending Activation" : "Coming Soon")}
             </div>
         </motion.div>
     );
