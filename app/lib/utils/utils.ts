@@ -112,14 +112,25 @@ export const convertCryptoToFiat = async (
     console.log('Converting', cryptoAmount, cryptoSymbol, 'to', fiatSymbol);
     console.log('Conversion type:', conversionType);
     console.log('Certificate:', certificate);
-    
+
+    const cacheKey = `conversion_${certificate}_${conversionType}`;
+    const cachedResult = sessionStorage.getItem(cacheKey);
+
+    if (cachedResult) {
+        return JSON.parse(cachedResult);
+    }
+
+    let conversion;
     if (conversionType != ConversionType.Any) {
-        return await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
+        conversion = await fetchPriceConversion(cryptoAmount, cryptoSymbol, fiatSymbol, certificate, conversionType);
     } else {
         console.log('Custom conversion. Directly fetching from CMC');
-        const conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
-        return conversion;
+        conversion = await fetchCryptoConversionFromCoinMarketCap(cryptoAmount, cryptoSymbol, fiatSymbol);
     }
+
+    sessionStorage.setItem(cacheKey, JSON.stringify(conversion));
+
+    return conversion;
 };
 
 export const checkImage = async (url: string) => {
@@ -134,18 +145,29 @@ export const checkImage = async (url: string) => {
 export const updateImageSrc = async (image: string | undefined, blockiesIcon: HTMLCanvasElement, setImgSrc: (src: string) => void, setIsLoading: (loading: boolean) => void) => {
     const option1 = `https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`;
     const option2 = `https://aquamarine-used-bear-228.mypinata.cloud/ipfs/${image}`;
+    const cacheKey = `imageSrc_${image}`;
 
     setIsLoading(true);
 
-    if (image && image.startsWith('https')) {
-        setImgSrc(blockiesIcon.toDataURL());
-    } else if (await checkImage(option1)) {
-        setImgSrc(option1);
-    } else if (await checkImage(option2)) {
-        setImgSrc(option2);
-    } else {
-        setImgSrc(blockiesIcon.toDataURL());
+    const cachedSrc = localStorage.getItem(cacheKey);
+    if (cachedSrc) {
+        setImgSrc(cachedSrc);
+        setIsLoading(false);
+        return;
     }
 
+    let imgSrc;
+    if (image && image.startsWith('https')) {
+        imgSrc = blockiesIcon.toDataURL();
+    } else if (await checkImage(option1)) {
+        imgSrc = option1;
+    } else if (await checkImage(option2)) {
+        imgSrc = option2;
+    } else {
+        imgSrc = blockiesIcon.toDataURL();
+    }
+
+    localStorage.setItem(cacheKey, imgSrc);
+    setImgSrc(imgSrc);
     setIsLoading(false);
 };
