@@ -8,7 +8,8 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import blockies from "ethereum-blockies";
 import { updateImageSrc } from "../lib/utils/utils";
-import { AccountAddress, useActiveAccount } from "thirdweb/react";
+import { useActiveAccount } from "thirdweb/react";
+import { toast } from "sonner";
 
 interface AgentConfigurationProps {
     certificate: string;
@@ -43,11 +44,119 @@ export function AgentConfiguration({
     const [style, setStyle] = useState("");
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
+    const [validationError, setValidationError] = useState("");
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
     const isOwner = accountAddress === creator;
 
+    const updateAgentData = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`/api/update-agent-data/${certificate.toLowerCase()}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstMessage,
+                    lore,
+                    style,
+                    adjective,
+                    knowledge,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                toast.success(`${ticker} Agent updated successfully`);
+            } else {
+                throw new Error(data.error || 'Conversion failed');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(error.message || 'Server error');
+            } else {
+                throw new Error('An unknown error occurred');
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchAgentData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch(`/api/agent-data/fetch-agent-data?contractAddress=${certificate}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    setPersonality(data.personality);
+                    setFirstMessage(data.firstMessage);
+                    setLore(data.lore);
+                    setStyle(data.style);
+                    setAdjective(data.adjective);
+                    setKnowledge(data.knowledge);
+                } else {
+                    throw new Error(data.error || 'Failed to fetch agent data');
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error('Error fetching agent data:', error.message);
+                } else {
+                    console.error('An unknown error occurred while fetching agent data');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    
+        fetchAgentData();
+    }, [certificate]);
+
+    const handleSubmit = () => {
+        if (!personality) {
+            setValidationError("Personality cannot be empty.");
+            return;
+        }
+
+        if (!firstMessage) {
+            setValidationError("First message cannot be empty.");
+            return;
+        }
+
+        if (!lore) {
+            setValidationError("Lore cannot be empty.");
+            return;
+        }
+
+        if (!style) {
+            setValidationError("Style cannot be empty.");
+            return;
+        }
+
+        if (!adjective) {
+            setValidationError("Adjective cannot be empty.");
+            return;
+        }
+
+        if (!knowledge) {
+            setValidationError("Knowledge cannot be empty.");
+            return;
+        }
+
+        setValidationError("");
+
+        //updateAgentData();
+    };
 
     useEffect(() => {
         if (image) return;
@@ -57,12 +166,6 @@ export function AgentConfiguration({
 
     const handleDialogClose = () => {
         onClose();
-    };
-
-    const handleSubmit = () => {
-        setIsLoading(true);
-
-        console.log("Updated");
     };
 
     return (
@@ -392,6 +495,10 @@ export function AgentConfiguration({
                                     </motion.div>
                                 )}
                             </AnimatePresence>
+
+                            {validationError && (
+                                <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
+                            )}
 
                             <button
                                 type="button"
