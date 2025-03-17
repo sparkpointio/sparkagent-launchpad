@@ -166,8 +166,8 @@ export function AgentConfiguration({
                                                         className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                         type="text"
                                                         name="agentName"
-                                                        value={agentName}
-                                                        readOnly
+                                                        defaultValue={agentName}
+                                                        readOnly={!isOwner}
                                                     />
                                                 </Form.Control>
                                             </Form.Field>
@@ -191,8 +191,8 @@ export function AgentConfiguration({
                                                         className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                         type="text"
                                                         name="ticker"
-                                                        value={ticker}
-                                                        readOnly
+                                                        defaultValue={ticker}
+                                                        readOnly={!isOwner}
                                                     />
                                                 </Form.Control>
                                             </Form.Field>
@@ -216,8 +216,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter description"
                                                     className={`w-full h-[10.14rem] mb-0 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="description"
-                                                    value={description}
-                                                    readOnly
+                                                    defaultValue={description}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setPersonality(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -252,8 +253,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter personality"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="personality"
-                                                    value={personality}
-                                                    readOnly
+                                                    defaultValue={personality}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setPersonality(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -277,8 +279,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter first message"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="first_message"
-                                                    value={firstMessage}
-                                                    readOnly
+                                                    defaultValue={firstMessage}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setFirstMessage(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -302,8 +305,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter lore"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="lore"
-                                                    value={lore}
-                                                    readOnly
+                                                    defaultValue={lore}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setLore(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -327,8 +331,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter style"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="style"
-                                                    value={style}
-                                                    readOnly
+                                                    defaultValue={style}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setStyle(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -352,8 +357,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter adjective"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="adjective"
-                                                    value={adjective}
-                                                    readOnly
+                                                    defaultValue={adjective}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setAdjective(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -377,8 +383,9 @@ export function AgentConfiguration({
                                                     placeholder="Enter knowledge"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="knowledge"
-                                                    value={knowledge}
-                                                    readOnly
+                                                    defaultValue={knowledge}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setKnowledge(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -396,7 +403,7 @@ export function AgentConfiguration({
                                 onClick={handleSubmit}
                                 disabled={!isOwner || isLoading}
                             >
-                                {!isLoading ? "Update" : <IconLoader2 size={16} className="animate-spin" />}
+                                {!isLoading ? !isOwner ? "Only the creator can modify agent details" :"Update" : <IconLoader2 size={16} className="animate-spin" />}
                             </button>
                         </Form.Root>
                     </div>
