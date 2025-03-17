@@ -276,9 +276,12 @@ const AgentPage = () => {
 
                   <AgentFunctionalityCard 
                     sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold, agent.initialLiquidity) : 0}
-                    gradThreshold={agent.gradThreshold}
-                    trading={agent.trading}
-                    contractAddress={agent.certificate}
+                    certificate={agent.certificate}
+                    creator={agent.creator}
+                    tokenName={agent.tokenName}
+                    tokenTicker={agent.tokenTicker}
+                    tokenDescription={agent.description}
+                    tokenImage={agent.image}
                   />
 
                   <div className="md:hidden w-full space-y-4">
