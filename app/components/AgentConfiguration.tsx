@@ -53,12 +53,13 @@ export function AgentConfiguration({
     const updateAgentData = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`/api/update-agent-data/${certificate.toLowerCase()}`, {
+            const response = await fetch(`/api/agent-data/update-agent-data?contractAddress=${certificate}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    personality,
                     firstMessage,
                     lore,
                     style,
@@ -71,13 +72,17 @@ export function AgentConfiguration({
     
             if (response.ok) {
                 toast.success(`${ticker} Agent updated successfully`);
+                handleDialogClose();
             } else {
+                toast.error(data.error || 'Failed to update agent. Please try again');
                 throw new Error(data.error || 'Conversion failed');
             }
         } catch (error) {
             if (error instanceof Error) {
+                toast.error('Failed to update agent. Please try again');
                 throw new Error(error.message || 'Server error');
             } else {
+                toast.error('Failed to update agent. Please try again');
                 throw new Error('An unknown error occurred');
             }
         } finally {
@@ -96,17 +101,18 @@ export function AgentConfiguration({
                     },
                 });
     
-                const data = await response.json();
+                const result = await response.json();
     
                 if (response.ok) {
-                    setPersonality(data.personality);
-                    setFirstMessage(data.firstMessage);
-                    setLore(data.lore);
-                    setStyle(data.style);
-                    setAdjective(data.adjective);
-                    setKnowledge(data.knowledge);
+                    const agentData = result.data;
+                    setPersonality(agentData.personality);
+                    setFirstMessage(agentData.first_message); // Ensure this matches the backend response
+                    setLore(agentData.lore);
+                    setStyle(agentData.style);
+                    setAdjective(agentData.adjective);
+                    setKnowledge(agentData.knowledge);
                 } else {
-                    throw new Error(data.error || 'Failed to fetch agent data');
+                    throw new Error(result.error || 'Failed to fetch agent data');
                 }
             } catch (error) {
                 if (error instanceof Error) {
@@ -155,7 +161,7 @@ export function AgentConfiguration({
 
         setValidationError("");
 
-        //updateAgentData();
+        updateAgentData();
     };
 
     useEffect(() => {
@@ -176,9 +182,6 @@ export function AgentConfiguration({
                     handleDialogClose();
                 }
             }}>
-            <Dialog.Trigger asChild>
-                <div />
-            </Dialog.Trigger>
             <Dialog.Portal>
                 <Dialog.Overlay className={formsDialogBackgroundOverlayProperties} />
                 <Dialog.Content className={formsDialogContentPropertiesWide + " transition-all duration-300"}
@@ -270,7 +273,7 @@ export function AgentConfiguration({
                                                         type="text"
                                                         name="agentName"
                                                         defaultValue={agentName}
-                                                        readOnly={!isOwner}
+                                                        readOnly
                                                     />
                                                 </Form.Control>
                                             </Form.Field>
@@ -295,7 +298,7 @@ export function AgentConfiguration({
                                                         type="text"
                                                         name="ticker"
                                                         defaultValue={ticker}
-                                                        readOnly={!isOwner}
+                                                        readOnly
                                                     />
                                                 </Form.Control>
                                             </Form.Field>
@@ -320,8 +323,7 @@ export function AgentConfiguration({
                                                     className={`w-full h-[10.14rem] mb-0 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="description"
                                                     defaultValue={description}
-                                                    readOnly={!isOwner}
-                                                    onChange={(e) => setPersonality(e.target.value)}
+                                                    readOnly
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -492,11 +494,7 @@ export function AgentConfiguration({
                                                 />
                                             </Form.Control>
                                         </Form.Field>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            {validationError && (
+                                        {validationError && (
                                 <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
                             )}
 
@@ -512,6 +510,9 @@ export function AgentConfiguration({
                             >
                                 {!isLoading ? !isOwner ? "Only the creator can modify agent details" :"Update" : <IconLoader2 size={16} className="animate-spin" />}
                             </button>
+                                </motion.div>
+                            )}
+                            </AnimatePresence>
                         </Form.Root>
                     </div>
                 </Dialog.Content>
