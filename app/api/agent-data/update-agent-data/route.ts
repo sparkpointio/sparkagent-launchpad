@@ -13,10 +13,11 @@ export async function POST(req: NextRequest) {
         }
 
         const apiUrl = `${backendUrl}/updateAgentData`;
-
+    
         const response = await axios.post(apiUrl, {
+            address: contractAddress,
             personality: requestBody.personality,
-            first_message: requestBody.first_message,
+            first_message: requestBody.firstMessage,
             lore: requestBody.lore,
             style: requestBody.style,
             adjective: requestBody.adjective,
