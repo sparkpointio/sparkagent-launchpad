@@ -482,9 +482,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 									</Link>
 								</div>
 								<div className="flex space-x-1 mb-4">
-									{agentData && (
+									{agentData && agentData.data[7] && (
 										<button
-											onClick={() => window.open((agentData) ? agentData.data[6] : '', "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[7] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="Website"
 											type="button"
@@ -492,9 +492,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											<IconWorld size={socialIconSize} />
 										</button>
 									)}
-									{agentData && (
+									{agentData && agentData.data[9] && (
 										<button
-											onClick={() => window.open((agentData) ? agentData.data[8] : '', "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[9] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="Telegram"
 											type="button"
@@ -502,9 +502,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											<IconBrandTelegram size={socialIconSize} />
 										</button>
 									)}
-									{agentData && (
+									{agentData && agentData.data[8] && (
 										<button
-											onClick={() => window.open((agentData) ? agentData.data[7] : '', "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ? agentData.data[8] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="X"
 											type="button"
@@ -512,9 +512,9 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											<IconBrandX size={socialIconSize} />
 										</button>
 									)}
-									{agentData && (
+									{agentData && agentData.data[10] && (
 										<button
-											onClick={() => window.open((agentData) ? agentData.data[9] : '', "_blank", "noopener, noreferrer")}
+											onClick={() => window.open((agentData) ?agentData.data[10] : '', "_blank", "noopener, noreferrer")}
 											className={socialButtonProperties}
 											title="YouTube"
 											type="button"
@@ -595,38 +595,38 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 											className="font-bold hover:text-sparkyOrange-600">{`${truncateHash(agentData ? agentData.data[0] : '')}`}</span>
 									</Link>
 								</div>
-								{agentData && agentData.data[10] && (
-									<button
-										className={socialButtonProperties}
-										onClick={() => window.open(agentData ? agentData.data[10] : '', "_blank", "noopener, noreferrer")}
-										title="Website"
-									>
-										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black" />
-									</button>
-								)}
-								{agentData && agentData.data[8] && (
-									<button
-										className={socialButtonProperties}
-										onClick={() => window.open(agentData ? agentData.data[8] : '', "_blank", "noopener, noreferrer")}
-										title="Telegram"
-									>
-										<IconBrandTelegram size={socialIconSize}
-											className="dark:group-hover:stroke-black" />
-									</button>
-								)}
 								{agentData && agentData.data[7] && (
 									<button
 										className={socialButtonProperties}
 										onClick={() => window.open(agentData ? agentData.data[7] : '', "_blank", "noopener, noreferrer")}
-										title="X"
+										title="Website"
 									>
-										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black" />
+										<IconWorld size={socialIconSize} className="dark:group-hover:stroke-black" />
 									</button>
 								)}
 								{agentData && agentData.data[9] && (
 									<button
 										className={socialButtonProperties}
 										onClick={() => window.open(agentData ? agentData.data[9] : '', "_blank", "noopener, noreferrer")}
+										title="Telegram"
+									>
+										<IconBrandTelegram size={socialIconSize}
+											className="dark:group-hover:stroke-black" />
+									</button>
+								)}
+								{agentData && agentData.data[8] && (
+									<button
+										className={socialButtonProperties}
+										onClick={() => window.open(agentData ? agentData.data[8] : '', "_blank", "noopener, noreferrer")}
+										title="X"
+									>
+										<IconBrandX size={socialIconSize} className="dark:group-hover:stroke-black" />
+									</button>
+								)}
+								{agentData && agentData.data[10] && (
+									<button
+										className={socialButtonProperties}
+										onClick={() => window.open(agentData ? agentData.data[10] : '', "_blank", "noopener, noreferrer")}
 										title="YouTube"
 									>
 										<IconBrandYoutube size={socialIconSize}
