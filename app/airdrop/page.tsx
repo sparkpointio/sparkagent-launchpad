@@ -523,8 +523,11 @@ export default function Page() {
           )}
         </div>
 
-        <p className="mt-6 text-center text-sm mb-5">
+        <p className="mt-10 text-center text-sm mb-5">
           Make sure you have enough ETH on Arbitrum in your wallet to cover the transaction fees
+        </p>
+        <p className="mt-0 text-center text-sm mb-5">
+          Note: The SRK claiming period is limited to one year. After this period, any remaining unclaimed SRK will be permanently burned.
         </p>
       </div>
     </div>

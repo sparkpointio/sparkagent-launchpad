@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prod": "npm run build && pm2 delete sparkagent-launchpad || true && pm2 start npm --name 'sparkagent-launchpad' --max-memory-restart 1000G -- start && pm2 save"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
