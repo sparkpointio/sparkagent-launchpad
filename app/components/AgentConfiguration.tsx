@@ -105,12 +105,12 @@ export function AgentConfiguration({
     
                 if (response.ok) {
                     const agentData = result.data;
-                    setPersonality(agentData.personality);
-                    setFirstMessage(agentData.first_message); // Ensure this matches the backend response
-                    setLore(agentData.lore);
-                    setStyle(agentData.style);
-                    setAdjective(agentData.adjective);
-                    setKnowledge(agentData.knowledge);
+                    setPersonality(agentData?.personality || "");
+                    setFirstMessage(agentData?.first_message || "");
+                    setLore(agentData?.lore || "");
+                    setStyle(agentData?.style || "");
+                    setAdjective(agentData?.adjective || "");
+                    setKnowledge(agentData?.knowledge || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
                 }
