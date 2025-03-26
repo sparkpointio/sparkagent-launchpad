@@ -133,7 +133,7 @@ export function AgentConfiguration({
 
     const signRequest = async () => {
         setIsUpdateLoading(true);
-        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate}`;
+        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
         try {
             if (!account) {
                 console.error('Wallet not connected. Cannot sign the message.');
