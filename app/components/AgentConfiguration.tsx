@@ -78,7 +78,7 @@ export function AgentConfiguration({
                 handleDialogClose();
             } else {
                 toast.error(data.error || 'Failed to update agent. Please try again');
-                throw new Error(data.error || 'Conversion failed');
+                throw new Error(data.error || 'Failed to update agent.');
             }
         } catch (error) {
             if (error instanceof Error) {
