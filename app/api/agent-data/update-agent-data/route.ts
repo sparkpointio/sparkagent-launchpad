@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
             knowledge: requestBody.knowledge,
         }, {
             headers: {
-                'x-api-key': process.env.NEXT_PUBLIC_FORUM_API,
+                'x-api-key': process.env.NEXT_PUBLIC_POST_FORUM_API,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
