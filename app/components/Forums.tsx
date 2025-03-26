@@ -21,13 +21,11 @@ interface ForumsProps {
 export interface ForumMessage {
     id: string;
     sender: string;
-    forumToken: string;
+    token: string;
     content: string;
-    timestamp: string;
-    llmresponse?: {
-        message: string;
-        timestamp: string;
-    };
+    created_at: string;
+    updated_at: string;
+    response: string;
 }
 
 const forumContract = getContract({
@@ -181,12 +179,12 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
                             id={message.id}
                             sender={message.sender}
                             content={message.content}
-                            messageTimestamp={new Date(Number(message.timestamp) * 1000)}
+                            messageTimestamp={new Date(message.created_at)}
                             agentCertificate={agentCertificate}
                             agentName={agentName}
                             agentImage={agentImage}
-                            agentMessage={message.llmresponse?.message}
-                            agentTimestamp={message.llmresponse ? new Date(Number(message.llmresponse.timestamp)) : undefined}
+                            agentMessage={message.response}
+                            agentTimestamp={message.updated_at ? new Date(message.updated_at) : undefined}
                         />
                     ))}
 

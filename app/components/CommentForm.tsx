@@ -125,12 +125,18 @@ export function CommentForm({ isOpen, onClose, forumToken, onCommentSubmitted }:
                 setIsLoading(false);
                 handleDialogClose();
                 toast.success("Comment posted successfully!");
+
+                const createdAtDate = new Date();
+                const createdAt = createdAtDate.toISOString().slice(0, 19).replace("T", " ");
+
                 const newMessage: ForumMessage = {
                     id: response.transactionHash,
                     sender: account.address,
-                    forumToken,
+                    token: forumToken,
                     content: comment,
-                    timestamp: Date.now().toString(),
+                    response: '',
+                    created_at: createdAt,
+                    updated_at: createdAt,
                 };
                 onCommentSubmitted(newMessage);
             },
