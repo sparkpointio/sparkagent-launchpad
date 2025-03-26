@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
         const apiUrl = `${backendUrl}/updateAgentData`;
     
         const response = await axios.post(apiUrl, {
+            signature: requestBody.signature,
             address: contractAddress,
             personality: requestBody.personality,
             first_message: requestBody.firstMessage,
