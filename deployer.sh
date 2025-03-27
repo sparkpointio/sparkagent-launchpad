@@ -32,7 +32,7 @@ nvm use 18
 node -v
 npm -v
 
-NODE_OPTIONS="--max-old-space-size=4096" npm update --jobs=2
+NODE_OPTIONS="--max-old-space-size=4096" npm install --jobs=2
 
 npm run build
 
