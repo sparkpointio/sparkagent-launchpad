@@ -44,5 +44,5 @@ else
   pm2 start npm --name $PROCESS_NAME -- start
 fi
 
-# Log deployment
+# Log deployment #
 echo "Deployment successful at $(date)" >> $LOG_FILE
