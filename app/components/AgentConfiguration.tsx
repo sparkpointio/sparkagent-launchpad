@@ -10,6 +10,7 @@ import blockies from "ethereum-blockies";
 import { updateImageSrc } from "../lib/utils/utils";
 import { useActiveAccount } from "thirdweb/react";
 import { toast } from "sonner";
+import { signMessage } from "thirdweb/utils";
 
 interface AgentConfigurationProps {
     certificate: string;
@@ -37,6 +38,7 @@ export function AgentConfiguration({
     const prevImageRef = useRef<string | null>(null);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isUpdateLoading, setIsUpdateLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("tokenDetails");
     const [personality, setPersonality] = useState("");
     const [firstMessage, setFirstMessage] = useState("");
@@ -45,13 +47,13 @@ export function AgentConfiguration({
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
     const [validationError, setValidationError] = useState("");
+    const [signature, setSignature] = useState<string | null>(null);
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
     const isOwner = accountAddress === creator;
 
     const updateAgentData = async () => {
-        setIsLoading(true);
         try {
             const response = await fetch(`/api/agent-data/update-agent-data?contractAddress=${certificate}`, {
                 method: 'POST',
@@ -59,6 +61,7 @@ export function AgentConfiguration({
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    signature,
                     personality,
                     firstMessage,
                     lore,
@@ -75,18 +78,18 @@ export function AgentConfiguration({
                 handleDialogClose();
             } else {
                 toast.error(data.error || 'Failed to update agent. Please try again');
-                throw new Error(data.error || 'Conversion failed');
+                throw new Error(data.error || 'Failed to update agent.');
             }
         } catch (error) {
             if (error instanceof Error) {
-                toast.error('Failed to update agent. Please try again');
+                toast.error(`Failed to update agent. ${error.message}`);
                 throw new Error(error.message || 'Server error');
             } else {
                 toast.error('Failed to update agent. Please try again');
                 throw new Error('An unknown error occurred');
             }
         } finally {
-            setIsLoading(false);
+            setIsUpdateLoading(false);
         }
     };
 
@@ -105,12 +108,12 @@ export function AgentConfiguration({
     
                 if (response.ok) {
                     const agentData = result.data;
-                    setPersonality(agentData.personality);
-                    setFirstMessage(agentData.first_message); // Ensure this matches the backend response
-                    setLore(agentData.lore);
-                    setStyle(agentData.style);
-                    setAdjective(agentData.adjective);
-                    setKnowledge(agentData.knowledge);
+                    setPersonality(agentData?.personality || "");
+                    setFirstMessage(agentData?.first_message || "");
+                    setLore(agentData?.lore || "");
+                    setStyle(agentData?.style || "");
+                    setAdjective(agentData?.adjective || "");
+                    setKnowledge(agentData?.knowledge || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
                 }
@@ -128,7 +131,38 @@ export function AgentConfiguration({
         fetchAgentData();
     }, [certificate]);
 
-    const handleSubmit = () => {
+    const signRequest = async () => {
+        setIsUpdateLoading(true);
+        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+    
+            const signature = await signMessage({
+                message: message,
+                account,
+            });
+
+            setSignature(signature);
+
+            updateAgentData();
+
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("You rejected the request. Approve the signature request to proceed.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Please try again.";
+                toast.error(`Error signing message: ${errorMessage}`);
+            }
+            setIsUpdateLoading(false);
+            return;
+        }
+    };
+
+    const handleSubmit = async () => {
         if (!personality) {
             setValidationError("Personality cannot be empty.");
             return;
@@ -160,8 +194,7 @@ export function AgentConfiguration({
         }
 
         setValidationError("");
-
-        updateAgentData();
+        await signRequest();
     };
 
     useEffect(() => {
@@ -503,12 +536,12 @@ export function AgentConfiguration({
                                 className={buttonVariants({
                                     variant: "outline",
                                     size: "md",
-                                    className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                    className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isUpdateLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
                                 })}
                                 onClick={handleSubmit}
-                                disabled={!isOwner || isLoading}
+                                disabled={!isOwner || isLoading || isUpdateLoading}
                             >
-                                {!isLoading ? !isOwner ? "Only the creator can modify agent details" :"Update" : <IconLoader2 size={16} className="animate-spin" />}
+                                {isLoading || isUpdateLoading ? <IconLoader2 size={16} className="animate-spin" /> : !isOwner ? "Only the creator can modify agent details" : "Update"}
                             </button>
                                 </motion.div>
                             )}
