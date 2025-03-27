@@ -45,4 +45,4 @@ else
 fi
 
 # Log deployment #
-echo "Deployment successful at $(date)" >> $LOG_FILE
+#echo "Deployment successful at $(date)" >> $LOG_FILE
