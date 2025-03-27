@@ -47,4 +47,3 @@ next-env.d.ts
 
 # deployment
 /storage
-deployer.sh
