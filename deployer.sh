@@ -34,6 +34,7 @@ npm -v
 
 NODE_OPTIONS="--max-old-space-size=4096" npm update --jobs=2
 
+npm install
 npm run build
 
 PROCESS_NAME="sparkagent-launchpad"
