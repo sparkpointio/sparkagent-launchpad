@@ -7,6 +7,7 @@ import { Footer } from "./components/Footer";
 import Script from "next/script";
 import LightDarkToggle from "./components/layout/light-dark-toggle";
 import { Toaster } from 'sonner'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const rubik = Rubik({
   weight: '400',
@@ -58,9 +59,9 @@ export default function RootLayout({
         <meta property="og:description" content="We connect blockchain and AI to unlock new possibilities and drive exponential growth for businesses and communities" />
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:type" content="website" />
-        {/*<meta property="og:url" content="https://sparkpoint.io" />*/}
+        <meta property="og:url" content="https://app.sparkpoint.io" />
 
-        {/* Google Analytics */}
+        {/* Google Analytics
         <Script
           id="google-analytics"
           strategy="afterInteractive"
@@ -75,7 +76,7 @@ export default function RootLayout({
               });
             `,
           }}
-        />
+        />*/}
       </head>
       <ThirdwebProvider>
         <body
@@ -87,6 +88,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </body>
+        <GoogleAnalytics gaId="G-HECJG05KED" />
       </ThirdwebProvider>
     </html>
   );
