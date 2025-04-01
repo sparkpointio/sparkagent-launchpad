@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThirdwebProvider } from "thirdweb/react";
 import Header from "./components/Header";
 import { Footer } from "./components/Footer";
-import Script from "next/script";
 import LightDarkToggle from "./components/layout/light-dark-toggle";
 import { Toaster } from 'sonner'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -60,23 +59,6 @@ export default function RootLayout({
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://app.sparkpoint.io" />
-
-        {/* Google Analytics
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          defer
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-CLXPCLDCPD', {
-                'anonymize_ip': true
-              });
-            `,
-          }}
-        />*/}
       </head>
       <ThirdwebProvider>
         <body
