@@ -58,7 +58,7 @@ export default function RootLayout({
         <meta property="og:description" content="We connect blockchain and AI to unlock new possibilities and drive exponential growth for businesses and communities" />
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:type" content="website" />
-        {/*<meta property="og:url" content="https://sparkpoint.io" />*/}
+        <meta property="og:url" content="https://app.sparkpoint.io" />
 
         {/* Google Analytics */}
         <Script
