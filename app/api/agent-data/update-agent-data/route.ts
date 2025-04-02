@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
         }
 
         const apiUrl = `${backendUrl}/updateAgentData`;
-    
+        
         const response = await axios.post(apiUrl, {
             signature: requestBody.signature,
             address: contractAddress,
@@ -37,7 +37,12 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
-        console.error('Error updating agent data:', error);
+        if (axios.isAxiosError(error) && error.response) {
+            console.error("Backend API Error Response:", error.response.data);
+            console.error("Backend API Error Status:", error.response.status);
+        } else {
+            console.error("Error updating agent data:", error);
+        }
         return new Response(
             JSON.stringify({ error: `Server error: Unable to process the request. ${error instanceof Error ? error.message : 'Unknown error'}` }),
             { status: 500 }
