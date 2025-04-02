@@ -47,13 +47,12 @@ export function AgentConfiguration({
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
     const [validationError, setValidationError] = useState("");
-    const [signature, setSignature] = useState<string | null>(null);
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
     const isOwner = accountAddress === creator;
 
-    const updateAgentData = async () => {
+    const updateAgentData = async (signature: string) => {
         try {
             const response = await fetch(`/api/agent-data/update-agent-data?contractAddress=${certificate}`, {
                 method: 'POST',
@@ -145,9 +144,7 @@ export function AgentConfiguration({
                 account,
             });
 
-            setSignature(signature);
-
-            updateAgentData();
+            await updateAgentData(signature);
 
         } catch (error: unknown) {
             const errorCode = (error as { code?: number })?.code;
