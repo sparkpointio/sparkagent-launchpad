@@ -15,6 +15,8 @@ import { selectedChain } from "../lib/chain-thirdweb";
 import { formsTextBoxProperties, formsDialogContentProperties, formsDialogBackgroundOverlayProperties } from "../lib/utils/style/customStyles";
 import axios from "axios";
 import { getFormattedEther } from "../lib/utils/formatting";
+import { signMessage } from "thirdweb/utils";
+import { toast } from "sonner";
 
 const unsparkingAIContract = getContract({
     client,
@@ -59,6 +61,8 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
     const [launchedContractAddress, setLaunchedContractAddress] = useState("");
 
+    const [signatureResponse, setSignatureResponse] = useState("");
+
     const account = useActiveAccount();
 
     if (!account) {
@@ -82,9 +86,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         setPaymentTotal(parseInt(purchaseAmountInitial) + parseInt(purchaseAmount));
     } , [purchaseAmount, purchaseAmountInitial]);
-
-
-    console.log(purchaseAmount);
 
     const { data: currentAllowanceTemp } = useReadContract({
         contract: srkContract,
@@ -157,6 +158,96 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         console.log("Approval transaction receipt:", approveReceipt);
     };
 
+    const signRequest = async (certificate: string) => {
+        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate}`;
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+    
+            const signature = await signMessage({
+                message: message,
+                account,
+            });
+
+            await setAgentData(certificate, signature);
+
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("Signature request rejected. AI Agent details not saved.");
+                setSignatureResponse("The signature request was rejected. Although the Agent Token has been deployed, the details of the agent are not saved. You may edit them on your agent's page.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Try again on your agent's page.";
+                toast.error(`Error signing message: ${errorMessage}.`);
+                setSignatureResponse(`There was an error saving your agent's details. Although the Agent Token has been deployed, the details of the agent are not saved. You may edit them on your agent's page.`);
+            }
+            return;
+        }
+    };
+
+    const setAgentData = async (certificate: string, signature: string) => {
+        if (!personality || !firstMessage || !lore || !style || !adjective || !knowledge) {
+            console.error("One or more required fields are missing.");
+            return;
+        }
+    
+        console.log("Setting agent data with certificate:", certificate);
+        console.log("Request body:", {
+            signature,
+            personality,
+            firstMessage,
+            lore,
+            style,
+            adjective,
+            knowledge,
+        });
+    
+        const maxRetries = 3;
+        let attempt = 0;
+    
+        while (attempt < maxRetries) {
+            try {
+                const response = await fetch(`/api/agent-data/update-agent-data?contractAddress=${certificate}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        signature,
+                        personality,
+                        firstMessage,
+                        lore,
+                        style,
+                        adjective,
+                        knowledge,
+                    }),
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    console.log("Agent data updated successfully:", data);
+                    return;
+                } else {
+                    console.error("Server responded with an error:", data);
+                    throw new Error(data.error || 'Failed to update agent.');
+                }
+            } catch (error) {
+                attempt++;
+                console.error(`Attempt ${attempt} failed:`, error);
+    
+                if (attempt >= maxRetries) {
+                    throw error;
+                }
+    
+                console.log(`Retrying in 5 seconds... (${attempt}/${maxRetries})`);
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+            }
+        }
+    };
+
     const proceedWithLaunch = async () => {
         const ipfsUrl = await uploadToIPFS();
 
@@ -217,9 +308,11 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 console.log(receipt)
 
                 const contractAddress = receipt?.logs[2].address;
+
                 if (contractAddress) {
                     console.log("Deployed Contract Address:", contractAddress);
-
+                    
+                    /*
                     await fetch('/api/tokens/' + contractAddress + '/update', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -232,8 +325,12 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                             knowledge: knowledge
                         })
                     }).catch(err => console.error(err));
+                    */
 
                     setLaunchedContractAddress(contractAddress);
+
+                    await signRequest(contractAddress);
+                    
                     setCurrentPage(4);
                 } else {
                     console.log("Contract address not found in receipt.");
@@ -388,6 +485,13 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                   Your agent token has been successfully deployed.
                                   <br/>
                                   Time to make it shine!
+
+                                  {signatureResponse && (
+                                    <>
+                                        <br/>
+                                        <span className="mt-2 text-center text-sparkyOrange text-[0.9em]">{`Note: ${signatureResponse}`}</span>
+                                    </>
+                                  )}
                               </>
                           )
                       )
