@@ -82,6 +82,7 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
                 creator={creator}
                 image={tokenImage}
                 isOpen={isAgentConfigOpen}
+                isSparked={sparked}
                 onClose={() => setIsAgentConfigOpen(false)}
             />
         </motion.div>
