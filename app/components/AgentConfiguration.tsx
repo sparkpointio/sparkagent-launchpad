@@ -3,7 +3,7 @@ import * as Form from "@radix-ui/react-form";
 import { buttonVariants } from '../components/variants/button-variants';
 import { useEffect, useRef, useState } from "react";
 import { formsDialogBackgroundOverlayProperties, formsDialogContentPropertiesWide, formsTextBoxProperties } from "../lib/utils/style/customStyles";
-import { IconLoader2 } from "@tabler/icons-react";
+import { IconBrandX, IconLoader2 } from "@tabler/icons-react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import blockies from "ethereum-blockies";
@@ -20,6 +20,7 @@ interface AgentConfigurationProps {
     creator: string;
     image: string;
     isOpen: boolean;
+    isSparked: boolean;
     onClose: () => void;
 }
 
@@ -31,6 +32,7 @@ export function AgentConfiguration({
     creator,
     image,
     isOpen,
+    isSparked,
     onClose,
 }: AgentConfigurationProps) {
     const [imgSrc, setImgSrc] = useState(`https://yellow-patient-hare-489.mypinata.cloud/ipfs/${image}`);
@@ -39,7 +41,7 @@ export function AgentConfiguration({
 
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("tokenDetails");
+    const [activeTab, setActiveTab] = useState<"tokenDetails" | "aiAgentDetails" | "xDetails">("tokenDetails");
     const [personality, setPersonality] = useState("");
     const [firstMessage, setFirstMessage] = useState("");
     const [lore, setLore] = useState("");
@@ -48,6 +50,10 @@ export function AgentConfiguration({
     const [knowledge, setKnowledge] = useState("");
     const [validationError, setValidationError] = useState("");
     const [signature, setSignature] = useState<string | null>(null);
+
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
@@ -271,6 +277,14 @@ export function AgentConfiguration({
                             >
                                 AI Agent Details
                             </button>
+                            {isSparked && (
+                                <button
+                                    className={`px-4 py-2 ${activeTab === "xDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                    onClick={() => setActiveTab("xDetails")}
+                                >
+                                    <span className="flex"><IconBrandX />Details</span>
+                                </button>
+                            )}
                         </div>
 
                         <Form.Root className="w-full flex flex-col items-center">
@@ -545,6 +559,107 @@ export function AgentConfiguration({
                             </button>
                                 </motion.div>
                             )}
+                                {activeTab === "xDetails" && (
+                                    <motion.div
+                                        key="xDetails"
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="w-full"
+                                    >
+                                        <Form.Field className="w-full mb-2" name="agentName">
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                Username:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <input
+                                                    placeholder="Enter username"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    type="text"
+                                                    name="username"
+                                                    value={username}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setUsername(e.target.value.replace(/@/g, ""))} // Remove @ symbol
+                                                />
+                                            </Form.Control>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                Username:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <input
+                                                    placeholder="Enter email"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    type="email"
+                                                    name="email"
+                                                    value={email}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                />
+                                            </Form.Control>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                Password:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <input
+                                                    placeholder="Enter email"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    type="password"
+                                                    name="password"
+                                                    value={password}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setPassword(e.target.value)}
+                                                />
+                                            </Form.Control>
+                                        </Form.Field>
+                                        {validationError && (
+                                        <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
+                                )}
+                                        <button
+                                            type="button"
+                                            className={buttonVariants({
+                                                variant: "outline",
+                                                size: "md",
+                                                className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isUpdateLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                            })}
+                                            onClick={handleSubmit}
+                                            disabled={!isOwner || isLoading || isUpdateLoading}
+                                        >
+                                            {isLoading || isUpdateLoading ? <IconLoader2 size={16} className="animate-spin" /> : !isOwner ? "Only the creator can modify agent details" : "Update"}
+                                        </button>
+                                    </motion.div>
+                                )}
+                            
                             </AnimatePresence>
                         </Form.Root>
                     </div>
