@@ -16,13 +16,15 @@ export async function POST(req: NextRequest) {
         
         const response = await axios.post(apiUrl, {
             signature: requestBody.signature,
+            bio: requestBody.bio,
             address: contractAddress,
-            personality: requestBody.personality,
+            personality: requestBody.bio,
             first_message: requestBody.firstMessage,
             lore: requestBody.lore,
             style: requestBody.style,
             adjective: requestBody.adjective,
             knowledge: requestBody.knowledge,
+            topics: requestBody.topics,
         }, {
             headers: {
                 'x-api-key': process.env.NEXT_PUBLIC_POST_FORUM_API,
