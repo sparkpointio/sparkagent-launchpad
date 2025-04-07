@@ -49,6 +49,7 @@ export function AgentConfiguration({
     const [lore, setLore] = useState("");
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
+    const [firstMessage, setFirstMessage] = useState("");
 
     const [allStyle, setAllStyle] = useState("");
     const [chatStyle, setChatStyle] = useState("");
@@ -76,6 +77,7 @@ export function AgentConfiguration({
                 body: JSON.stringify({
                     signature,
                     bio,
+                    firstMessage,
                     topics,
                     lore,
                     style: {
@@ -130,6 +132,7 @@ export function AgentConfiguration({
                 if (response.ok) {
                     const agentData = result.data;
                     setBio(agentData?.bio || "");
+                    setFirstMessage(agentData?.first_message || "");
                     setTopics(agentData?.topics || "");
                     setLore(agentData?.lore || "");
                     setAdjective(agentData?.adjective || "");
@@ -194,6 +197,11 @@ export function AgentConfiguration({
 
         if (!topics) {
             setValidationError("Topics cannot be empty.");
+            return;
+        }
+
+        if (!firstMessage) {
+            setValidationError("First Message cannot be empty.");
             return;
         }
 
@@ -617,6 +625,32 @@ export function AgentConfiguration({
                                             </Form.Control>
                                         </Form.Field>
 
+                                        <Form.Field className="w-full mb-2" name="first message">
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                First Message:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <textarea
+                                                    placeholder="Enter First Message"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    name="first message"
+                                                    defaultValue={firstMessage}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => { setFirstMessage(e.target.value); handleAutoResize(e) } }
+                                                />
+                                            </Form.Control>
+                                        </Form.Field>
+
                                         <Form.Field className="w-full mb-2" name="lore">
                                             <div
                                                 style={{
@@ -664,7 +698,7 @@ export function AgentConfiguration({
                                                     name="adjective"
                                                     defaultValue={adjective}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setAdjective(e.target.value)}
+                                                    onChange={(e) => { setAdjective(e.target.value); handleAutoResize(e) }}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -690,7 +724,7 @@ export function AgentConfiguration({
                                                     name="knowledge"
                                                     defaultValue={knowledge}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setKnowledge(e.target.value)}
+                                                    onChange={(e) => { setKnowledge(e.target.value); handleAutoResize(e) }}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -716,7 +750,7 @@ export function AgentConfiguration({
                                                     name="knowledge"
                                                     defaultValue={topics}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setTopics(e.target.value)}
+                                                    onChange={(e) => { setTopics(e.target.value); handleAutoResize(e) }}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -744,7 +778,7 @@ export function AgentConfiguration({
                                                     name="style"
                                                     defaultValue={allStyle}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setAllStyle(e.target.value)}
+                                                    onChange={(e) => { setAllStyle(e.target.value); handleAutoResize(e) }}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -770,7 +804,7 @@ export function AgentConfiguration({
                                                     name="style"
                                                     defaultValue={chatStyle}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setChatStyle(e.target.value)}
+                                                    onChange={(e) => { setChatStyle(e.target.value); handleAutoResize(e) }}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -796,33 +830,7 @@ export function AgentConfiguration({
                                                     name="style"
                                                     defaultValue={postStyle}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setPostStyle(e.target.value)}
-                                                />
-                                            </Form.Control>
-                                        </Form.Field>
-
-                                        <Form.Field className="w-full mb-2" name="topics">
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "baseline",
-                                                    justifyContent: "space-between",
-                                                    width: "100%",
-                                                    fontSize: "0.8em",
-                                                    paddingLeft: "6px",
-                                                    marginBottom: "2px",
-                                                }}
-                                            >
-                                                Topics:
-                                            </div>
-                                            <Form.Control asChild>
-                                                <textarea
-                                                    placeholder="Enter Topics"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                    name="topics"
-                                                    defaultValue={topics}
-                                                    readOnly={!isOwner}
-                                                    onChange={(e) => { setTopics(e.target.value); handleAutoResize(e) } }
+                                                    onChange={(e) => { setPostStyle(e.target.value); handleAutoResize(e) }}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
