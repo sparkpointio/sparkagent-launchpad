@@ -40,12 +40,17 @@ export function AgentConfiguration({
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdateLoading, setIsUpdateLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("tokenDetails");
-    const [personality, setPersonality] = useState("");
+    const [bio, setBio] = useState("");
     const [firstMessage, setFirstMessage] = useState("");
     const [lore, setLore] = useState("");
-    const [style, setStyle] = useState("");
     const [adjective, setAdjective] = useState("");
     const [knowledge, setKnowledge] = useState("");
+    const [topics, setTopics] = useState("");
+
+    const [allStyle, setAllStyle] = useState("");
+    const [chatStyle, setChatStyle] = useState("");
+    const [postStyle, setPostStyle] = useState("");
+
     const [validationError, setValidationError] = useState("");
 
     const account = useActiveAccount();
@@ -61,16 +66,23 @@ export function AgentConfiguration({
                 },
                 body: JSON.stringify({
                     signature,
-                    personality,
+                    bio,
                     firstMessage,
                     lore,
-                    style,
+                    style: {
+                        all: allStyle,
+                        chat: chatStyle,
+                        post: postStyle,
+                    },
                     adjective,
                     knowledge,
+                    topics,
                 }),
             });
     
             const data = await response.json();
+
+            console.log("Response from updating:", data);
     
             if (response.ok) {
                 toast.success(`${ticker} Agent updated successfully`);
@@ -104,15 +116,20 @@ export function AgentConfiguration({
                 });
     
                 const result = await response.json();
+
+                console.log("Response from fetching:", result);
     
                 if (response.ok) {
                     const agentData = result.data;
-                    setPersonality(agentData?.personality || "");
+                    setBio(agentData?.bio || "");
                     setFirstMessage(agentData?.first_message || "");
                     setLore(agentData?.lore || "");
-                    setStyle(agentData?.style || "");
                     setAdjective(agentData?.adjective || "");
                     setKnowledge(agentData?.knowledge || "");
+                    setTopics(agentData?.topics || "");
+                    setAllStyle(agentData?.style?.all || "");
+                    setChatStyle(agentData?.style?.chat || "");
+                    setPostStyle(agentData?.style?.post || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
                 }
@@ -144,6 +161,8 @@ export function AgentConfiguration({
                 account,
             });
 
+            console.log("Signature:", signature);
+
             await updateAgentData(signature);
 
         } catch (error: unknown) {
@@ -160,8 +179,8 @@ export function AgentConfiguration({
     };
 
     const handleSubmit = async () => {
-        if (!personality) {
-            setValidationError("Personality cannot be empty.");
+        if (!bio) {
+            setValidationError("Bio cannot be empty.");
             return;
         }
 
@@ -175,11 +194,6 @@ export function AgentConfiguration({
             return;
         }
 
-        if (!style) {
-            setValidationError("Style cannot be empty.");
-            return;
-        }
-
         if (!adjective) {
             setValidationError("Adjective cannot be empty.");
             return;
@@ -187,6 +201,26 @@ export function AgentConfiguration({
 
         if (!knowledge) {
             setValidationError("Knowledge cannot be empty.");
+            return;
+        }
+
+        if (!topics) {
+            setValidationError("Topics cannot be empty.");
+            return;
+        }
+
+        if (!allStyle) {
+            setValidationError("All style cannot be empty.");
+            return;
+        }
+
+        if (!chatStyle) {
+            setValidationError("Chat style cannot be empty.");
+            return;
+        }
+
+        if (!postStyle) {
+            setValidationError("Post style cannot be empty.");
             return;
         }
 
@@ -369,7 +403,7 @@ export function AgentConfiguration({
                                         transition={{ duration: 0.3 }}
                                         className="w-full"
                                     >
-                                        <Form.Field className="w-full mb-2" name="personality">
+                                        <Form.Field className="w-full mb-2" name="bio">
                                             <div
                                                 style={{
                                                     display: "flex",
@@ -381,16 +415,16 @@ export function AgentConfiguration({
                                                     marginBottom: "2px",
                                                 }}
                                             >
-                                                Personality:
+                                                Bio:
                                             </div>
                                             <Form.Control asChild>
                                                 <textarea
-                                                    placeholder="Enter personality"
+                                                    placeholder="Enter bio"
                                                     className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                    name="personality"
-                                                    defaultValue={personality}
+                                                    name="bio"
+                                                    defaultValue={bio}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setPersonality(e.target.value)}
+                                                    onChange={(e) => setBio(e.target.value)}
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -447,32 +481,6 @@ export function AgentConfiguration({
                                             </Form.Control>
                                         </Form.Field>
 
-                                        <Form.Field className="w-full mb-2" name="style">
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "baseline",
-                                                    justifyContent: "space-between",
-                                                    width: "100%",
-                                                    fontSize: "0.8em",
-                                                    paddingLeft: "6px",
-                                                    marginBottom: "2px",
-                                                }}
-                                            >
-                                                Style:
-                                            </div>
-                                            <Form.Control asChild>
-                                                <textarea
-                                                    placeholder="Enter style"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                    name="style"
-                                                    defaultValue={style}
-                                                    readOnly={!isOwner}
-                                                    onChange={(e) => setStyle(e.target.value)}
-                                                />
-                                            </Form.Control>
-                                        </Form.Field>
-
                                         <Form.Field className="w-full mb-2" name="adjective">
                                             <div
                                                 style={{
@@ -524,6 +532,113 @@ export function AgentConfiguration({
                                                 />
                                             </Form.Control>
                                         </Form.Field>
+                                        
+                                        <Form.Field className="w-full mb-2" name="knowledge">
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                Topics:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <textarea
+                                                    placeholder="Enter knowledge"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    name="knowledge"
+                                                    defaultValue={topics}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setTopics(e.target.value)}
+                                                />
+                                            </Form.Control>
+                                        </Form.Field>
+
+                                        <div className="w-full mb-2 font-bold text-lg">Style</div>
+
+                                        <Form.Field className="w-full mb-2" name="style">
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                All:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <textarea
+                                                    placeholder="Enter style"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    name="style"
+                                                    defaultValue={allStyle}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setAllStyle(e.target.value)}
+                                                />
+                                            </Form.Control>
+                                        </Form.Field>
+
+                                        <Form.Field className="w-full mb-2" name="style">
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                Chat:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <textarea
+                                                    placeholder="Enter style"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    name="style"
+                                                    defaultValue={chatStyle}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setChatStyle(e.target.value)}
+                                                />
+                                            </Form.Control>
+                                        </Form.Field>
+
+                                        <Form.Field className="w-full mb-2" name="style">
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "baseline",
+                                                    justifyContent: "space-between",
+                                                    width: "100%",
+                                                    fontSize: "0.8em",
+                                                    paddingLeft: "6px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                Post:
+                                            </div>
+                                            <Form.Control asChild>
+                                                <textarea
+                                                    placeholder="Enter style"
+                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    name="style"
+                                                    defaultValue={postStyle}
+                                                    readOnly={!isOwner}
+                                                    onChange={(e) => setPostStyle(e.target.value)}
+                                                />
+                                            </Form.Control>
+                                        </Form.Field>
+
                                         {validationError && (
                                 <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
                             )}
