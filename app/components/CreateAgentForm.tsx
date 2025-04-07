@@ -49,12 +49,16 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     const [youtubeLink, setYoutubeLink] = useState("");
 
     // AI Agent fields
-    const [personality, setPersonality] = useState("analytical, strategic, persuasive, empathetic");
+    const [bio, setBio] = useState("supports SparkPoint and SparkAgent Launchpad in driving the blockchain revolution");
     const [firstMessage, setFirstMessage] = useState("Hello! How can I assist you today?");
     const [lore, setLore] = useState("An AI trained in financial forecasting with access to market trends.");
-    const [style, setStyle] = useState("formal, friendly, concise, technical");
     const [adjective, setAdjective] = useState("precise, engaging, adaptive");
     const [knowledge, setKnowledge] = useState("cryptocurrency, legal consulting, cybersecurity, medical diagnostics");
+    const [topics, setTopics] = useState("JavaScript frameworks, blockchain development, smart contracts");
+
+    const [allStyle, setAllStyle] = useState("uses clear and concise explanations\nprovides actionable insights for developers");
+    const [chatStyle, setChatStyle] = useState("answers questions with detailed explanations\nengages in technical discussions with clarity");
+    const [postStyle, setPostStyle] = useState("shares code snippets with explanations\nprovides blockchain and AI insights for the community");
 
     //Others
     const [SRKBalance, setSRKBalance] = useState("");
@@ -188,7 +192,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     };
 
     const setAgentData = async (certificate: string, signature: string) => {
-        if (!personality || !firstMessage || !lore || !style || !adjective || !knowledge) {
+        if (!bio || !firstMessage || !lore || !adjective || !knowledge || !topics || !allStyle || !chatStyle || !postStyle) {
             console.error("One or more required fields are missing.");
             return;
         }
@@ -196,12 +200,17 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         console.log("Setting agent data with certificate:", certificate);
         console.log("Request body:", {
             signature,
-            personality,
+            bio,
             firstMessage,
             lore,
-            style,
+            style: {
+                all: allStyle,
+                chat: chatStyle,
+                post: postStyle,
+            },
             adjective,
             knowledge,
+            topics,
         });
     
         const maxRetries = 3;
@@ -216,12 +225,17 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                     },
                     body: JSON.stringify({
                         signature,
-                        personality,
+                        bio,
                         firstMessage,
                         lore,
-                        style,
+                        style: {
+                            all: allStyle,
+                            chat: chatStyle,
+                            post: postStyle,
+                        },
                         adjective,
                         knowledge,
+                        topics,
                     }),
                 });
     
@@ -374,7 +388,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     }
 
     function validatePage2Fields(): boolean {
-        if (!personality || !firstMessage || !lore || !style || !adjective || !knowledge) {
+        if (!bio || !firstMessage || !lore || !adjective || !knowledge || !topics || !allStyle || !chatStyle || !postStyle) {
             setValidationError("Please fill in all required fields.");
             return false;
         }
@@ -475,7 +489,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                   {currentPage === 1
                       ? "Define your token's essential details and add any optional links to your social platforms."
                       : (currentPage === 2 ?
-                          "Craft your AI Agent's personality, behavior, and initial message to define how it interacts with users."
+                          "Craft your AI Agent's bio, behavior, and initial message to define how it interacts with users."
                           : (currentPage === 3
                             ? (transactionPhase == 1
                               ? "Please confirm the approval transaction in your wallet..."
@@ -823,7 +837,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                   {currentPage === 2 && (
                       <>
-                          <Form.Field className="w-full mb-2" name="personality">
+                          <Form.Field className="w-full mb-2" name="bio">
                             <p className="text-xs text-gray-500 mb-2"><b className="text-sparkyRed-500">NOTE:</b> Separate each words by a comma.</p>
                               <div
                                   style={{
@@ -835,16 +849,16 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       marginBottom: "2px",
                                   }}
                               >
-                                  Personality:
+                                  Bio:
                               </div>
                               <Form.Control asChild>
                                   <textarea
                                       className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      name="personality"
-                                      value={personality}
-                                      onChange={(e) => setPersonality(e.target.value)} // Handle email change
+                                      name="bio"
+                                      value={bio}
+                                      onChange={(e) => setBio(e.target.value)}
                                       required
-                                      placeholder='Define the agent’s personality traits'
+                                      placeholder='Define the agent’s bio'
                                   ></textarea>
                               </Form.Control>
                           </Form.Field>
@@ -899,31 +913,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </Form.Control>
                           </Form.Field>
 
-                          <Form.Field className="w-full mb-2" name="style">
-                              <div
-                                  style={{
-                                      display: "flex",
-                                      alignItems: "baseline",
-                                      justifyContent: "space-between",
-                                      width: "100%",
-                                      fontSize: "0.8em",
-                                      marginBottom: "2px",
-                                  }}
-                              >
-                                  Style:
-                              </div>
-                              <Form.Control asChild>
-                                  <textarea
-                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      name="style"
-                                      value={style}
-                                      onChange={(e) => setStyle(e.target.value)} // Handle email change
-                                      required
-                                      placeholder='Describe the agent’s communication style'
-                                  ></textarea>
-                              </Form.Control>
-                          </Form.Field>
-
                           <Form.Field className="w-full mb-2" name="adjective">
                               <div
                                   style={{
@@ -973,6 +962,105 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                   ></textarea>
                               </Form.Control>
                           </Form.Field>
+
+                          <Form.Field className="w-full mb-2" name="topics">
+                              <div
+                                  style={{
+                                      display: "flex",
+                                      alignItems: "baseline",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      fontSize: "0.8em",
+                                      marginBottom: "2px",
+                                  }}
+                              >
+                                  Topics:
+                              </div>
+                              <Form.Control asChild>
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                      name="knowledge"
+                                      value={topics}
+                                      onChange={(e) => setTopics(e.target.value)}
+                                      required
+                                      placeholder='Define the agent’s topics'
+                                  ></textarea>
+                              </Form.Control>
+                          </Form.Field>
+
+                          <div className="w-full mb-2 font-bold text-lg">Style</div>
+                          
+                            <Form.Field className="w-full mb-2" name="style">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        fontSize: "0.8em",
+                                        marginBottom: "2px",
+                                    }}
+                                >
+                                    All:
+                                </div>
+                                <Form.Control asChild>
+                                    <textarea
+                                        placeholder="Enter style"
+                                        className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        name="style"
+                                        defaultValue={allStyle}
+                                        onChange={(e) => setAllStyle(e.target.value)}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
+
+                            <Form.Field className="w-full mb-2" name="style">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        fontSize: "0.8em",
+                                        marginBottom: "2px",
+                                    }}
+                                >
+                                    Chat:
+                                </div>
+                                <Form.Control asChild>
+                                    <textarea
+                                        placeholder="Enter style"
+                                        className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        name="style"
+                                        defaultValue={chatStyle}
+                                        onChange={(e) => setChatStyle(e.target.value)}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
+
+                            <Form.Field className="w-full mb-2" name="style">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        fontSize: "0.8em",
+                                        marginBottom: "2px",
+                                    }}
+                                >
+                                    Post:
+                                </div>
+                                <Form.Control asChild>
+                                    <textarea
+                                        placeholder="Enter style"
+                                        className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        name="style"
+                                        defaultValue={postStyle}
+                                        onChange={(e) => setPostStyle(e.target.value)}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
 
                           {validationError && (
                               <p className="mt-2 text-center text-red-500 text-[0.9em]">{validationError}</p>
