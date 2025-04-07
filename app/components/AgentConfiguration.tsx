@@ -420,7 +420,7 @@ export function AgentConfiguration({
                                             <Form.Control asChild>
                                                 <textarea
                                                     placeholder="Enter bio"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="bio"
                                                     defaultValue={bio}
                                                     readOnly={!isOwner}
@@ -446,7 +446,7 @@ export function AgentConfiguration({
                                             <Form.Control asChild>
                                                 <textarea
                                                     placeholder="Enter first message"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="first_message"
                                                     defaultValue={firstMessage}
                                                     readOnly={!isOwner}
@@ -472,7 +472,7 @@ export function AgentConfiguration({
                                             <Form.Control asChild>
                                                 <textarea
                                                     placeholder="Enter lore"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="lore"
                                                     defaultValue={lore}
                                                     readOnly={!isOwner}
@@ -498,7 +498,7 @@ export function AgentConfiguration({
                                             <Form.Control asChild>
                                                 <textarea
                                                     placeholder="Enter adjective"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="adjective"
                                                     defaultValue={adjective}
                                                     readOnly={!isOwner}
@@ -524,7 +524,7 @@ export function AgentConfiguration({
                                             <Form.Control asChild>
                                                 <textarea
                                                     placeholder="Enter knowledge"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="knowledge"
                                                     defaultValue={knowledge}
                                                     readOnly={!isOwner}
@@ -550,7 +550,7 @@ export function AgentConfiguration({
                                             <Form.Control asChild>
                                                 <textarea
                                                     placeholder="Enter knowledge"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="knowledge"
                                                     defaultValue={topics}
                                                     readOnly={!isOwner}
@@ -577,8 +577,8 @@ export function AgentConfiguration({
                                             </div>
                                             <Form.Control asChild>
                                                 <textarea
-                                                    placeholder="Enter style"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    placeholder="Enter style (all)"
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="style"
                                                     defaultValue={allStyle}
                                                     readOnly={!isOwner}
@@ -603,8 +603,8 @@ export function AgentConfiguration({
                                             </div>
                                             <Form.Control asChild>
                                                 <textarea
-                                                    placeholder="Enter style"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    placeholder="Enter style (Chat)"
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="style"
                                                     defaultValue={chatStyle}
                                                     readOnly={!isOwner}
@@ -629,8 +629,8 @@ export function AgentConfiguration({
                                             </div>
                                             <Form.Control asChild>
                                                 <textarea
-                                                    placeholder="Enter style"
-                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                    placeholder="Enter style (Post)"
+                                                    className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="style"
                                                     defaultValue={postStyle}
                                                     readOnly={!isOwner}
