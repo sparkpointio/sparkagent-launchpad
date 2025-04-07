@@ -577,7 +577,7 @@ export function AgentConfiguration({
                                             </div>
                                             <Form.Control asChild>
                                                 <textarea
-                                                    placeholder="Enter style (all)"
+                                                    placeholder="Enter style (All)"
                                                     className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                     name="style"
                                                     defaultValue={allStyle}
