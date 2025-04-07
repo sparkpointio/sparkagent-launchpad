@@ -278,6 +278,7 @@ const AgentPage = () => {
                     sparkingProgress={agent?.reserves[1] ? getSparkingProgress(agent.reserves[1], agent.gradThreshold, agent.initialLiquidity) : 0}
                     certificate={agent.certificate}
                     creator={agent.creator}
+                    hasGraduated={agent.tradingOnUniSwap}
                     tokenName={agent.tokenName}
                     tokenTicker={agent.tokenTicker}
                     tokenDescription={agent.description}

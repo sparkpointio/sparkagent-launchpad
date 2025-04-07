@@ -10,6 +10,7 @@ interface AgentFunctionalityCardProps {
     sparkingProgress: number;
     certificate: string;
     creator: string;
+    hasGraduated: boolean;
     tokenName: string;
     tokenTicker: string;
     tokenDescription: string;
@@ -43,6 +44,7 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
     sparkingProgress,
     certificate,
     creator,
+    hasGraduated,
     tokenName,
     tokenTicker,
     tokenDescription,
@@ -80,6 +82,7 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
                 description={tokenDescription}
                 certificate={certificate}
                 creator={creator}
+                hasGraduated={hasGraduated}
                 image={tokenImage}
                 isOpen={isAgentConfigOpen}
                 onClose={() => setIsAgentConfigOpen(false)}
