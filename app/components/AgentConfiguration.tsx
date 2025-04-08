@@ -328,55 +328,21 @@ export function AgentConfiguration({
         }
 
         setValidationError("");
-
         setIsUpdateLoading(true);
-        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+
+        let signature = null;
+
         try {
             if (!account) {
                 console.error('Wallet not connected. Cannot sign the message.');
                 return;
             }
 
-            const signature = await signMessage({
+            const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+            signature = await signMessage({
                 message: message,
                 account,
             });
-
-            try {
-                const response = await fetch(`/api/agent-data/turn-on-twitter-agent?contractAddress=${certificate}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        signature,
-                        twitterUsername,
-                        twitterEmail,
-                        twitterPassword,
-                        twitter2FASecret
-                    }),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    toast.success(`${ticker} Twitter/X AI Agent turned on successfully`);
-                    handleDialogClose();
-                } else {
-                    toast.error(data.error || 'Failed to turn on Twitter/X AI Agent. Please try again');
-                    throw new Error(data.error || 'Failed to update agent.');
-                }
-            } catch (error) {
-                if (error instanceof Error) {
-                    toast.error(`Failed to turn on Twitter/X AI Agent. ${error.message}`);
-                    throw new Error(error.message || 'Server error');
-                } else {
-                    toast.error('Failed to turn on Twitter/X AI Agent. Please try again');
-                    throw new Error('An unknown error occurred');
-                }
-            } finally {
-                setIsProcessingTwitterAIAgent("");
-            }
         } catch (error: unknown) {
             const errorCode = (error as { code?: number })?.code;
             if (errorCode === 4001) {
@@ -387,6 +353,42 @@ export function AgentConfiguration({
             }
             setIsUpdateLoading(false);
             return;
+        }
+
+        try {
+            const response = await fetch(`/api/agent-data/turn-on-twitter-agent?contractAddress=${certificate}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    signature,
+                    twitterUsername,
+                    twitterEmail,
+                    twitterPassword,
+                    twitter2FASecret
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(`${ticker} Twitter/X AI Agent turned on successfully`);
+                handleDialogClose();
+            } else {
+                toast.error(data.error || 'Failed to turn on Twitter/X AI Agent. Please try again');
+                throw new Error(data.error || 'Failed to update agent.');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(`Failed to turn on Twitter/X AI Agent. ${error.message}`);
+                throw new Error(error.message || 'Server error');
+            } else {
+                toast.error('Failed to turn on Twitter/X AI Agent. Please try again');
+                throw new Error('An unknown error occurred');
+            }
+        } finally {
+            setIsProcessingTwitterAIAgent("");
         }
 
         setTwitterAgentId('true')
@@ -883,7 +885,7 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            Username:
+                                                            Username: { isProcessingTwitterAIAgent } { isProcessingTwitterAIAgent != "" ? 'true' : 'false' } { isLoading ? 'true' : 'false' } { !isOwner ? 'true' : 'false' }
                                                         </div>
                                                         <Form.Control asChild>
                                                             <input
@@ -988,7 +990,7 @@ export function AgentConfiguration({
                                                         className={buttonVariants({
                                                             variant: "outline",
                                                             size: "md",
-                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isUpdateLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isProcessingTwitterAIAgent != "" ? 'opacity-50 cursor-not-allowed' : ''}`,
                                                         })}
                                                         onClick={handleTwitterSubmit}
                                                         disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
@@ -1027,7 +1029,7 @@ export function AgentConfiguration({
                                                         className={buttonVariants({
                                                             variant: "outline",
                                                             size: "md",
-                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isUpdateLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isProcessingTwitterAIAgent != "" ? 'opacity-50 cursor-not-allowed' : ''}`,
                                                         })}
                                                         onClick={handleTwitterTurnOff}
                                                         disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
