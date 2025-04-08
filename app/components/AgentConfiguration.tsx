@@ -865,7 +865,7 @@ export function AgentConfiguration({
                                             transition={{ duration: 0.3 }}
                                             className="w-full"
                                         >
-                                            {twitterAgentId !== ""
+                                            {twitterAgentId === ""
                                                 ?
                                                 <>
                                                     <Form.Field className="w-full mb-2" name="bio">
