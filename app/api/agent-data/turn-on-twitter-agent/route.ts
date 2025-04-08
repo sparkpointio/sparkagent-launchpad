@@ -37,6 +37,13 @@ export async function POST(req: NextRequest) {
         if (axios.isAxiosError(error) && error.response) {
             console.error("Backend API Error Response:", error.response.data);
             console.error("Backend API Error Status:", error.response.status);
+
+            if(error.response.data.error) {
+                return new Response(
+                    JSON.stringify({ error: error.response.data.error }),
+                    { status: 500 }
+                );
+            }
         } else {
             console.error("Error turning on Twitter/X AI agent:", error);
         }

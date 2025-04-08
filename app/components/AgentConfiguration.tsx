@@ -62,6 +62,7 @@ export function AgentConfiguration({
     const [twitterPassword, setTwitterPassword] = useState("");
     const [twitter2FASecret, setTwitter2FASecret] = useState("");
     const [twitterAgentId, setTwitterAgentId] = useState("");
+    const [isProcessingTwitterAIAgent, setIsProcessingTwitterAIAgent] = useState("");
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
@@ -140,7 +141,7 @@ export function AgentConfiguration({
                     setAllStyle(agentData?.style?.all || "");
                     setChatStyle(agentData?.style?.chat || "");
                     setPostStyle(agentData?.style?.post || "");
-                    setTwitterAgentId(agentData?.twitter_agent_id || "");
+                    setTwitterAgentId(agentData?.eliza_agent_id || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
                 }
@@ -245,7 +246,7 @@ export function AgentConfiguration({
     };
 
     const handleTwitterTurnOff = async () => {
-        setIsUpdateLoading(true);
+        setIsProcessingTwitterAIAgent("stop");
         const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
         try {
             if (!account) {
@@ -287,7 +288,7 @@ export function AgentConfiguration({
                     throw new Error('An unknown error occurred');
                 }
             } finally {
-                setIsUpdateLoading(false);
+                setIsProcessingTwitterAIAgent("");
                 setTwitterAgentId('')
             }
         } catch (error: unknown) {
@@ -304,6 +305,8 @@ export function AgentConfiguration({
     };
 
     const handleTwitterSubmit = async () => {
+        setIsProcessingTwitterAIAgent("start");
+
         if (!twitterUsername) {
             setValidationError("Bio cannot be empty.");
             return;
@@ -372,7 +375,7 @@ export function AgentConfiguration({
                     throw new Error('An unknown error occurred');
                 }
             } finally {
-                setIsUpdateLoading(false);
+                setIsProcessingTwitterAIAgent("");
             }
         } catch (error: unknown) {
             const errorCode = (error as { code?: number })?.code;
@@ -988,25 +991,35 @@ export function AgentConfiguration({
                                                             className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isUpdateLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
                                                         })}
                                                         onClick={handleTwitterSubmit}
-                                                        disabled={!isOwner || isLoading || isUpdateLoading}
+                                                        disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
                                                     >
-                                                        {isLoading || isUpdateLoading ? <IconLoader2 size={16}
-                                                                                                     className="animate-spin"/> : !isOwner ? "Only the creator can modify agent details" : "Turn On Twitter/X AI Agent"}
+                                                        {isLoading || isProcessingTwitterAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Starting Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn On Twitter/X AI Agent"}
                                                     </button>
                                                 </>
                                                 :
                                                 <>
-                                                    <div className="relative pt-[50px] pb-[20px]">
-                                                        <div className="text-[1.8em]">
-                                                            <div className="absolute left-[calc(50%-35px)] top-[20px]">
-                                                                <FontAwesomeIcon icon={faCog} size='xl' color='#444444' className="animate-spin"/>
+                                                    <div className="pt-4">
+                                                        <div className="relative pb-[20px]">
+                                                            <div className="text-[1.8em] h-[110px]">
+                                                                <div className="absolute left-[calc(50%-60px)] top-[20px]">
+                                                                    <FontAwesomeIcon icon={faCog} color='#444444'
+                                                                                     className="text-[2em] animate-spin"/>
+                                                                </div>
+                                                                <div className="absolute left-[calc(50%+5px)] top-[50px]">
+                                                                    <FontAwesomeIcon icon={faCog} size='xl' color='#444444'
+                                                                                     className="animate-spin"
+                                                                                     style={{animationDirection: "reverse"}}/>
+                                                                </div>
+                                                                <div className="absolute left-[calc(50%+5px)] top-[5px]">
+                                                                    <FontAwesomeIcon icon={faCog} color='#444444'
+                                                                                     className="text-[1em] animate-spin"
+                                                                                     style={{animationDirection: "reverse"}}/>
+                                                                </div>
                                                             </div>
-                                                            <div className="absolute left-[calc(50%+5px)] top-[50px]">
-                                                                <FontAwesomeIcon icon={faCog} size='xl' color='#444444' className="animate-spin" style={{animationDirection: "reverse"}}/>
-                                                            </div>
+                                                            <p className="text-center font-bold text-[1.2em] mt-2">Twitter/X
+                                                                AI
+                                                                Agent<br/> is online and operational.</p>
                                                         </div>
-                                                        <p className="text-center font-bold text-[1.2em] mt-[60px]">Twitter/X AI
-                                                            Agent<br/> is online and operational. {twitterAgentId}</p>
                                                     </div>
 
                                                     <button
@@ -1017,9 +1030,9 @@ export function AgentConfiguration({
                                                             className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isUpdateLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
                                                         })}
                                                         onClick={handleTwitterTurnOff}
-                                                        disabled={!isOwner || isLoading || isUpdateLoading}
+                                                        disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
                                                     >
-                                                        {isLoading || isUpdateLoading ? <IconLoader2 size={16} className="animate-spin"/> : !isOwner ? "Only the creator can modify agent details" : "Turn Off Twitter/X AI Agent"}
+                                                        {isLoading || isProcessingTwitterAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Turning Off Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn Off Twitter/X AI Agent"}
                                                     </button>
                                                 </>
                                             }
