@@ -51,7 +51,7 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
     tokenImage,
 }) => {
     const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
-    const [isXAgentActive, setIsXAgentActive] = useState(false);
+    const [isXAgentActive] = useState(false);
     
     const sparked = sparkingProgress >= 100;
 
