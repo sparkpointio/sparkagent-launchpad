@@ -308,22 +308,22 @@ export function AgentConfiguration({
         setIsProcessingTwitterAIAgent("start");
 
         if (!twitterUsername) {
-            setValidationError("Bio cannot be empty.");
+            setValidationError("Username cannot be empty.");
             return;
         }
 
         if (!twitterEmail) {
-            setValidationError("Topics cannot be empty.");
+            setValidationError("Email cannot be empty.");
             return;
         }
 
         if (!twitterPassword) {
-            setValidationError("Lore cannot be empty.");
+            setValidationError("Password cannot be empty.");
             return;
         }
 
         if (!twitter2FASecret) {
-            setValidationError("Style cannot be empty.");
+            setValidationError("2FA Secret cannot be empty.");
             return;
         }
 
@@ -583,7 +583,7 @@ export function AgentConfiguration({
                                                 <Form.Control asChild>
                                                     <textarea
                                                         placeholder="Enter description"
-                                                        className={`w-full h-[10.14rem] mb-0 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                        className={`w-full mb-0 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
                                                         name="description"
                                                         defaultValue={description}
                                                         readOnly
@@ -625,7 +625,7 @@ export function AgentConfiguration({
                                                     name="bio"
                                                     defaultValue={bio}
                                                     readOnly={!isOwner}
-                                                    onChange={(e) => setBio(e.target.value)}
+                                                    onChange={(e) => { setBio(e.target.value); handleAutoResize(e) } }
                                                 />
                                             </Form.Control>
                                         </Form.Field>
@@ -995,7 +995,7 @@ export function AgentConfiguration({
                                                         onClick={handleTwitterSubmit}
                                                         disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
                                                     >
-                                                        {isLoading || isProcessingTwitterAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Starting Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn On Twitter/X AI Agent"}
+                                                        {isLoading || isProcessingTwitterAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Starting Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent's Twitter/X details" : "Turn On Twitter/X AI Agent"}
                                                     </button>
                                                 </>
                                                 :
