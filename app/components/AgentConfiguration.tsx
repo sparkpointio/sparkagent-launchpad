@@ -138,9 +138,12 @@ export function AgentConfiguration({
                     setLore(agentData?.lore || "");
                     setAdjective(agentData?.adjective || "");
                     setKnowledge(agentData?.knowledge || "");
-                    setAllStyle(agentData?.style?.all || "");
-                    setChatStyle(agentData?.style?.chat || "");
-                    setPostStyle(agentData?.style?.post || "");
+
+                    const style = agentData?.style ? JSON.parse(agentData.style) : {};
+                    setAllStyle(style.all || "");
+                    setChatStyle(style.chat || "");
+                    setPostStyle(style.post || "");
+
                     setTwitterAgentId(agentData?.eliza_agent_id || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
