@@ -51,10 +51,11 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
     tokenImage,
 }) => {
     const [isAgentConfigOpen, setIsAgentConfigOpen] = useState(false);
+    const [isXAgentActive, setIsXAgentActive] = useState(false);
     
     const sparked = sparkingProgress >= 100;
 
-    const isXAgentReady = false;
+    const isXAgentReady = true;
     const isTelegramAgentReady = false;
     const isTradingAgentReady = false;
 
@@ -65,7 +66,7 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
             </div>
             <div className="flex flex-col space-y-4">
                 {renderFunctionality(IconMessageChatbot, "Forum Agent", "Interact with the Agent", "Running")}
-                {renderFunctionality(IconBrandX, "Agentic X Agent", "Agent comes alive on X", sparked ? "Coming Soon" : isXAgentReady ? "Pending Activation" : "Coming Soon")}
+                {renderFunctionality(IconBrandX, "Agentic X Agent", "Agent comes alive on X", sparked ? "Coming Soon" : isXAgentReady ? isXAgentActive ? "Running" : "Pending Activation" : "Coming Soon")}
                 {renderFunctionality(IconBrandTelegram, "Agentic Telegram Agent", "Agent comes alive on Telegram", sparked ? "Coming Soon" : isTelegramAgentReady ? "Pending Activation" : "Coming Soon")}
                 {renderFunctionality(IconChartLine, "Trading Agent", "Agent autonomously trading", sparked ? "Coming Soon" : isTradingAgentReady ? "Pending Activation" : "Coming Soon")}
             </div>
