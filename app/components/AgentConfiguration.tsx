@@ -888,7 +888,7 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            Username: { isProcessingTwitterAIAgent } { isProcessingTwitterAIAgent != "" ? 'true' : 'false' } { isLoading ? 'true' : 'false' } { !isOwner ? 'true' : 'false' }
+                                                            Username: {/*{ isProcessingTwitterAIAgent } { isProcessingTwitterAIAgent != "" ? 'true' : 'false' } { isLoading ? 'true' : 'false' } { !isOwner ? 'true' : 'false' }*/}
                                                         </div>
                                                         <Form.Control asChild>
                                                             <input
