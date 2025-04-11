@@ -23,7 +23,7 @@ const runningProperties = "text-sm sm:text-md font-bold";
 const functionalityProperties = "text-sm sm:text-md font-bold";
 const agentConfigButtonProperties = "w-full border-2 border-black dark:border-gray-600 dark:bg-gray-800 rounded-3xl hover:bg-sparkyOrange-500 dark:hover:bg-sparkyOrange-600 transition-all p-4";
 
-const renderFunctionality = (Icon: React.ElementType, name: string, description: string, status: "Running" | "Coming Soon"  | "Pending Activation") => {
+const renderFunctionality = (Icon: React.ElementType, name: string, description: string, status: "Running" | "Coming Soon"  | "Activating") => {
     const statusProperties = status === "Running" ? runningProperties : pendingProperties;
 
     return (
