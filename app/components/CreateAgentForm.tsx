@@ -15,6 +15,8 @@ import { selectedChain } from "../lib/chain-thirdweb";
 import { formsTextBoxProperties, formsDialogContentProperties, formsDialogBackgroundOverlayProperties } from "../lib/utils/style/customStyles";
 import axios from "axios";
 import { getFormattedEther } from "../lib/utils/formatting";
+import { signMessage } from "thirdweb/utils";
+import { toast } from "sonner";
 
 const unsparkingAIContract = getContract({
     client,
@@ -47,17 +49,23 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     const [youtubeLink, setYoutubeLink] = useState("");
 
     // AI Agent fields
-    const [personality, setPersonality] = useState("analytical, strategic, persuasive, empathetic");
+    const [bio, setBio] = useState("supports SparkPoint and SparkAgent Launchpad in driving the blockchain revolution");
     const [firstMessage, setFirstMessage] = useState("Hello! How can I assist you today?");
     const [lore, setLore] = useState("An AI trained in financial forecasting with access to market trends.");
-    const [style, setStyle] = useState("formal, friendly, concise, technical");
     const [adjective, setAdjective] = useState("precise, engaging, adaptive");
     const [knowledge, setKnowledge] = useState("cryptocurrency, legal consulting, cybersecurity, medical diagnostics");
+    const [topics, setTopics] = useState("JavaScript frameworks, blockchain development, smart contracts");
+
+    const [allStyle, setAllStyle] = useState("uses clear and concise explanations\nprovides actionable insights for developers");
+    const [chatStyle, setChatStyle] = useState("answers questions with detailed explanations\nengages in technical discussions with clarity");
+    const [postStyle, setPostStyle] = useState("shares code snippets with explanations\nprovides blockchain and AI insights for the community");
 
     //Others
     const [SRKBalance, setSRKBalance] = useState("");
 
     const [launchedContractAddress, setLaunchedContractAddress] = useState("");
+
+    const [signatureResponse, setSignatureResponse] = useState("");
 
     const account = useActiveAccount();
 
@@ -82,9 +90,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         setPaymentTotal(parseInt(purchaseAmountInitial) + parseInt(purchaseAmount));
     } , [purchaseAmount, purchaseAmountInitial]);
-
-
-    console.log(purchaseAmount);
 
     const { data: currentAllowanceTemp } = useReadContract({
         contract: srkContract,
@@ -157,6 +162,106 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
         console.log("Approval transaction receipt:", approveReceipt);
     };
 
+    const signRequest = async (certificate: string) => {
+        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate}`;
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+    
+            const signature = await signMessage({
+                message: message,
+                account,
+            });
+
+            await setAgentData(certificate, signature);
+
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("Signature request rejected. AI Agent details not saved.");
+                setSignatureResponse("The signature request was rejected. Although the Agent Token has been deployed, the details of the agent are not saved. You may edit them on your agent's page.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Try again on your agent's page.";
+                toast.error(`Error signing message: ${errorMessage}.`);
+                setSignatureResponse(`There was an error saving your agent's details. Although the Agent Token has been deployed, the details of the agent are not saved. You may edit them on your agent's page.`);
+            }
+            return;
+        }
+    };
+
+    const setAgentData = async (certificate: string, signature: string) => {
+        if (!bio || !firstMessage || !lore || !adjective || !knowledge || !topics || !allStyle || !chatStyle || !postStyle) {
+            console.error("One or more required fields are missing.");
+            return;
+        }
+    
+        console.log("Setting agent data with certificate:", certificate);
+        console.log("Request body:", {
+            signature,
+            bio,
+            firstMessage,
+            lore,
+            style: {
+                all: allStyle,
+                chat: chatStyle,
+                post: postStyle,
+            },
+            adjective,
+            knowledge,
+            topics,
+        });
+    
+        const maxRetries = 3;
+        let attempt = 0;
+    
+        while (attempt < maxRetries) {
+            try {
+                const response = await fetch(`/api/agent-data/update-agent-data?contractAddress=${certificate}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        signature,
+                        bio,
+                        firstMessage,
+                        lore,
+                        style: {
+                            all: allStyle,
+                            chat: chatStyle,
+                            post: postStyle,
+                        },
+                        adjective,
+                        knowledge,
+                        topics,
+                    }),
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    console.log("Agent data updated successfully:", data);
+                    return;
+                } else {
+                    console.error("Server responded with an error:", data);
+                    throw new Error(data.error || 'Failed to update agent.');
+                }
+            } catch (error) {
+                attempt++;
+                console.error(`Attempt ${attempt} failed:`, error);
+    
+                if (attempt >= maxRetries) {
+                    throw error;
+                }
+    
+                console.log(`Retrying in 5 seconds... (${attempt}/${maxRetries})`);
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+            }
+        }
+    };
+
     const proceedWithLaunch = async () => {
         const ipfsUrl = await uploadToIPFS();
 
@@ -217,9 +322,11 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                 console.log(receipt)
 
                 const contractAddress = receipt?.logs[2].address;
+
                 if (contractAddress) {
                     console.log("Deployed Contract Address:", contractAddress);
-
+                    
+                    /*
                     await fetch('/api/tokens/' + contractAddress + '/update', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -232,8 +339,12 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                             knowledge: knowledge
                         })
                     }).catch(err => console.error(err));
+                    */
 
                     setLaunchedContractAddress(contractAddress);
+
+                    await signRequest(contractAddress);
+                    
                     setCurrentPage(4);
                 } else {
                     console.log("Contract address not found in receipt.");
@@ -277,7 +388,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
     }
 
     function validatePage2Fields(): boolean {
-        if (!personality || !firstMessage || !lore || !style || !adjective || !knowledge) {
+        if (!bio || !firstMessage || !lore || !adjective || !knowledge || !topics || !allStyle || !chatStyle || !postStyle) {
             setValidationError("Please fill in all required fields.");
             return false;
         }
@@ -378,7 +489,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                   {currentPage === 1
                       ? "Define your token's essential details and add any optional links to your social platforms."
                       : (currentPage === 2 ?
-                          "Craft your AI Agent's personality, behavior, and initial message to define how it interacts with users."
+                          "Craft your AI Agent's bio, behavior, and initial message to define how it interacts with users."
                           : (currentPage === 3
                             ? (transactionPhase == 1
                               ? "Please confirm the approval transaction in your wallet..."
@@ -388,6 +499,13 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                   Your agent token has been successfully deployed.
                                   <br/>
                                   Time to make it shine!
+
+                                  {signatureResponse && (
+                                    <>
+                                        <br/>
+                                        <span className="mt-2 text-center text-sparkyOrange text-[0.9em]">{`Note: ${signatureResponse}`}</span>
+                                    </>
+                                  )}
                               </>
                           )
                       )
@@ -719,7 +837,7 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
 
                   {currentPage === 2 && (
                       <>
-                          <Form.Field className="w-full mb-2" name="personality">
+                          <Form.Field className="w-full mb-2" name="bio">
                             <p className="text-xs text-gray-500 mb-2"><b className="text-sparkyRed-500">NOTE:</b> Separate each words by a comma.</p>
                               <div
                                   style={{
@@ -731,16 +849,16 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                       marginBottom: "2px",
                                   }}
                               >
-                                  Personality:
+                                  Bio:
                               </div>
                               <Form.Control asChild>
                                   <textarea
                                       className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      name="personality"
-                                      value={personality}
-                                      onChange={(e) => setPersonality(e.target.value)} // Handle email change
+                                      name="bio"
+                                      value={bio}
+                                      onChange={(e) => setBio(e.target.value)}
                                       required
-                                      placeholder='Define the agent’s personality traits'
+                                      placeholder='Define the agent’s bio'
                                   ></textarea>
                               </Form.Control>
                           </Form.Field>
@@ -795,31 +913,6 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                               </Form.Control>
                           </Form.Field>
 
-                          <Form.Field className="w-full mb-2" name="style">
-                              <div
-                                  style={{
-                                      display: "flex",
-                                      alignItems: "baseline",
-                                      justifyContent: "space-between",
-                                      width: "100%",
-                                      fontSize: "0.8em",
-                                      marginBottom: "2px",
-                                  }}
-                              >
-                                  Style:
-                              </div>
-                              <Form.Control asChild>
-                                  <textarea
-                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                      name="style"
-                                      value={style}
-                                      onChange={(e) => setStyle(e.target.value)} // Handle email change
-                                      required
-                                      placeholder='Describe the agent’s communication style'
-                                  ></textarea>
-                              </Form.Control>
-                          </Form.Field>
-
                           <Form.Field className="w-full mb-2" name="adjective">
                               <div
                                   style={{
@@ -869,6 +962,105 @@ export function CreateAgentForm({ children }: { children: React.ReactNode }) {
                                   ></textarea>
                               </Form.Control>
                           </Form.Field>
+
+                          <Form.Field className="w-full mb-2" name="topics">
+                              <div
+                                  style={{
+                                      display: "flex",
+                                      alignItems: "baseline",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                      fontSize: "0.8em",
+                                      marginBottom: "2px",
+                                  }}
+                              >
+                                  Topics:
+                              </div>
+                              <Form.Control asChild>
+                                  <textarea
+                                      className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                      name="knowledge"
+                                      value={topics}
+                                      onChange={(e) => setTopics(e.target.value)}
+                                      required
+                                      placeholder='Define the agent’s topics'
+                                  ></textarea>
+                              </Form.Control>
+                          </Form.Field>
+
+                          <div className="w-full mb-2 font-bold text-lg">Style</div>
+                          
+                            <Form.Field className="w-full mb-2" name="style">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        fontSize: "0.8em",
+                                        marginBottom: "2px",
+                                    }}
+                                >
+                                    All:
+                                </div>
+                                <Form.Control asChild>
+                                    <textarea
+                                        placeholder="Enter style"
+                                        className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        name="style"
+                                        defaultValue={allStyle}
+                                        onChange={(e) => setAllStyle(e.target.value)}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
+
+                            <Form.Field className="w-full mb-2" name="style">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        fontSize: "0.8em",
+                                        marginBottom: "2px",
+                                    }}
+                                >
+                                    Chat:
+                                </div>
+                                <Form.Control asChild>
+                                    <textarea
+                                        placeholder="Enter style"
+                                        className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        name="style"
+                                        defaultValue={chatStyle}
+                                        onChange={(e) => setChatStyle(e.target.value)}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
+
+                            <Form.Field className="w-full mb-2" name="style">
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "baseline",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        fontSize: "0.8em",
+                                        marginBottom: "2px",
+                                    }}
+                                >
+                                    Post:
+                                </div>
+                                <Form.Control asChild>
+                                    <textarea
+                                        placeholder="Enter style"
+                                        className={`w-full h-[90px] mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                        name="style"
+                                        defaultValue={postStyle}
+                                        onChange={(e) => setPostStyle(e.target.value)}
+                                    />
+                                </Form.Control>
+                            </Form.Field>
 
                           {validationError && (
                               <p className="mt-2 text-center text-red-500 text-[0.9em]">{validationError}</p>

@@ -12,19 +12,10 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ error: 'Missing required parameters.' }), { status: 400 });
         }
 
-        const apiUrl = `${backendUrl}/updateAgentData`;
+        const apiUrl = `${backendUrl}/agents/${contractAddress}/stop`;
         
         const response = await axios.post(apiUrl, {
-            signature: requestBody.signature,
-            bio: requestBody.bio,
-            address: contractAddress,
-            personality: requestBody.bio,
-            first_message: requestBody.firstMessage,
-            lore: requestBody.lore,
-            style: requestBody.style,
-            adjective: requestBody.adjective,
-            knowledge: requestBody.knowledge,
-            topics: requestBody.topics,
+            signature: requestBody.signature
         }, {
             headers: {
                 'x-api-key': process.env.NEXT_PUBLIC_POST_FORUM_API,
@@ -43,7 +34,7 @@ export async function POST(req: NextRequest) {
             console.error("Backend API Error Response:", error.response.data);
             console.error("Backend API Error Status:", error.response.status);
         } else {
-            console.error("Error updating agent data:", error);
+            console.error("Error turning off Twitter/X AI agent:", error);
         }
         return new Response(
             JSON.stringify({ error: `Server error: Unable to process the request. ${error instanceof Error ? error.message : 'Unknown error'}` }),
