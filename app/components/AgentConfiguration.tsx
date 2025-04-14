@@ -964,7 +964,7 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            2FA Secret:
+                                                            2FA Secret (optional):
                                                         </div>
                                                         <Form.Control asChild>
                                                             <input
