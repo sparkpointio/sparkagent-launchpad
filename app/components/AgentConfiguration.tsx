@@ -325,11 +325,6 @@ export function AgentConfiguration({
             return;
         }
 
-        if (!twitter2FASecret) {
-            setValidationError("2FA Secret cannot be empty.");
-            return;
-        }
-
         setValidationError("");
         setIsUpdateLoading(true);
 
