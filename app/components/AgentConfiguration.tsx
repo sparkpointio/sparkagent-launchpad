@@ -325,11 +325,6 @@ export function AgentConfiguration({
             return;
         }
 
-        if (!twitter2FASecret) {
-            setValidationError("2FA Secret cannot be empty.");
-            return;
-        }
-
         setValidationError("");
         setIsUpdateLoading(true);
 
@@ -969,7 +964,7 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            2FA Secret:
+                                                            2FA Secret (optional):
                                                         </div>
                                                         <Form.Control asChild>
                                                             <input
