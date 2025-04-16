@@ -56,6 +56,8 @@ export function AgentConfiguration({
     const [chatStyle, setChatStyle] = useState("");
     const [postStyle, setPostStyle] = useState("");
 
+    const [isAgentDataComplete, setIsAgentDataComplete] = useState(false);
+
     const [validationError, setValidationError] = useState("");
 
     const [twitterUsername, setTwitterUsername] = useState("");
@@ -64,6 +66,8 @@ export function AgentConfiguration({
     const [twitter2FASecret, setTwitter2FASecret] = useState("");
     const [twitterAgentId, setTwitterAgentId] = useState("");
     const [isProcessingTwitterAIAgent, setIsProcessingTwitterAIAgent] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [show2FASecret, setShow2FASecret] = useState(false);
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
@@ -98,6 +102,7 @@ export function AgentConfiguration({
 
             if (response.ok) {
                 toast.success(`${ticker} Agent updated successfully`);
+                setIsAgentDataComplete(true);
                 handleDialogClose();
             } else {
                 toast.error(data.error || 'Failed to update agent. Please try again');
@@ -144,6 +149,18 @@ export function AgentConfiguration({
                     setAllStyle(style.all || "");
                     setChatStyle(style.chat || "");
                     setPostStyle(style.post || "");
+
+                    const isComplete = agentData?.bio &&
+                        agentData?.first_message &&
+                        agentData?.topics &&
+                        agentData?.lore &&
+                        agentData?.adjective &&
+                        agentData?.knowledge &&
+                        style.all &&
+                        style.chat &&
+                        style.post;
+
+                    setIsAgentDataComplete(!!isComplete);
 
                     setTwitterAgentId(agentData?.eliza_agent_id || "");
                 } else {
@@ -309,7 +326,10 @@ export function AgentConfiguration({
     };
 
     const handleTwitterSubmit = async () => {
-        setIsProcessingTwitterAIAgent("start");
+        if (isAgentDataComplete) {
+            setValidationError("AI Agent Details have not been set. Please set them before proceeding.");
+            return;
+        }
 
         if (!twitterUsername) {
             setValidationError("Username cannot be empty.");
@@ -325,6 +345,8 @@ export function AgentConfiguration({
             setValidationError("Password cannot be empty.");
             return;
         }
+
+        setIsProcessingTwitterAIAgent("start");
 
         setValidationError("");
         setIsUpdateLoading(true);
