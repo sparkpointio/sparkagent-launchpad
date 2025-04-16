@@ -326,7 +326,7 @@ export function AgentConfiguration({
     };
 
     const handleTwitterSubmit = async () => {
-        if (isAgentDataComplete) {
+        if (!isAgentDataComplete) {
             setValidationError("AI Agent Details have not been set. Please set them before proceeding.");
             return;
         }
