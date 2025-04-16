@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { signMessage } from "thirdweb/utils";
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 
 interface AgentConfigurationProps {
     certificate: string;
@@ -925,7 +926,7 @@ export function AgentConfiguration({
                                                         </Form.Control>
                                                     </Form.Field>
 
-                                                    <Form.Field className="w-full mb-2" name="bio">
+                                                    <Form.Field className="w-full mb-2" name="password">
                                                         <div
                                                             style={{
                                                                 display: "flex",
@@ -939,20 +940,34 @@ export function AgentConfiguration({
                                                         >
                                                             Password:
                                                         </div>
-                                                        <Form.Control asChild>
-                                                            <input
-                                                                placeholder="Enter password"
-                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="twitter_password"
-                                                                readOnly={!isOwner}
-                                                                onChange={(e) => {
-                                                                    setTwitterPassword(e.target.value)
-                                                                }}
-                                                            />
-                                                        </Form.Control>
+                                                        <div className="relative w-full">
+                                                            <Form.Control asChild>
+                                                                <input
+                                                                    placeholder="Enter password"
+                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                    name="twitter_password"
+                                                                    type={showPassword ? "text" : "password"} // Toggle between text and password
+                                                                    readOnly={!isOwner}
+                                                                    onChange={(e) => {
+                                                                        setTwitterPassword(e.target.value);
+                                                                    }}
+                                                                />
+                                                            </Form.Control>
+                                                            <button
+                                                                type="button"
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
+                                                                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                                                            >
+                                                                {showPassword ? (
+                                                                    <FontAwesomeIcon icon={faEyeSlash} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </Form.Field>
 
-                                                    <Form.Field className="w-full mb-2" name="bio">
+                                                    <Form.Field className="w-full mb-2" name="2fa_secret">
                                                         <div
                                                             style={{
                                                                 display: "flex",
@@ -966,17 +981,31 @@ export function AgentConfiguration({
                                                         >
                                                             2FA Secret (optional):
                                                         </div>
-                                                        <Form.Control asChild>
-                                                            <input
-                                                                placeholder="Enter 2FA secret"
-                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="twitter_2fa_secret"
-                                                                readOnly={!isOwner}
-                                                                onChange={(e) => {
-                                                                    setTwitter2FASecret(e.target.value)
-                                                                }}
-                                                            />
-                                                        </Form.Control>
+                                                        <div className="relative w-full">
+                                                            <Form.Control asChild>
+                                                                <input
+                                                                    placeholder="Enter 2FA secret"
+                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                    name="twitter_2fa_secret"
+                                                                    type={show2FASecret ? "text" : "password"} // Toggle between text and password
+                                                                    readOnly={!isOwner}
+                                                                    onChange={(e) => {
+                                                                        setTwitter2FASecret(e.target.value);
+                                                                    }}
+                                                                />
+                                                            </Form.Control>
+                                                            <button
+                                                                type="button"
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
+                                                                onClick={() => setShow2FASecret(!show2FASecret)} // Toggle password visibility
+                                                            >
+                                                                {show2FASecret ? (
+                                                                    <FontAwesomeIcon icon={faEyeSlash} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </Form.Field>
 
                                                     {validationError && (
