@@ -618,7 +618,7 @@ export function AgentConfiguration({
                                 {activeTab === "aiAgentDetails" && (
                                     <>
                                     <motion.div
-                                        key="agentDetails"
+                                        key="aiAgentDetails"
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
                                         exit={{ opacity: 0, height: 0 }}
@@ -884,7 +884,7 @@ export function AgentConfiguration({
                                 {activeTab === "twitterDetails" && (
                                     <>
                                         <motion.div
-                                            key="agentDetails"
+                                            key="twitterDetails"
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: "auto" }}
                                             exit={{ opacity: 0, height: 0 }}
