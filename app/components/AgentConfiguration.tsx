@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { signMessage } from "thirdweb/utils";
 import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 
 interface AgentConfigurationProps {
     certificate: string;
@@ -55,6 +56,8 @@ export function AgentConfiguration({
     const [chatStyle, setChatStyle] = useState("");
     const [postStyle, setPostStyle] = useState("");
 
+    const [isAgentDataComplete, setIsAgentDataComplete] = useState(false);
+
     const [validationError, setValidationError] = useState("");
 
     const [twitterUsername, setTwitterUsername] = useState("");
@@ -63,6 +66,8 @@ export function AgentConfiguration({
     const [twitter2FASecret, setTwitter2FASecret] = useState("");
     const [twitterAgentId, setTwitterAgentId] = useState("");
     const [isProcessingTwitterAIAgent, setIsProcessingTwitterAIAgent] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [show2FASecret, setShow2FASecret] = useState(false);
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
@@ -97,6 +102,7 @@ export function AgentConfiguration({
 
             if (response.ok) {
                 toast.success(`${ticker} Agent updated successfully`);
+                setIsAgentDataComplete(true);
                 handleDialogClose();
             } else {
                 toast.error(data.error || 'Failed to update agent. Please try again');
@@ -143,6 +149,18 @@ export function AgentConfiguration({
                     setAllStyle(style.all || "");
                     setChatStyle(style.chat || "");
                     setPostStyle(style.post || "");
+
+                    const isComplete = agentData?.bio &&
+                        agentData?.first_message &&
+                        agentData?.topics &&
+                        agentData?.lore &&
+                        agentData?.adjective &&
+                        agentData?.knowledge &&
+                        style.all &&
+                        style.chat &&
+                        style.post;
+
+                    setIsAgentDataComplete(!!isComplete);
 
                     setTwitterAgentId(agentData?.eliza_agent_id || "");
                 } else {
@@ -308,7 +326,10 @@ export function AgentConfiguration({
     };
 
     const handleTwitterSubmit = async () => {
-        setIsProcessingTwitterAIAgent("start");
+        if (!isAgentDataComplete) {
+            setValidationError("AI Agent Details have not been set. Please set them before proceeding.");
+            return;
+        }
 
         if (!twitterUsername) {
             setValidationError("Username cannot be empty.");
@@ -324,6 +345,8 @@ export function AgentConfiguration({
             setValidationError("Password cannot be empty.");
             return;
         }
+
+        setIsProcessingTwitterAIAgent("start");
 
         setValidationError("");
         setIsUpdateLoading(true);
@@ -595,7 +618,7 @@ export function AgentConfiguration({
                                 {activeTab === "aiAgentDetails" && (
                                     <>
                                     <motion.div
-                                        key="agentDetails"
+                                        key="aiAgentDetails"
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
                                         exit={{ opacity: 0, height: 0 }}
@@ -861,7 +884,7 @@ export function AgentConfiguration({
                                 {activeTab === "twitterDetails" && (
                                     <>
                                         <motion.div
-                                            key="agentDetails"
+                                            key="twitterDetails"
                                             initial={{ opacity: 0, height: 0 }}
                                             animate={{ opacity: 1, height: "auto" }}
                                             exit={{ opacity: 0, height: 0 }}
@@ -925,7 +948,7 @@ export function AgentConfiguration({
                                                         </Form.Control>
                                                     </Form.Field>
 
-                                                    <Form.Field className="w-full mb-2" name="bio">
+                                                    <Form.Field className="w-full mb-2" name="password">
                                                         <div
                                                             style={{
                                                                 display: "flex",
@@ -939,20 +962,34 @@ export function AgentConfiguration({
                                                         >
                                                             Password:
                                                         </div>
-                                                        <Form.Control asChild>
-                                                            <input
-                                                                placeholder="Enter password"
-                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="twitter_password"
-                                                                readOnly={!isOwner}
-                                                                onChange={(e) => {
-                                                                    setTwitterPassword(e.target.value)
-                                                                }}
-                                                            />
-                                                        </Form.Control>
+                                                        <div className="relative w-full">
+                                                            <Form.Control asChild>
+                                                                <input
+                                                                    placeholder="Enter password"
+                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                    name="twitter_password"
+                                                                    type={showPassword ? "text" : "password"} // Toggle between text and password
+                                                                    readOnly={!isOwner}
+                                                                    onChange={(e) => {
+                                                                        setTwitterPassword(e.target.value);
+                                                                    }}
+                                                                />
+                                                            </Form.Control>
+                                                            <button
+                                                                type="button"
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
+                                                                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                                                            >
+                                                                {showPassword ? (
+                                                                    <FontAwesomeIcon icon={faEyeSlash} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </Form.Field>
 
-                                                    <Form.Field className="w-full mb-2" name="bio">
+                                                    <Form.Field className="w-full mb-2" name="2fa_secret">
                                                         <div
                                                             style={{
                                                                 display: "flex",
@@ -966,17 +1003,31 @@ export function AgentConfiguration({
                                                         >
                                                             2FA Secret (optional):
                                                         </div>
-                                                        <Form.Control asChild>
-                                                            <input
-                                                                placeholder="Enter 2FA secret"
-                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="twitter_2fa_secret"
-                                                                readOnly={!isOwner}
-                                                                onChange={(e) => {
-                                                                    setTwitter2FASecret(e.target.value)
-                                                                }}
-                                                            />
-                                                        </Form.Control>
+                                                        <div className="relative w-full">
+                                                            <Form.Control asChild>
+                                                                <input
+                                                                    placeholder="Enter 2FA secret"
+                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                    name="twitter_2fa_secret"
+                                                                    type={show2FASecret ? "text" : "password"} // Toggle between text and password
+                                                                    readOnly={!isOwner}
+                                                                    onChange={(e) => {
+                                                                        setTwitter2FASecret(e.target.value);
+                                                                    }}
+                                                                />
+                                                            </Form.Control>
+                                                            <button
+                                                                type="button"
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
+                                                                onClick={() => setShow2FASecret(!show2FASecret)} // Toggle password visibility
+                                                            >
+                                                                {show2FASecret ? (
+                                                                    <FontAwesomeIcon icon={faEyeSlash} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </Form.Field>
 
                                                     {validationError && (
