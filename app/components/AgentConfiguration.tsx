@@ -70,12 +70,10 @@ export function AgentConfiguration({
     const [show2FASecret, setShow2FASecret] = useState(false);
 
     const [telegramUsername, setTelegramUsername] = useState("");
-    const [telegramEmail, setTelegramEmail] = useState("");
-    const [telegramPassword, setTelegramPassword] = useState("");
+    const [telegramPhoneNumber, setTelegramPhoneNumber] = useState("");
     const [telegram2FASecret, setTelegram2FASecret] = useState("");
     const [telegramAgentId, setTelegramAgentId] = useState("");
     const [isProcessingTelegramAIAgent, setIsProcessingTelegramAIAgent] = useState("");
-    const [showTelegramPassword, setShowTelegramPassword] = useState(false);
     const [showTelegram2FASecret, setShowTelegram2FASecret] = useState(false);
     
 
@@ -1172,59 +1170,25 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            Email:
+                                                            Phone Number:
                                                         </div>
                                                         <Form.Control asChild>
                                                             <input
-                                                                placeholder="Enter email"
+                                                                placeholder="Enter phone number (ex: 631234567890)"
                                                                 className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="telegram_email"
+                                                                name="telegram_phone_number"
+                                                                type="tel"
+                                                                inputMode="numeric" // Ensures numeric keyboard on mobile devices
+                                                                onInput={(e) => {
+                                                                    const input = e.target as HTMLInputElement;
+                                                                    input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                                                                }}
                                                                 readOnly={!isOwner}
                                                                 onChange={(e) => {
-                                                                    setTelegramEmail(e.target.value)
+                                                                    setTelegramPhoneNumber(e.target.value);
                                                                 }}
                                                             />
                                                         </Form.Control>
-                                                    </Form.Field>
-
-                                                    <Form.Field className="w-full mb-2" name="password">
-                                                        <div
-                                                            style={{
-                                                                display: "flex",
-                                                                alignItems: "baseline",
-                                                                justifyContent: "space-between",
-                                                                width: "100%",
-                                                                fontSize: "0.8em",
-                                                                paddingLeft: "6px",
-                                                                marginBottom: "2px",
-                                                            }}
-                                                        >
-                                                            Password:
-                                                        </div>
-                                                        <div className="relative w-full">
-                                                            <Form.Control asChild>
-                                                                <input
-                                                                    placeholder="Enter password"
-                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                    name="telegram_password"
-                                                                    type={showTelegramPassword ? "text" : "password"}
-                                                                    onChange={(e) => {
-                                                                        setTelegramPassword(e.target.value);
-                                                                    }}
-                                                                />
-                                                            </Form.Control>
-                                                            <button
-                                                                type="button"
-                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
-                                                                onClick={() => setShowTelegramPassword(!showTelegramPassword)}
-                                                            >
-                                                                {showTelegramPassword ? (
-                                                                    <FontAwesomeIcon icon={faEyeSlash} />
-                                                                ) : (
-                                                                    <FontAwesomeIcon icon={faEye} />
-                                                                )}
-                                                            </button>
-                                                        </div>
                                                     </Form.Field>
 
                                                     <Form.Field className="w-full mb-2" name="2fa_secret">
@@ -1239,7 +1203,7 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            2FA Secret (optional):
+                                                            2FA Secret:
                                                         </div>
                                                         <div className="relative w-full">
                                                             <Form.Control asChild>
