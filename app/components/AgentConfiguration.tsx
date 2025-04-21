@@ -64,6 +64,16 @@ export function AgentConfiguration({
     const [twitterAgentId, setTwitterAgentId] = useState("");
     const [isProcessingTwitterAIAgent, setIsProcessingTwitterAIAgent] = useState("");
 
+    const [telegramUsername, setTelegramUsername] = useState("");
+    const [telegramEmail, setTelegramEmail] = useState("");
+    const [telegramPassword, setTelegramPassword] = useState("");
+    const [telegram2FASecret, setTelegram2FASecret] = useState("");
+    const [telegramAgentId, setTelegramAgentId] = useState("");
+    const [isProcessingTelegramAIAgent, setIsProcessingTelegramAIAgent] = useState("");
+    const [showTelegramPassword, setShowTelegramPassword] = useState(false);
+    const [showTelegram2FASecret, setShowTelegram2FASecret] = useState(false);
+    
+
     const account = useActiveAccount();
     const accountAddress = account?.address;
     const isOwner = accountAddress === creator;
@@ -307,6 +317,17 @@ export function AgentConfiguration({
         }
     };
 
+    const handleTelegramTurnOff = async () => {
+        // TODO: Implement Telegram Turn Off functionality
+        console.log("Telegram Turn Off clicked");
+        setIsProcessingTelegramAIAgent("stop");
+    }
+
+    const handleTelegramSubmit = async () => {
+        // TODO: Implement Telegram Submit functionality
+        console.log("Telegram Submit clicked");
+    }
+
     const handleTwitterSubmit = async () => {
         setIsProcessingTwitterAIAgent("start");
 
@@ -476,7 +497,7 @@ export function AgentConfiguration({
                             </motion.div>
                         </div>
 
-                        <div className="w-full flex justify-center mb-4 space-x-4">
+                        <div className="w-full flex justify-center mb-4">
                             <button
                                 className={`px-4 py-2 ${activeTab === "tokenDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
                                 onClick={() => setActiveTab("tokenDetails")}
@@ -496,6 +517,15 @@ export function AgentConfiguration({
                                         onClick={() => setActiveTab("twitterDetails")}
                                     >
                                         Twitter/X Details
+                                    </button>
+                            }
+                            {
+                                hasGraduated &&
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === "telegramDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                        onClick={() => setActiveTab("telegramDetails")}
+                                    >
+                                        Telegram Details
                                     </button>
                             }
                         </div>
@@ -1033,6 +1063,214 @@ export function AgentConfiguration({
                                                         disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
                                                     >
                                                         {isLoading || isProcessingTwitterAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Turning Off Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn Off Twitter/X AI Agent"}
+                                                    </button>
+                                                </>
+                                            }
+                                        </motion.div>
+                                    </>
+                                )}
+                                {activeTab === "telegramDetails" && (
+                                    <>
+                                        <motion.div
+                                            key="telegramDetails"
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="w-full"
+                                        >
+                                            {telegramAgentId === ""
+                                                ?
+                                                <>
+                                                    <Form.Field className="w-full mb-2" name="username">
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            Username:
+                                                        </div>
+                                                        <Form.Control asChild>
+                                                            <input
+                                                                placeholder="Enter username"
+                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                name="telegram_username"
+                                                                readOnly={!isOwner}
+                                                                onChange={(e) => {
+                                                                    setTelegramUsername(e.target.value)
+                                                                }}
+                                                            />
+                                                        </Form.Control>
+                                                    </Form.Field>
+
+                                                    <Form.Field className="w-full mb-2" name="email">
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            Email:
+                                                        </div>
+                                                        <Form.Control asChild>
+                                                            <input
+                                                                placeholder="Enter email"
+                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                name="telegram_email"
+                                                                readOnly={!isOwner}
+                                                                onChange={(e) => {
+                                                                    setTelegramEmail(e.target.value)
+                                                                }}
+                                                            />
+                                                        </Form.Control>
+                                                    </Form.Field>
+
+                                                    <Form.Field className="w-full mb-2" name="password">
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            Password:
+                                                        </div>
+                                                        <div className="relative w-full">
+                                                            <Form.Control asChild>
+                                                                <input
+                                                                    placeholder="Enter password"
+                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                    name="telegram_password"
+                                                                    type={showTelegramPassword ? "text" : "password"}
+                                                                    onChange={(e) => {
+                                                                        setTelegramPassword(e.target.value);
+                                                                    }}
+                                                                />
+                                                            </Form.Control>
+                                                            <button
+                                                                type="button"
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
+                                                                onClick={() => setShowTelegramPassword(!showTelegramPassword)}
+                                                            >
+                                                                {showTelegramPassword ? (
+                                                                    <FontAwesomeIcon icon={faEyeSlash} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    </Form.Field>
+
+                                                    <Form.Field className="w-full mb-2" name="2fa_secret">
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            2FA Secret (optional):
+                                                        </div>
+                                                        <div className="relative w-full">
+                                                            <Form.Control asChild>
+                                                                <input
+                                                                    placeholder="Enter 2FA secret"
+                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                    name="telegram_2fa_secret"
+                                                                    type={showTelegram2FASecret ? "text" : "password"}
+                                                                    readOnly={!isOwner}
+                                                                    onChange={(e) => {
+                                                                        setTelegram2FASecret(e.target.value);
+                                                                    }}
+                                                                />
+                                                            </Form.Control>
+                                                            <button
+                                                                type="button"
+                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
+                                                                onClick={() => setShowTelegram2FASecret(!showTelegram2FASecret)}
+                                                            >
+                                                                {showTelegram2FASecret ? (
+                                                                    <FontAwesomeIcon icon={faEyeSlash} />
+                                                                ) : (
+                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    </Form.Field>
+
+                                                    {validationError && (
+                                                        <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
+                                                    )}
+
+                                                    <button
+                                                        type="button"
+                                                        className={buttonVariants({
+                                                            variant: "outline",
+                                                            size: "md",
+                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isProcessingTwitterAIAgent != "" ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                                        })}
+                                                        onClick={handleTelegramSubmit}
+                                                        disabled={!isOwner || isLoading || isProcessingTelegramAIAgent != ""}
+                                                    >
+                                                        {isLoading || isProcessingTelegramAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Starting Your Telegram AI Agent</span></> : !isOwner ? "Only the creator can modify agent's Telegram details" : "Turn On Telegram AI Agent"}
+                                                    </button>
+                                                </>
+                                                :
+                                                <>
+                                                    <div className="pt-4">
+                                                        <div className="relative pb-[20px]">
+                                                            <div className="text-[1.8em] h-[110px]">
+                                                                <div className="absolute left-[calc(50%-60px)] top-[20px]">
+                                                                    <FontAwesomeIcon icon={faCog} color='#444444'
+                                                                                     className="text-[2em] animate-spin"/>
+                                                                </div>
+                                                                <div className="absolute left-[calc(50%+5px)] top-[50px]">
+                                                                    <FontAwesomeIcon icon={faCog} size='xl' color='#444444'
+                                                                                     className="animate-spin"
+                                                                                     style={{animationDirection: "reverse"}}/>
+                                                                </div>
+                                                                <div className="absolute left-[calc(50%+5px)] top-[5px]">
+                                                                    <FontAwesomeIcon icon={faCog} color='#444444'
+                                                                                     className="text-[1em] animate-spin"
+                                                                                     style={{animationDirection: "reverse"}}/>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-center font-bold text-[1.2em] mt-2">
+                                                                Telegram/X AI Agent<br/> is online and operational.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        className={buttonVariants({
+                                                            variant: "outline",
+                                                            size: "md",
+                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isProcessingTwitterAIAgent != "" ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                                        })}
+                                                        onClick={handleTelegramTurnOff}
+                                                        disabled={!isOwner || isLoading || isProcessingTelegramAIAgent != ""}
+                                                    >
+                                                        {isLoading || isProcessingTelegramAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Turning Off Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn Off Twitter/X AI Agent"}
                                                     </button>
                                                 </>
                                             }
