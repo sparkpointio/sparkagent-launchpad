@@ -3,7 +3,7 @@ import * as Form from "@radix-ui/react-form";
 import { buttonVariants } from '../components/variants/button-variants';
 import React, { useEffect, useRef, useState } from "react";
 import { formsDialogBackgroundOverlayProperties, formsDialogContentPropertiesWide, formsTextBoxProperties } from "../lib/utils/style/customStyles";
-import { IconLoader2 } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight, IconLoader2 } from "@tabler/icons-react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import blockies from "ethereum-blockies";
@@ -69,12 +69,10 @@ export function AgentConfiguration({
     const [showPassword, setShowPassword] = useState(false);
     const [show2FASecret, setShow2FASecret] = useState(false);
 
-    const [telegramUsername, setTelegramUsername] = useState("");
-    const [telegramPhoneNumber, setTelegramPhoneNumber] = useState("");
-    const [telegram2FASecret, setTelegram2FASecret] = useState("");
+    const [telegramChatId, setTelegramChatId] = useState("");
     const [telegramAgentId, setTelegramAgentId] = useState("");
     const [isProcessingTelegramAIAgent, setIsProcessingTelegramAIAgent] = useState("");
-    const [showTelegram2FASecret, setShowTelegram2FASecret] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     
 
     const account = useActiveAccount();
@@ -1143,94 +1141,76 @@ export function AgentConfiguration({
                                                                 marginBottom: "2px",
                                                             }}
                                                         >
-                                                            Username:
+                                                            Telegram Chat ID:
                                                         </div>
                                                         <Form.Control asChild>
                                                             <input
-                                                                placeholder="Enter username"
+                                                                placeholder="Enter Chat ID"
                                                                 className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="telegram_username"
+                                                                name="telegram_chat_id"
                                                                 readOnly={!isOwner}
                                                                 onChange={(e) => {
-                                                                    setTelegramUsername(e.target.value)
+                                                                    setTelegramChatId(e.target.value)
                                                                 }}
                                                             />
                                                         </Form.Control>
                                                     </Form.Field>
 
-                                                    <Form.Field className="w-full mb-2" name="email">
-                                                        <div
-                                                            style={{
-                                                                display: "flex",
-                                                                alignItems: "baseline",
-                                                                justifyContent: "space-between",
-                                                                width: "100%",
-                                                                fontSize: "0.8em",
-                                                                paddingLeft: "6px",
-                                                                marginBottom: "2px",
-                                                            }}
-                                                        >
-                                                            Phone Number:
-                                                        </div>
-                                                        <Form.Control asChild>
-                                                            <input
-                                                                placeholder="Enter phone number (ex: 631234567890)"
-                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                name="telegram_phone_number"
-                                                                type="tel"
-                                                                inputMode="numeric" // Ensures numeric keyboard on mobile devices
-                                                                onInput={(e) => {
-                                                                    const input = e.target as HTMLInputElement;
-                                                                    input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                                                                }}
-                                                                readOnly={!isOwner}
-                                                                onChange={(e) => {
-                                                                    setTelegramPhoneNumber(e.target.value);
-                                                                }}
-                                                            />
-                                                        </Form.Control>
-                                                    </Form.Field>
-
-                                                    <Form.Field className="w-full mb-2" name="2fa_secret">
-                                                        <div
-                                                            style={{
-                                                                display: "flex",
-                                                                alignItems: "baseline",
-                                                                justifyContent: "space-between",
-                                                                width: "100%",
-                                                                fontSize: "0.8em",
-                                                                paddingLeft: "6px",
-                                                                marginBottom: "2px",
-                                                            }}
-                                                        >
-                                                            2FA Secret:
-                                                        </div>
-                                                        <div className="relative w-full">
-                                                            <Form.Control asChild>
-                                                                <input
-                                                                    placeholder="Enter 2FA secret"
-                                                                    className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
-                                                                    name="telegram_2fa_secret"
-                                                                    type={showTelegram2FASecret ? "text" : "password"}
-                                                                    readOnly={!isOwner}
-                                                                    onChange={(e) => {
-                                                                        setTelegram2FASecret(e.target.value);
-                                                                    }}
-                                                                />
-                                                            </Form.Control>
-                                                            <button
-                                                                type="button"
-                                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 flex w-5 h-5"
-                                                                onClick={() => setShowTelegram2FASecret(!showTelegram2FASecret)}
+                                                    <div className="flex flex-col mb-2 w-full">
+                                                        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
+                                                            <div
+                                                                className="cursor-pointer font-semibold text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400"
+                                                                onClick={() => setIsExpanded(!isExpanded)}
                                                             >
-                                                                {showTelegram2FASecret ? (
-                                                                    <FontAwesomeIcon icon={faEyeSlash} />
-                                                                ) : (
-                                                                    <FontAwesomeIcon icon={faEye} />
+                                                                <span className="flex flex-row w-full h-full items-center justify-center">{ isExpanded ? <IconChevronDown /> : <IconChevronRight />} {`How to get Chat ID`}</span>
+                                                            </div>
+                                                            <AnimatePresence>
+                                                                {isExpanded && (
+                                                                    <motion.div
+                                                                        initial={{ opacity: 0, height: 0 }}
+                                                                        animate={{ opacity: 1, height: "auto" }}
+                                                                        exit={{ opacity: 0, height: 0 }}
+                                                                        transition={{ duration: 0.3 }}
+                                                                        className="mt-2 text-left text-gray-600 dark:text-gray-400 space-y-2"
+                                                                    >
+                                                                        <p>{'1. If you don’t have a bot yet, create one using @BotFather on Telegram:'}</p>
+                                                                        <ul className="list-disc list-inside pl-4">
+                                                                            <li>{`Open Telegram and search for @BotFather`}</li>
+                                                                            <li>{`Send the command: `}<code>{`/newbot`}</code></li>
+                                                                            <li>{`Follow the prompts and copy the Bot Token`}</li>
+                                                                        </ul>
+                                                                        <p>{`2. Add your bot to the Telegram group where you want it to post messages:`}</p>
+                                                                        <ul className="list-disc list-inside pl-4">
+                                                                            <li>{`Open the group`}</li>
+                                                                            <li>{`Tap the group name > Add Members`}</li>
+                                                                            <li>{`Search your bot by its username and add it`}</li>
+                                                                        </ul>
+                                                                        <p>{`3. Disable privacy mode so the bot can read messages:`}</p>
+                                                                        <ul className="list-disc list-inside pl-4">
+                                                                            <li>{`Go back to @BotFather`}</li>
+                                                                            <li>{`Send: `}<code>{`/mybots`}</code></li>
+                                                                            <li>{`Select your bot > Bot Settings > Group Privacy`}</li>
+                                                                            <li>{`Set it to OFF`}</li>
+                                                                        </ul>
+                                                                        <p>{`4. Send any message in the group (e.g., "Hello")`}</p>
+                                                                        <p>{`5. In your browser, go to the following URL (replace `}<code>{`<YOUR_BOT_TOKEN>`}</code>{`):`}</p>
+                                                                        <p className="bg-gray-200 dark:bg-gray-700 p-2 rounded text-sm font-mono break-words text-[0.8em]">
+                                                                            {`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`}
+                                                                        </p>
+                                                                        <p>{`Example:`}</p>
+                                                                        <p className="bg-gray-200 dark:bg-gray-700 p-2 rounded text-sm font-mono break-words text-[0.8em]">
+                                                                            {`https://api.telegram.org/bot123456789:ABCdefGhIJKlmNoPQRstuVwXyZ1234567890/getUpdates`}
+                                                                        </p>
+                                                                        <p>{`6. Look for a line like this in the result:`}</p>
+                                                                        <p className="bg-gray-200 dark:bg-gray-700 p-2 rounded text-sm font-mono break-words text-[0.8em]">
+                                                                            {`"id": -1001234567890`}
+                                                                        </p>
+                                                                        <p>{`That number is your Group Chat ID. Copy it and paste it into the form.`}</p>
+                                                                    </motion.div>
                                                                 )}
-                                                            </button>
+                                                            </AnimatePresence>
                                                         </div>
-                                                    </Form.Field>
+                                                    </div>
 
                                                     {validationError && (
                                                         <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
