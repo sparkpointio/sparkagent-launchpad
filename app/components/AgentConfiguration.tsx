@@ -518,13 +518,13 @@ export function AgentConfiguration({
 
                         <div className="w-full flex justify-center mb-4">
                             <button
-                                className={`px-4 py-2 ${activeTab === "tokenDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "tokenDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                 onClick={() => setActiveTab("tokenDetails")}
                             >
                                 Token Details
                             </button>
                             <button
-                                className={`px-4 py-2 ${activeTab === "aiAgentDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "aiAgentDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                 onClick={() => setActiveTab("aiAgentDetails")}
                             >
                                 AI Agent Details
@@ -532,7 +532,7 @@ export function AgentConfiguration({
                             {
                                 hasGraduated &&
                                     <button
-                                        className={`px-4 py-2 ${activeTab === "twitterDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                        className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "twitterDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                         onClick={() => setActiveTab("twitterDetails")}
                                     >
                                         Twitter/X Details
@@ -541,7 +541,7 @@ export function AgentConfiguration({
                             {
                                 hasGraduated &&
                                     <button
-                                        className={`px-4 py-2 ${activeTab === "telegramDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                        className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "telegramDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                         onClick={() => setActiveTab("telegramDetails")}
                                     >
                                         Telegram Details
