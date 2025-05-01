@@ -70,6 +70,7 @@ export function AgentConfiguration({
     const [show2FASecret, setShow2FASecret] = useState(false);
 
     const [telegramChatId, setTelegramChatId] = useState("");
+    const [telegramBotToken, setTelegramBotToken] = useState("");
     const [telegramAgentId, setTelegramAgentId] = useState("");
     const [isProcessingTelegramAIAgent, setIsProcessingTelegramAIAgent] = useState("");
     const [isExpanded, setIsExpanded] = useState(false);
@@ -169,6 +170,7 @@ export function AgentConfiguration({
                     setIsAgentDataComplete(!!isComplete);
 
                     setTwitterAgentId(agentData?.eliza_agent_id || "");
+                    setTelegramAgentId(agentData?.eliza_agent_id || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
                 }
@@ -332,14 +334,146 @@ export function AgentConfiguration({
     };
 
     const handleTelegramTurnOff = async () => {
-        // TODO: Implement Telegram Turn Off functionality
-        console.log("Telegram Turn Off clicked");
         setIsProcessingTelegramAIAgent("stop");
+
+        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+
+            const signature = await signMessage({
+                message: message,
+                account,
+            });
+
+            try {
+                const response = await fetch(`/api/agent-data/turn-off-telegram-agent?contractAddress=${certificate}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        signature
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    toast.success(`${ticker} Telegram AI Agent turned off successfully`);
+                    handleDialogClose();
+                } else {
+                    toast.error(data.error || 'Failed to turn off Telegram AI Agent. Please try again');
+                    throw new Error(data.error || 'Failed to update agent.');
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    toast.error(`Failed to turn off Telegram AI Agent. ${error.message}`);
+                    throw new Error(error.message || 'Server error');
+                } else {
+                    toast.error('Failed to turn off Telegram AI Agent. Please try again');
+                    throw new Error('An unknown error occurred');
+                }
+            } finally {
+                setIsProcessingTelegramAIAgent("");
+                setTelegramAgentId('')
+            }
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("You rejected the request. Approve the signature request to proceed.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Please try again.";
+                toast.error(`Error signing message: ${errorMessage}`);
+            }
+            setIsUpdateLoading(false);
+            return;
+        }
     }
 
     const handleTelegramSubmit = async () => {
-        // TODO: Implement Telegram Submit functionality
-        console.log("Telegram Submit clicked");
+        if (!isAgentDataComplete) {
+            setValidationError("AI Agent Details have not been set. Please set them before proceeding.");
+            return;
+        }
+
+        if (!telegramChatId) {
+            setValidationError("Telegram Chat ID cannot be empty.");
+            return;
+        }
+
+        if (!telegramBotToken) {
+            setValidationError("Telegram Bot Token cannot be empty.");
+            return;
+        }
+
+        setIsProcessingTelegramAIAgent("start");
+
+        setValidationError("");
+        setIsUpdateLoading(true);
+
+        let signature = null;
+
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+
+            const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+            signature = await signMessage({
+                message: message,
+                account,
+            });
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("You rejected the request. Approve the signature request to proceed.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Please try again.";
+                toast.error(`Error signing message: ${errorMessage}`);
+            }
+            setIsUpdateLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/agent-data/turn-on-telegram-agent?contractAddress=${certificate}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    signature,
+                    telegramChatId,
+                    telegramBotToken
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(`${ticker} Telegram AI Agent turned on successfully`);
+                handleDialogClose();
+            } else {
+                toast.error(data.error || 'Failed to turn on Telegram AI Agent. Please try again');
+                throw new Error(data.error || 'Failed to update agent.');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(`Failed to turn on Telegram AI Agent. ${error.message}`);
+                throw new Error(error.message || 'Server error');
+            } else {
+                toast.error('Failed to turn on Telegram AI Agent. Please try again');
+                throw new Error('An unknown error occurred');
+            }
+        } finally {
+            setIsProcessingTwitterAIAgent("");
+        }
+
+        setTelegramAgentId('true')
     }
 
     const handleTwitterSubmit = async () => {
@@ -1129,7 +1263,32 @@ export function AgentConfiguration({
                                             {telegramAgentId === ""
                                                 ?
                                                 <>
-                                                    <Form.Field className="w-full mb-2" name="username">
+                                                    <Form.Field className="w-full mb-2" name="bot_token">
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            Bot Token:
+                                                        </div>
+                                                        <Form.Control asChild>
+                                                            <input
+                                                                placeholder="Enter Bot Token"
+                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                name="bot_token"
+                                                                readOnly={!isOwner}
+                                                                onChange={(e) => {
+                                                                    setTelegramBotToken(e.target.value)
+                                                                }}
+                                                            />
+                                                        </Form.Control>
+
                                                         <div
                                                             style={{
                                                                 display: "flex",
@@ -1157,20 +1316,24 @@ export function AgentConfiguration({
                                                     </Form.Field>
 
                                                     <div className="flex flex-col mb-2 w-full">
-                                                        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
+                                                        <div
+                                                            className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
                                                             <div
                                                                 className="cursor-pointer font-semibold text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400"
                                                                 onClick={() => setIsExpanded(!isExpanded)}
                                                             >
-                                                                <span className="flex flex-row w-full h-full items-center justify-center">{ isExpanded ? <IconChevronDown /> : <IconChevronRight />} {`How to get Chat ID`}</span>
+                                                                <span
+                                                                    className="flex flex-row w-full h-full items-center justify-center">{isExpanded ?
+                                                                    <IconChevronDown/> :
+                                                                    <IconChevronRight/>} {`How to get Chat ID`}</span>
                                                             </div>
                                                             <AnimatePresence>
                                                                 {isExpanded && (
                                                                     <motion.div
-                                                                        initial={{ opacity: 0, height: 0 }}
-                                                                        animate={{ opacity: 1, height: "auto" }}
-                                                                        exit={{ opacity: 0, height: 0 }}
-                                                                        transition={{ duration: 0.3 }}
+                                                                        initial={{opacity: 0, height: 0}}
+                                                                        animate={{opacity: 1, height: "auto"}}
+                                                                        exit={{opacity: 0, height: 0}}
+                                                                        transition={{duration: 0.3}}
                                                                         className="mt-2 text-left text-gray-600 dark:text-gray-400 space-y-2"
                                                                     >
                                                                         <p>{'1. If you don’t have a bot yet, create one using @BotFather on Telegram:'}</p>
