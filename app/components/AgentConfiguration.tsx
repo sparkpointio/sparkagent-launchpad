@@ -664,7 +664,7 @@ export function AgentConfiguration({
                                 AI Agent Details
                             </button>
                             {
-                                hasGraduated &&
+                                (hasGraduated && isOwner) &&
                                     <button
                                         className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "twitterDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                         onClick={() => setActiveTab("twitterDetails")}
@@ -673,7 +673,7 @@ export function AgentConfiguration({
                                     </button>
                             }
                             {
-                                hasGraduated &&
+                                (hasGraduated && isOwner) &&
                                     <button
                                         className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "telegramDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                         onClick={() => setActiveTab("telegramDetails")}
