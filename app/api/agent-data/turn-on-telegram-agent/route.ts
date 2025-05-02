@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
                 );
             }
         } else {
-            console.error("Error turning on Twitter/X AI agent:", error);
+            console.error("Error turning on Telegram AI agent:", error);
         }
         return new Response(
             JSON.stringify({ error: `Server error: Unable to process the request. ${error instanceof Error ? error.message : 'Unknown error'}` }),

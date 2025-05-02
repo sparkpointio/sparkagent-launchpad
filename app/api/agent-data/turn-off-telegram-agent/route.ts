@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
             console.error("Backend API Error Response:", error.response.data);
             console.error("Backend API Error Status:", error.response.status);
         } else {
-            console.error("Error turning off Twitter/X AI agent:", error);
+            console.error("Error turning off Telegram AI agent:", error);
         }
         return new Response(
             JSON.stringify({ error: `Server error: Unable to process the request. ${error instanceof Error ? error.message : 'Unknown error'}` }),
