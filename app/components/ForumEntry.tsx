@@ -133,6 +133,9 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
+                                p: ({ children }) => (
+                                    <p className="py-2">{children}</p>
+                                ),
                                 code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
                                     const language = className?.match(/language-(\w+)/)?.[1]; // Extract language from className
                                     const isInline = typeof children === "string" && !children.includes("\n"); // Check if it's inline code
