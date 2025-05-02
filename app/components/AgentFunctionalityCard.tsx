@@ -57,7 +57,7 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
     const sparked = sparkingProgress >= 100;
 
     const isXAgentReady = true;
-    const isTelegramAgentReady = false;
+    const isTelegramAgentReady = true;
     const isTradingAgentReady = false;
 
     return (
