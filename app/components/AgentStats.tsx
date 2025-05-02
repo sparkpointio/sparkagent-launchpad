@@ -526,19 +526,23 @@ const AgentStats: React.FC<AgentStatsProps> = ({
 							</div>
 
 							<h3 className="mb-2 text-xl tracking-tight truncate w-full flex items-center">
-								<span className="pr-2">CA:</span>
-								<button
-									className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-									onClick={() => { copyToClipboard(certificate); }}
-									type="button"
-								>
-									<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
-									{copied ? (
-										<IconCircleCheck size={16} />
-									) : (
-										<IconCopy size={16} />
-									)}
-								</button>
+								<div className="flex justify-between items-center w-full">
+									<span className="pr-2">CA:</span>
+									<button
+										className="flex group items-center space-x-2 truncate px-2 text-sm text-black font-medium dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all ml-auto"
+										onClick={() => {
+											copyToClipboard(certificate);
+										}}
+									>
+										<span
+											className="dark:group-hover:text-black">{`${truncateHash(certificate, 12, 6, 6)}`}</span>
+										{copied ? (
+											<IconCircleCheck size={16} className="dark:group-hover:stroke-black " />
+										) : (
+											<IconCopy size={16} className="dark:group-hover:stroke-black " />
+										)}
+									</button>
+								</div>
 							</h3>
 						</div>
 

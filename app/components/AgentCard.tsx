@@ -185,14 +185,15 @@ const AgentCard: React.FC<AgentCardProps> = ({
 					<h3 className="mt-2 mb-2 text-xl tracking-tight truncate w-full flex items-center">
 						<span className="pr-2">CA:</span>
 						<button
-							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all"
-							onClick={() => { copyToClipboard(certificate);}}
+							className="flex items-center space-x-2 truncate px-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-sparkyOrange-200 transition-all group/button"
+							onClick={() => { copyToClipboard(certificate); }}
 						>
-							<span>{`${truncateHash(certificate, 12, 6, 6)}`}</span>
+							<span
+								className="group-hover/button:dark:text-black">{`${truncateHash(certificate, 12, 6, 6)}`}</span>
 							{copied ? (
-								<IconCircleCheck size={16} />
+								<IconCircleCheck size={16} className="group-hover/button:dark:stroke-black" />
 							) : (
-								<IconCopy size={16} />
+								<IconCopy size={16} className="group-hover/button:dark:stroke-black" />
 							)}
 						</button>
 					</h3>
