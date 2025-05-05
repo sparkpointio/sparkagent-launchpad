@@ -249,7 +249,7 @@ const AgentPage = () => {
                     agentData={agentDataFromAPI}
                   />
 
-                  <div className="hidden md:block w-full space-y-4">
+                  <div className="hidden lg:block w-full space-y-4">
                     <Forums
                       agentCertificate={agent.certificate}
                       agentName={agent._tokenName}
@@ -285,7 +285,7 @@ const AgentPage = () => {
                     tokenImage={agent.image}
                   />
 
-                  <div className="md:hidden w-full space-y-4">
+                  <div className="lg:hidden w-full space-y-4">
                     <Forums
                       agentCertificate={agent.certificate}
                       agentName={agent._tokenName}

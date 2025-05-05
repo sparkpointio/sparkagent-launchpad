@@ -3,7 +3,7 @@ import * as Form from "@radix-ui/react-form";
 import { buttonVariants } from '../components/variants/button-variants';
 import React, { useEffect, useRef, useState } from "react";
 import { formsDialogBackgroundOverlayProperties, formsDialogContentPropertiesWide, formsTextBoxProperties } from "../lib/utils/style/customStyles";
-import { IconLoader2 } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight, IconLoader2 } from "@tabler/icons-react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import blockies from "ethereum-blockies";
@@ -68,6 +68,13 @@ export function AgentConfiguration({
     const [isProcessingTwitterAIAgent, setIsProcessingTwitterAIAgent] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [show2FASecret, setShow2FASecret] = useState(false);
+
+    const [telegramChatId, setTelegramChatId] = useState("");
+    const [telegramBotToken, setTelegramBotToken] = useState("");
+    const [telegramAgentId, setTelegramAgentId] = useState("");
+    const [isProcessingTelegramAIAgent, setIsProcessingTelegramAIAgent] = useState("");
+    const [isExpanded, setIsExpanded] = useState(false);
+    
 
     const account = useActiveAccount();
     const accountAddress = account?.address;
@@ -163,6 +170,7 @@ export function AgentConfiguration({
                     setIsAgentDataComplete(!!isComplete);
 
                     setTwitterAgentId(agentData?.eliza_agent_id || "");
+                    setTelegramAgentId(agentData?.eliza_agent_id || "");
                 } else {
                     throw new Error(result.error || 'Failed to fetch agent data');
                 }
@@ -324,6 +332,149 @@ export function AgentConfiguration({
             return;
         }
     };
+
+    const handleTelegramTurnOff = async () => {
+        setIsProcessingTelegramAIAgent("stop");
+
+        const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+
+            const signature = await signMessage({
+                message: message,
+                account,
+            });
+
+            try {
+                const response = await fetch(`/api/agent-data/turn-off-telegram-agent?contractAddress=${certificate}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        signature
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    toast.success(`${ticker} Telegram AI Agent turned off successfully`);
+                    handleDialogClose();
+                } else {
+                    toast.error(data.error || 'Failed to turn off Telegram AI Agent. Please try again');
+                    throw new Error(data.error || 'Failed to update agent.');
+                }
+            } catch (error) {
+                if (error instanceof Error) {
+                    toast.error(`Failed to turn off Telegram AI Agent. ${error.message}`);
+                    throw new Error(error.message || 'Server error');
+                } else {
+                    toast.error('Failed to turn off Telegram AI Agent. Please try again');
+                    throw new Error('An unknown error occurred');
+                }
+            } finally {
+                setIsProcessingTelegramAIAgent("");
+                setTelegramAgentId('')
+            }
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("You rejected the request. Approve the signature request to proceed.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Please try again.";
+                toast.error(`Error signing message: ${errorMessage}`);
+            }
+            setIsUpdateLoading(false);
+            return;
+        }
+    }
+
+    const handleTelegramSubmit = async () => {
+        if (!isAgentDataComplete) {
+            setValidationError("AI Agent Details have not been set. Please set them before proceeding.");
+            return;
+        }
+
+        if (!telegramChatId) {
+            setValidationError("Telegram Chat ID cannot be empty.");
+            return;
+        }
+
+        if (!telegramBotToken) {
+            setValidationError("Telegram Bot Token cannot be empty.");
+            return;
+        }
+
+        setIsProcessingTelegramAIAgent("start");
+
+        setValidationError("");
+        setIsUpdateLoading(true);
+
+        let signature = null;
+
+        try {
+            if (!account) {
+                console.error('Wallet not connected. Cannot sign the message.');
+                return;
+            }
+
+            const message = `SparkAgent Launchpad Agent Data Edit Request | Token Address: ${certificate.toLowerCase()}`;
+            signature = await signMessage({
+                message: message,
+                account,
+            });
+        } catch (error: unknown) {
+            const errorCode = (error as { code?: number })?.code;
+            if (errorCode === 4001) {
+                toast.error("You rejected the request. Approve the signature request to proceed.");
+            } else {
+                const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Please try again.";
+                toast.error(`Error signing message: ${errorMessage}`);
+            }
+            setIsUpdateLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/agent-data/turn-on-telegram-agent?contractAddress=${certificate}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    signature,
+                    telegramChatId,
+                    telegramBotToken
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(`${ticker} Telegram AI Agent turned on successfully`);
+                handleDialogClose();
+            } else {
+                toast.error(data.error || 'Failed to turn on Telegram AI Agent. Please try again');
+                throw new Error(data.error || 'Failed to update agent.');
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(`Failed to turn on Telegram AI Agent. ${error.message}`);
+                throw new Error(error.message || 'Server error');
+            } else {
+                toast.error('Failed to turn on Telegram AI Agent. Please try again');
+                throw new Error('An unknown error occurred');
+            }
+        } finally {
+            setIsProcessingTwitterAIAgent("");
+        }
+
+        setTelegramAgentId('true')
+    }
 
     const handleTwitterSubmit = async () => {
         if (!isAgentDataComplete) {
@@ -499,26 +650,35 @@ export function AgentConfiguration({
                             </motion.div>
                         </div>
 
-                        <div className="w-full flex justify-center mb-4 space-x-4">
+                        <div className="w-full flex justify-center mb-4">
                             <button
-                                className={`px-4 py-2 ${activeTab === "tokenDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "tokenDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                 onClick={() => setActiveTab("tokenDetails")}
                             >
                                 Token Details
                             </button>
                             <button
-                                className={`px-4 py-2 ${activeTab === "aiAgentDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "aiAgentDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                 onClick={() => setActiveTab("aiAgentDetails")}
                             >
                                 AI Agent Details
                             </button>
                             {
-                                hasGraduated &&
+                                (hasGraduated && isOwner) &&
                                     <button
-                                        className={`px-4 py-2 ${activeTab === "twitterDetails" ? "border-b-2 border-black dark:border-white" : ""}`}
+                                        className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "twitterDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
                                         onClick={() => setActiveTab("twitterDetails")}
                                     >
                                         Twitter/X Details
+                                    </button>
+                            }
+                            {
+                                (hasGraduated && isOwner) &&
+                                    <button
+                                        className={`hover:text-sparkyOrange transition-all px-4 py-2 ${activeTab === "telegramDetails" ? "border-b-2 border-black dark:border-white hover:dark:border-sparkyOrange hover:border-sparkyOrange" : ""}`}
+                                        onClick={() => setActiveTab("telegramDetails")}
+                                    >
+                                        Telegram Details
                                     </button>
                             }
                         </div>
@@ -1084,6 +1244,191 @@ export function AgentConfiguration({
                                                         disabled={!isOwner || isLoading || isProcessingTwitterAIAgent != ""}
                                                     >
                                                         {isLoading || isProcessingTwitterAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Turning Off Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn Off Twitter/X AI Agent"}
+                                                    </button>
+                                                </>
+                                            }
+                                        </motion.div>
+                                    </>
+                                )}
+                                {activeTab === "telegramDetails" && (
+                                    <>
+                                        <motion.div
+                                            key="telegramDetails"
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="w-full"
+                                        >
+                                            {telegramAgentId === ""
+                                                ?
+                                                <>
+                                                    <Form.Field className="w-full mb-2" name="bot_token">
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            Bot Token:
+                                                        </div>
+                                                        <Form.Control asChild>
+                                                            <input
+                                                                placeholder="Enter Bot Token"
+                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                name="bot_token"
+                                                                readOnly={!isOwner}
+                                                                onChange={(e) => {
+                                                                    setTelegramBotToken(e.target.value)
+                                                                }}
+                                                            />
+                                                        </Form.Control>
+
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "baseline",
+                                                                justifyContent: "space-between",
+                                                                width: "100%",
+                                                                fontSize: "0.8em",
+                                                                paddingLeft: "6px",
+                                                                marginBottom: "2px",
+                                                            }}
+                                                        >
+                                                            Telegram Chat ID:
+                                                        </div>
+                                                        <Form.Control asChild>
+                                                            <input
+                                                                placeholder="Enter Chat ID"
+                                                                className={`w-full h-12 mb-1 px-5 py-3 text-[0.9em] ${formsTextBoxProperties}`}
+                                                                name="telegram_chat_id"
+                                                                readOnly={!isOwner}
+                                                                onChange={(e) => {
+                                                                    setTelegramChatId(e.target.value)
+                                                                }}
+                                                            />
+                                                        </Form.Control>
+                                                    </Form.Field>
+
+                                                    <div className="flex flex-col mb-2 w-full">
+                                                        <div
+                                                            className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border-2 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-400">
+                                                            <div
+                                                                className="cursor-pointer font-semibold text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400"
+                                                                onClick={() => setIsExpanded(!isExpanded)}
+                                                            >
+                                                                <span
+                                                                    className="flex flex-row w-full h-full items-center justify-center">{isExpanded ?
+                                                                    <IconChevronDown/> :
+                                                                    <IconChevronRight/>} {`How to get Chat ID`}</span>
+                                                            </div>
+                                                            <AnimatePresence>
+                                                                {isExpanded && (
+                                                                    <motion.div
+                                                                        initial={{opacity: 0, height: 0}}
+                                                                        animate={{opacity: 1, height: "auto"}}
+                                                                        exit={{opacity: 0, height: 0}}
+                                                                        transition={{duration: 0.3}}
+                                                                        className="mt-2 text-left text-gray-600 dark:text-gray-400 space-y-2"
+                                                                    >
+                                                                        <p>{'1. If you don’t have a bot yet, create one using @BotFather on Telegram:'}</p>
+                                                                        <ul className="list-disc list-inside pl-4">
+                                                                            <li>{`Open Telegram and search for @BotFather`}</li>
+                                                                            <li>{`Send the command: `}<code>{`/newbot`}</code></li>
+                                                                            <li>{`Follow the prompts and copy the Bot Token`}</li>
+                                                                        </ul>
+                                                                        <p>{`2. Add your bot to the Telegram group where you want it to post messages:`}</p>
+                                                                        <ul className="list-disc list-inside pl-4">
+                                                                            <li>{`Open the group`}</li>
+                                                                            <li>{`Tap the group name > Add Members`}</li>
+                                                                            <li>{`Search your bot by its username and add it`}</li>
+                                                                        </ul>
+                                                                        <p>{`3. Disable privacy mode so the bot can read messages:`}</p>
+                                                                        <ul className="list-disc list-inside pl-4">
+                                                                            <li>{`Go back to @BotFather`}</li>
+                                                                            <li>{`Send: `}<code>{`/mybots`}</code></li>
+                                                                            <li>{`Select your bot > Bot Settings > Group Privacy`}</li>
+                                                                            <li>{`Set it to OFF`}</li>
+                                                                        </ul>
+                                                                        <p>{`4. Send any message in the group (e.g., "Hello")`}</p>
+                                                                        <p>{`5. In your browser, go to the following URL (replace `}<code>{`<YOUR_BOT_TOKEN>`}</code>{`):`}</p>
+                                                                        <p className="bg-gray-200 dark:bg-gray-700 p-2 rounded text-sm font-mono break-words text-[0.8em]">
+                                                                            {`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`}
+                                                                        </p>
+                                                                        <p>{`Example:`}</p>
+                                                                        <p className="bg-gray-200 dark:bg-gray-700 p-2 rounded text-sm font-mono break-words text-[0.8em]">
+                                                                            {`https://api.telegram.org/bot123456789:ABCdefGhIJKlmNoPQRstuVwXyZ1234567890/getUpdates`}
+                                                                        </p>
+                                                                        <p>{`6. Look for a line like this in the result:`}</p>
+                                                                        <p className="bg-gray-200 dark:bg-gray-700 p-2 rounded text-sm font-mono break-words text-[0.8em]">
+                                                                            {`"id": -1001234567890`}
+                                                                        </p>
+                                                                        <p>{`That number is your Group Chat ID. Copy it and paste it into the form.`}</p>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
+                                                    </div>
+
+                                                    {validationError && (
+                                                        <p className="text-center text-red-500 text-[0.9em]">{validationError}</p>
+                                                    )}
+
+                                                    <button
+                                                        type="button"
+                                                        className={buttonVariants({
+                                                            variant: "outline",
+                                                            size: "md",
+                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isProcessingTwitterAIAgent != "" ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                                        })}
+                                                        onClick={handleTelegramSubmit}
+                                                        disabled={!isOwner || isLoading || isProcessingTelegramAIAgent != ""}
+                                                    >
+                                                        {isLoading || isProcessingTelegramAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Starting Your Telegram AI Agent</span></> : !isOwner ? "Only the creator can modify agent's Telegram details" : "Turn On Telegram AI Agent"}
+                                                    </button>
+                                                </>
+                                                :
+                                                <>
+                                                    <div className="pt-4">
+                                                        <div className="relative pb-[20px]">
+                                                            <div className="text-[1.8em] h-[110px]">
+                                                                <div className="absolute left-[calc(50%-60px)] top-[20px]">
+                                                                    <FontAwesomeIcon icon={faCog} color='#444444'
+                                                                                     className="text-[2em] animate-spin"/>
+                                                                </div>
+                                                                <div className="absolute left-[calc(50%+5px)] top-[50px]">
+                                                                    <FontAwesomeIcon icon={faCog} size='xl' color='#444444'
+                                                                                     className="animate-spin"
+                                                                                     style={{animationDirection: "reverse"}}/>
+                                                                </div>
+                                                                <div className="absolute left-[calc(50%+5px)] top-[5px]">
+                                                                    <FontAwesomeIcon icon={faCog} color='#444444'
+                                                                                     className="text-[1em] animate-spin"
+                                                                                     style={{animationDirection: "reverse"}}/>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-center font-bold text-[1.2em] mt-2">
+                                                                Telegram/X AI Agent<br/> is online and operational.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        className={buttonVariants({
+                                                            variant: "outline",
+                                                            size: "md",
+                                                            className: `mt-5 bg-white border w-full border-black active:drop-shadow-none px-8 py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] hover:text-[#000] hover:bg-[#D6F2FE] active:translate-x-0 active:translate-y-0 active:shadow-none shrink-0 button-1 ${isLoading || !isOwner || isProcessingTwitterAIAgent != "" ? 'opacity-50 cursor-not-allowed' : ''}`,
+                                                        })}
+                                                        onClick={handleTelegramTurnOff}
+                                                        disabled={!isOwner || isLoading || isProcessingTelegramAIAgent != ""}
+                                                    >
+                                                        {isLoading || isProcessingTelegramAIAgent != "" ? <><IconLoader2 size={16} className="animate-spin"/> <span>&nbsp;Turning Off Your Twitter/x AI Agent</span></> : !isOwner ? "Only the creator can modify agent details" : "Turn Off Twitter/X AI Agent"}
                                                     </button>
                                                 </>
                                             }

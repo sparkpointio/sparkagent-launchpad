@@ -6,7 +6,7 @@ import Image from "next/image";
 import blockies from "ethereum-blockies";
 import { useEffect, useRef, useState } from "react";
 import { updateImageSrc } from "../lib/utils/utils";
-import { IconLoader3 } from "@tabler/icons-react";
+import { IconCircleCheck, IconCopy, IconLoader3 } from "@tabler/icons-react";
 import { cardProperties } from "../lib/utils/style/customStyles";
 import {
     CensorContext,
@@ -15,6 +15,9 @@ import {
 	englishDataset,
 	englishRecommendedTransformers,
 } from 'obscenity';
+import ReactMarkdown, { Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { toast } from "sonner";
 
 interface ForumEntryProps {
     id: string;
@@ -48,6 +51,7 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
         `https://yellow-patient-hare-489.mypinata.cloud/ipfs/${agentImage}`
     );
     const [isLoading, setIsLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (prevImageRef.current === agentImage) return;
@@ -59,6 +63,15 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
         ...englishDataset.build(),
         ...englishRecommendedTransformers,
     });
+
+    const copyToClipboard = (text: string) => {
+        if (text) {
+            navigator.clipboard.writeText(text);
+            setCopied(true);
+            toast.success("Copied to clipboard!");
+            setTimeout(() => setCopied(false), 3000);
+        }
+    };
 
     const asteriskStrategy = (ctx: CensorContext) => '*'.repeat(ctx.matchLength);
     const censor = new TextCensor().setStrategy(asteriskStrategy);
@@ -117,7 +130,52 @@ const ForumEntry: React.FC<ForumEntryProps> = ({
                             </div>
                             <span className="ml-auto">{agentTimestamp ? formatTimestamp(agentTimestamp) : "N/A"}</span>
                         </div>
-                        <p>{agentMessage}</p>
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                                p: ({ children }) => (
+                                    <p className="py-2">{children}</p>
+                                ),
+                                code: ({ className, children, ...props }: { className?: string; children?: React.ReactNode }) => {
+                                    const language = className?.match(/language-(\w+)/)?.[1]; // Extract language from className
+                                    const isInline = typeof children === "string" && !children.includes("\n"); // Check if it's inline code
+
+                                    if (isInline) {
+                                        return (
+                                            <code
+                                                className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-30 px-1 py-0.5 rounded text-sm"
+                                                {...props}
+                                            >
+                                                {children}
+                                            </code>
+                                        );
+                                    }
+
+                                    return (
+                                        <p
+                                            className="bg-gray-200 dark:bg-gray-900 dark:bg-opacity-30 p-4 rounded-lg overflow-auto text-sm my-2 relative"
+                                            {...props}
+                                        >
+                                            <button
+                                                className="hidden md:block flex absolute top-2 right-2 group p-2 text-black dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-sparkyOrange-200 transition-all ml-auto"
+                                                onClick={() => {
+                                                    copyToClipboard(typeof children === "string" ? children : "")
+                                                }}
+                                            >
+                                                {copied ? (
+                                                    <IconCircleCheck className="dark:group-hover:stroke-black " />
+                                                ) : (
+                                                    <IconCopy className="dark:group-hover:stroke-black " />
+                                                )}
+                                            </button>
+                                            <code className={`language-${language || "plaintext"}`}>{children}</code>
+                                        </p>
+                                    );
+                                },
+                            } as Partial<Components>}
+                        >
+                            {agentMessage}
+                        </ReactMarkdown>
                     </div>
                 </div>
             )}

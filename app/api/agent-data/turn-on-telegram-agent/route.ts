@@ -12,14 +12,12 @@ export async function POST(req: NextRequest) {
             return new Response(JSON.stringify({ error: 'Missing required parameters.' }), { status: 400 });
         }
 
-        const apiUrl = `${backendUrl}/agents/${contractAddress}/twitter/start`;
+        const apiUrl = `${backendUrl}/agents/${contractAddress}/telegram/start`;
         
         const response = await axios.post(apiUrl, {
             signature: requestBody.signature,
-            twitterUsername: requestBody.twitterUsername,
-            twitterEmail: requestBody.twitterEmail,
-            twitterPassword: requestBody.twitterPassword,
-            twitter2FASecret: requestBody.twitter2FASecret
+            chatID: requestBody.telegramChatId,
+            botToken: requestBody.telegramBotToken
         }, {
             headers: {
                 'x-api-key': process.env.NEXT_PUBLIC_POST_FORUM_API,
@@ -45,7 +43,7 @@ export async function POST(req: NextRequest) {
                 );
             }
         } else {
-            console.error("Error turning on Twitter/X AI agent:", error);
+            console.error("Error turning on Telegram AI agent:", error);
         }
         return new Response(
             JSON.stringify({ error: `Server error: Unable to process the request. ${error instanceof Error ? error.message : 'Unknown error'}` }),
