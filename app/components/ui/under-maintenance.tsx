@@ -23,7 +23,7 @@ export default function UnderMaintenance() {
       <div className="relative z-5 flex flex-col items-center justify-center p-8 sm:p-16 min-h-screen">
         <div className={`w-full space-y-12 text-center transition-all duration-1000 ${true ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           
-          <div className="flex flex-row items-center justify-center gap-4 mx-auto mb-12">
+          <div className="flex flex-row items-center justify-center gap-4 mx-auto mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-orange-400/20 dark:bg-orange-500/20 rounded-full blur-xl animate-pulse"></div>
               <Image
@@ -55,8 +55,8 @@ export default function UnderMaintenance() {
             </div>
 
             <div>
-              <p className="text-lg text-gray-700 dark:text-gray-300">
-                The SparkAgent Launchpad is currently undergoing exciting improvements to enhance your experience. 
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                The SparkAgent Launchpad is currently undergoing exciting improvements. 
                 Our team is working around the clock to bring you amazing new features and better performance.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-600 dark:text-gray-400">
