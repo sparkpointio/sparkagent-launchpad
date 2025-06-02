@@ -44,7 +44,7 @@ const Hero = () => {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <MaintenanceWrapper 
               mode="limited-access" 
-              feature="wallet" 
+              feature="create-agent" 
               showModalOnClick={true}
             >
               {account ? (
