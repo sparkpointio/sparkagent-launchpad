@@ -5,6 +5,7 @@ import { cardProperties } from "../lib/utils/style/customStyles";
 import { IconBrandTelegram, IconBrandX, IconChartLine, IconMessageChatbot } from "@tabler/icons-react";
 import { AgentConfiguration } from "./AgentConfiguration";
 import { useState } from "react";
+import MaintenanceWrapper from "./MaintenanceWrapper";
 
 interface AgentFunctionalityCardProps {
     sparkingProgress: number;
@@ -71,13 +72,19 @@ const AgentFunctionalityCard: React.FC<AgentFunctionalityCardProps> = ({
                 {renderFunctionality(IconBrandTelegram, "Agentic Telegram Agent", "Agent comes alive on Telegram", sparked ? "Coming Soon" : isTelegramAgentReady ? isTelegramAgentActive ? "Running" : "Activating" : "Coming Soon")}
                 {renderFunctionality(IconChartLine, "Trading Agent", "Agent autonomously trading", sparked ? "Coming Soon" : isTradingAgentReady ? "Activating" : "Coming Soon")}
             </div>
-            <button
-                type="button"
-                onClick={() => setIsAgentConfigOpen(true)}
-                className={agentConfigButtonProperties}
+            <MaintenanceWrapper 
+                mode="limited-access" 
+                feature="agent-configuration" 
+                showModalOnClick={true}
             >
-                Agent Config
-            </button>
+                <button
+                    type="button"
+                    onClick={() => setIsAgentConfigOpen(true)}
+                    className={agentConfigButtonProperties}
+                >
+                    Agent Config
+                </button>
+            </MaintenanceWrapper>
             <AgentConfiguration
                 agentName={tokenName}
                 ticker={tokenTicker}
