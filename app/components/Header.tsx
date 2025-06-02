@@ -13,6 +13,7 @@ import {ConnectButton, darkTheme} from 'thirdweb/react';
 import { client } from '../client';
 import { selectedChain } from "../lib/chain-thirdweb";
 import SparkAgentLogo from './SparkAgentLogo';
+import MaintenanceWrapper from './MaintenanceWrapper';
 
 const Header = ({ className }: { className?: string }) => {
 
@@ -123,22 +124,33 @@ const Header = ({ className }: { className?: string }) => {
                     How it works
                   </Link>
                 </nav>
-                <ConnectButton
-                  connectButton={customButtonStyles}
-                  detailsButton={{
-                    className: "!w-full justify-center"
-                  }}
-                  client={client}
-                  chain={selectedChain}
-                  theme={isDarkMode
-                    ? darkTheme({
-                        colors: {
-                          connectedButtonBg: "#1a1d21",
-                        },
-                      })
-                    : 'light'
-                  }
-                />
+                <MaintenanceWrapper 
+                  mode="limited-access" 
+                  feature="wallet" 
+                  showModalOnClick={true}
+                >
+                  <div className="w-full">
+                    <ConnectButton
+                      connectButton={{
+                        ...customButtonStyles,
+                        className: `${customButtonStyles.className} w-full`
+                      }}
+                      detailsButton={{
+                        className: "!w-full justify-center"
+                      }}
+                      client={client}
+                      chain={selectedChain}
+                      theme={isDarkMode
+                          ? darkTheme({
+                            colors: {
+                              connectedButtonBg: "#1a1d21",
+                            },
+                          })
+                          : 'light'
+                      }
+                    />
+                  </div>
+                </MaintenanceWrapper>
               </div>
 
 
@@ -166,22 +178,34 @@ const Header = ({ className }: { className?: string }) => {
                   How it works
                 </Link>
               </nav>
-              <ConnectButton
-                connectButton={customButtonStyles}
-                detailsButton={{
-                  className: "!w-full justify-center"
-                }}
-                client={client}
-                chain={selectedChain}
-                theme={isDarkMode
-                    ? darkTheme({
-                      colors: {
-                        connectedButtonBg: "#1a1d21",
-                      },
-                    })
-                    : 'light'
-                }
-              />
+              
+             <MaintenanceWrapper 
+                mode="limited-access" 
+                feature="wallet" 
+                showModalOnClick={true}
+              >
+                <div className="w-full">
+                  <ConnectButton
+                    connectButton={{
+                      ...customButtonStyles,
+                      className: `${customButtonStyles.className} !w-full !min-w-full`
+                    }}
+                    detailsButton={{
+                      className: "!w-full !min-w-full justify-center"
+                    }}
+                    client={client}
+                    chain={selectedChain}
+                    theme={isDarkMode
+                        ? darkTheme({
+                          colors: {
+                            connectedButtonBg: "#1a1d21",
+                          },
+                        })
+                        : 'light'
+                    }
+                  />
+                </div>
+              </MaintenanceWrapper>
             </motion.div>
           )}
         </AnimatePresence>
