@@ -7,7 +7,8 @@ import { Footer } from "./components/Footer";
 import LightDarkToggle from "./components/layout/light-dark-toggle";
 import { Toaster } from 'sonner'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import UnderMaintenance from "./components/ui/under-maintenance";
+import MaintenanceWrapper from "./components/MaintenanceWrapper";
+import { MaintenanceProvider } from "./contexts/MaintenanceContext";
 
 const rubik = Rubik({
   weight: '400',
@@ -31,8 +32,6 @@ export const metadata: Metadata = {
   title: "SparkAgent Launchpad",
   description: "Launch the smartest AI agents in the SparkPoint ecosystem.",
 };
-
-const isUnderMaintenance = process.env.NEXT_PUBLIC_UNDER_MAINTENANCE === "true" ? true : false;
 
 export default function RootLayout({
   children,
@@ -64,24 +63,22 @@ export default function RootLayout({
         <meta property="og:url" content="https://app.sparkpoint.io" />
       </head>
       <ThirdwebProvider>
-        <body
-          className={`${rubik.variable} ${poppins.variable} ${righteous.variable} antialiased`}
-        >
-          <Toaster position="top-center" richColors />
-          <LightDarkToggle />
+        <MaintenanceProvider>
+          <body
+            className={`${rubik.variable} ${poppins.variable} ${righteous.variable} antialiased`}
+          >
+            <Toaster position="top-center" richColors />
+            <LightDarkToggle />
 
-          {
-            isUnderMaintenance ? 
-              <UnderMaintenance />
-            :
-            <>
+            <MaintenanceWrapper mode="full">
               <Header />
               {children}
-            </> 
-          }
-          <Footer />
-        </body>
+            </MaintenanceWrapper>
+            
+            <Footer />
+          </body>
         <GoogleAnalytics gaId="G-HECJG05KED" />
+        </MaintenanceProvider>
       </ThirdwebProvider>
     </html>
   );
