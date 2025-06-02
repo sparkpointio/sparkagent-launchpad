@@ -8,6 +8,7 @@ import { ConnectButton } from 'thirdweb/react';
 import { CreateAgentForm } from "../components/CreateAgentForm";
 import { buttonVariants } from '../components/variants/button-variants';
 import Image from 'next/image';
+import MaintenanceWrapper from './MaintenanceWrapper';
 
 const Hero = () => {
   const account = useActiveAccount();
@@ -41,20 +42,26 @@ const Hero = () => {
           Tokenize your ideas into AI agents that collaborate, trade, and earn for you!
         </p>
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+            <MaintenanceWrapper 
+              mode="limited-access" 
+              feature="wallet" 
+              showModalOnClick={true}
+            >
               {account ? (
-                    <CreateAgentForm>
-                      <button className={buttonVariants({ variant: "outline", size: "lg", className: 'w-full sm:w-48 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2' })}>
-                        Create Agent
-                      </button>
-                  </CreateAgentForm>
-                  ): (
-                  <ConnectButton
-                      connectButton={customButtonStyles}
-                      client={client}
-                      chain={selectedChain}
-                      theme="light"
-                  />
-                  )}
+                <CreateAgentForm>
+                    <button className={buttonVariants({ variant: "outline", size: "lg", className: 'w-full sm:w-48 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2' })}>
+                      Create Agent
+                    </button>
+                </CreateAgentForm>
+                ): (
+                <ConnectButton
+                    connectButton={customButtonStyles}
+                    client={client}
+                    chain={selectedChain}
+                    theme="light"
+                />
+              )}
+            </MaintenanceWrapper>
           </div>
       </div>
 
