@@ -8,6 +8,7 @@ import {
   useScroll,
   useMotionValueEvent,
 } from "framer-motion";
+import { usePathname } from 'next/navigation';
 import { cn } from '../lib/utils/style';
 import {ConnectButton, darkTheme} from 'thirdweb/react';
 import { client } from '../client';
@@ -20,6 +21,7 @@ const Header = ({ className }: { className?: string }) => {
   const { scrollY } = useScroll();
   const [isOpen, setIsOpen] = useState(false);
   const [visible, setVisible] = useState(true);
+  const pathname = usePathname();
   const toggleMenu = () => setIsOpen(!isOpen);
 
   useMotionValueEvent(scrollY, "change", (current) => {
@@ -64,6 +66,46 @@ const Header = ({ className }: { className?: string }) => {
       observer.disconnect(); // Cleanup observer on unmount
     };
   }, []);
+
+  // Helper function to conditionally wrap ConnectButton with MaintenanceWrapper
+  const renderConnectButton = (additionalClasses: string = "") => {
+    const connectButtonElement = (
+      <ConnectButton
+        connectButton={{
+          ...customButtonStyles,
+          className: `${customButtonStyles.className} ${additionalClasses}`
+        }}
+        detailsButton={{
+          className: `!w-full justify-center ${additionalClasses.includes('!w-full') ? '!min-w-full' : ''}`
+        }}
+        client={client}
+        chain={selectedChain}
+        theme={isDarkMode
+            ? darkTheme({
+              colors: {
+                connectedButtonBg: "#1a1d21",
+              },
+            })
+            : 'light'
+        }
+      />
+    );
+
+    // Skip MaintenanceWrapper on /airdrop page
+    if (pathname === '/airdrop') {
+      return <div className="w-full">{connectButtonElement}</div>;
+    }
+
+    return (
+      <MaintenanceWrapper 
+        mode="limited-access" 
+        feature="wallet" 
+        showModalOnClick={true}
+      >
+        <div className="w-full">{connectButtonElement}</div>
+      </MaintenanceWrapper>
+    );
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -124,33 +166,7 @@ const Header = ({ className }: { className?: string }) => {
                     How it works
                   </Link>
                 </nav>
-                <MaintenanceWrapper 
-                  mode="limited-access" 
-                  feature="wallet" 
-                  showModalOnClick={true}
-                >
-                  <div className="w-full">
-                    <ConnectButton
-                      connectButton={{
-                        ...customButtonStyles,
-                        className: `${customButtonStyles.className} w-full`
-                      }}
-                      detailsButton={{
-                        className: "!w-full justify-center"
-                      }}
-                      client={client}
-                      chain={selectedChain}
-                      theme={isDarkMode
-                          ? darkTheme({
-                            colors: {
-                              connectedButtonBg: "#1a1d21",
-                            },
-                          })
-                          : 'light'
-                      }
-                    />
-                  </div>
-                </MaintenanceWrapper>
+                {renderConnectButton("w-full")}
               </div>
 
 
@@ -179,33 +195,7 @@ const Header = ({ className }: { className?: string }) => {
                 </Link>
               </nav>
               
-             <MaintenanceWrapper 
-                mode="limited-access" 
-                feature="wallet" 
-                showModalOnClick={true}
-              >
-                <div className="w-full">
-                  <ConnectButton
-                    connectButton={{
-                      ...customButtonStyles,
-                      className: `${customButtonStyles.className} !w-full !min-w-full`
-                    }}
-                    detailsButton={{
-                      className: "!w-full !min-w-full justify-center"
-                    }}
-                    client={client}
-                    chain={selectedChain}
-                    theme={isDarkMode
-                        ? darkTheme({
-                          colors: {
-                            connectedButtonBg: "#1a1d21",
-                          },
-                        })
-                        : 'light'
-                    }
-                  />
-                </div>
-              </MaintenanceWrapper>
+              {renderConnectButton("!w-full !min-w-full")}
             </motion.div>
           )}
         </AnimatePresence>
