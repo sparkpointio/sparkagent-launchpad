@@ -14,6 +14,7 @@ import blockies from "ethereum-blockies";
 import WalletConfirmationStatus from "../components/WalletConfirmationStatus";
 import { getFormattedEther } from "../lib/utils/formatting";
 import { cardProperties } from "../lib/utils/style/customStyles";
+import MaintenanceWrapper from "./MaintenanceWrapper";
 
 const unsparkingAIContract = getContract({
     client,
@@ -440,8 +441,13 @@ const SwapCard: React.FC<SwapCardProps> = ({ contractAddress, ticker, image, tra
                 </div>
             </div>
 
-            <button type="button" className={`${swapButtonProperties}`} onClick={handleSwap}>Swap</button>
-
+            <MaintenanceWrapper 
+                mode="limited-access" 
+                feature="swap" 
+                showModalOnClick={true}
+            >
+                <button type="button" className={`${swapButtonProperties}`} onClick={handleSwap}>Swap</button>
+            </MaintenanceWrapper>
             <WalletConfirmationStatus
                 walletConfirmationStatus={walletConfirmationStatus}
                 swapType={swapType}
