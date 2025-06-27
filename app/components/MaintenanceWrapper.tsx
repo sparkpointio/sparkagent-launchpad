@@ -46,9 +46,9 @@ export default function MaintenanceWrapper({
             showMaintenanceModal();
             onClick?.();
           }}
-          className="opacity-75 cursor-pointer w-full"
+          className="opacity-75 cursor-pointer"
         >
-          <div className="pointer-events-none w-full">
+          <div className="pointer-events-none">
             {children}
           </div>
         </div>

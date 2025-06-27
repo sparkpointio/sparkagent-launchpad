@@ -11,6 +11,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { getContract, readContract, toEther } from "thirdweb";
 import { client } from '../client';
 import { selectedChain } from "../lib/chain-thirdweb";
+import MaintenanceWrapper from "./MaintenanceWrapper";
 
 interface ForumsProps {
     agentCertificate: string;
@@ -138,25 +139,30 @@ const Forums: React.FC<ForumsProps> = ({ agentCertificate, agentName, agentImage
 
     return (
         <div className="flex flex-col space-y-4 justify-center items-center">
-            <button
-                type="button"
-                onClick={() => setIsCommentFormOpen(true)}
-                disabled={!isWalletConnected}
-                className={buttonVariants({
-                    variant: "outline",
-                    size: "xl",
-                    className: `w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2 ${!isWalletConnected ? 'opacity-50 cursor-not-allowed' : ''}`,
-                })}
+            <MaintenanceWrapper
+                mode="limited-access"
+                feature="comment"
+                showModalOnClick={true}
             >
-                {
-                    isWalletConnected ? (
-                        <span>Comment <br />(Burn {BigInt(toEther(fetchedBurnAmount))} SRK)</span>
-                    ) : (
-                        <span>Connect Wallet to Comment</span>
-                    )
-                }
-            </button>
-
+                <button
+                    type="button"
+                    onClick={() => setIsCommentFormOpen(true)}
+                    disabled={!isWalletConnected}
+                    className={buttonVariants({
+                        variant: "outline",
+                        size: "xl",
+                        className: `w-full sm:w-60 active:drop-shadow-none py-3 transition-all duration-200 cursor-pointer hover:-translate-y-[0.25rem] hover:translate-x-[-0.25rem] text-white bg-black hover:bg-black hover:shadow-[0.25rem_0.25rem_#E5E7EB] active:translate-x-0 active:translate-y-0 active:shadow-none button-2 ${!isWalletConnected ? 'opacity-50 cursor-not-allowed' : ''}`,
+                    })}
+                >
+                    {
+                        isWalletConnected ? (
+                            <span>Comment <br />(Burn {BigInt(toEther(fetchedBurnAmount))} SRK)</span>
+                        ) : (
+                            <span>Connect Wallet to Comment</span>
+                        )
+                    }
+                </button>
+            </MaintenanceWrapper>
             {isLoading ? (
                 <motion.span
                     className="text-lg"
